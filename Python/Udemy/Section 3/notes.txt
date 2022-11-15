@@ -1,0 +1,5 @@
+when doing numbers in this example, they function as
+0:0:0
+{idk, but it is always 0, it is prob to start the count from the number in the "i in range(1,13)" so here it would be 1} 
+(how spaced out the variable is to the rest of the words, this is to make the output prettier)
+{}

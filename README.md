@@ -4,4 +4,4 @@
 * C++
 
 # Future
-* Bash lol
+* Proper Bash lol (I am shell pro tho, no cap)

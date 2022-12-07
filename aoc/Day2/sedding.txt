@@ -1,0 +1,2500 @@
+C Z
+A Y (rock L)
+C Z
+A Y (rock L)
+C Y
+A Z (rock W)
+B Y
+C X
+A Y (rock L)
+B X
+B X
+A Y (rock L)
+C Z
+C Y
+C Y
+A Y (rock L)
+C Y
+B X
+B X
+A Z (rock W)
+C Y
+B Z
+C Z
+A Z (rock W)
+B Y
+A Y (rock L)
+C Z
+A Z (rock W)
+A Y (rock L)
+C Z
+C Z
+A X (Rock tie)
+A Y (rock L)
+B Y
+C X
+B Y
+C Z
+A Z (rock W)
+A X (Rock tie)
+A Z (rock W)
+A Y (rock L)
+C Y
+C X
+C Y
+A Z (rock W)
+C Z
+C Z
+A Y (rock L)
+A Z (rock W)
+C Z
+A Y (rock L)
+C Z
+C Y
+C Z
+A Z (rock W)
+A Y (rock L)
+C Z
+C Y
+C Y
+C X
+B Y
+B Y
+C Y
+A Z (rock W)
+A Z (rock W)
+B X
+B Z
+B X
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+C Y
+B X
+B Y
+A Z (rock W)
+C Y
+C Z
+A Y (rock L)
+B X
+C Z
+A Y (rock L)
+C Z
+C Z
+A Y (rock L)
+B Z
+C Z
+A Y (rock L)
+B X
+A Y (rock L)
+C Z
+C Z
+B Y
+B Z
+B Z
+A Y (rock L)
+A Z (rock W)
+B Y
+C Z
+C Y
+C Z
+A Y (rock L)
+C Z
+C Z
+C Z
+C Y
+A Z (rock W)
+A Z (rock W)
+C Z
+C Z
+A Z (rock W)
+C Z
+C Y
+C X
+A Z (rock W)
+A Z (rock W)
+B Z
+A Y (rock L)
+A Y (rock L)
+C X
+B Y
+C Y
+A Y (rock L)
+B X
+B Y
+B Y
+B Y
+C Y
+A Z (rock W)
+C Y
+A Y (rock L)
+C Z
+B Y
+B X
+A Z (rock W)
+C Y
+B Y
+A Y (rock L)
+C Z
+B Z
+B Z
+A X (Rock tie)
+B Y
+C Z
+B Z
+B Y
+C Z
+B X
+B Y
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+B Y
+B Y
+A Z (rock W)
+C Z
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+A X (Rock tie)
+C Y
+A Y (rock L)
+C Z
+A Z (rock W)
+C Z
+C Y
+C X
+B Z
+A Z (rock W)
+C Y
+C Z
+A Z (rock W)
+C Z
+C Z
+C Y
+C Z
+C Y
+C Z
+C Y
+C Z
+C Z
+C Y
+B X
+A Y (rock L)
+C Y
+C Z
+B Y
+B Y
+C X
+C Z
+A Z (rock W)
+B X
+C Z
+A Y (rock L)
+B Y
+C Z
+C Z
+C Z
+B X
+A Y (rock L)
+C Z
+B Z
+B X
+C Z
+C Z
+C X
+A Y (rock L)
+A Y (rock L)
+C Z
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+B X
+C Z
+B X
+C Z
+A Y (rock L)
+A Z (rock W)
+B X
+B Z
+C Z
+A Y (rock L)
+C Y
+C Z
+C Y
+B X
+B Y
+C X
+C Z
+A Y (rock L)
+A Y (rock L)
+B Z
+A Y (rock L)
+C Z
+C Z
+B Y
+B X
+C Z
+C Y
+C Y
+B Y
+C Y
+A Y (rock L)
+C X
+C Z
+A Y (rock L)
+A Y (rock L)
+C Y
+A Y (rock L)
+C X
+C Z
+A Y (rock L)
+B Z
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+C Z
+B X
+B Y
+C Y
+A Z (rock W)
+C Y
+C X
+B Z
+A Y (rock L)
+C Z
+A Y (rock L)
+B Y
+B X
+A Y (rock L)
+C X
+C X
+B Y
+C Z
+B X
+C X
+C Z
+A Y (rock L)
+C Z
+C X
+C Z
+B Y
+C Z
+C Z
+A Y (rock L)
+C Z
+B Y
+A Y (rock L)
+A Y (rock L)
+C Y
+C Z
+B X
+C Z
+C X
+C Y
+B Z
+A Y (rock L)
+B X
+C Y
+B Y
+C Y
+B Y
+A Y (rock L)
+A Y (rock L)
+B X
+B Z
+B X
+B Y
+C X
+C Z
+A Y (rock L)
+C Z
+C Z
+C Z
+C Z
+B Z
+C Z
+B Y
+A Y (rock L)
+C Y
+C X
+C Z
+B X
+C Z
+B Y
+C X
+C Z
+A Y (rock L)
+A Z (rock W)
+B Z
+A Y (rock L)
+B Y
+B Z
+C Y
+B X
+A X (Rock tie)
+C Y
+C X
+B Y
+C X
+C Z
+C Z
+C Z
+B X
+C X
+A X (Rock tie)
+B Y
+B Z
+C Z
+C Z
+C Y
+C Z
+B Y
+C Y
+C Y
+C Z
+B X
+B Z
+B Y
+B Y
+C Z
+B Y
+A X (Rock tie)
+B X
+A Z (rock W)
+C Z
+C Z
+A Y (rock L)
+C Z
+A Y (rock L)
+C Y
+B Z
+B Z
+C Z
+C X
+A Y (rock L)
+C X
+B Z
+A Y (rock L)
+B X
+A Z (rock W)
+A Z (rock W)
+B X
+C X
+C Y
+B Y
+A Y (rock L)
+B Y
+C Z
+C Z
+C Y
+A Y (rock L)
+C Y
+C Z
+C Y
+C Z
+C Z
+C Z
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+C Z
+B X
+A Y (rock L)
+C Z
+C Y
+C X
+C Y
+C Z
+C Y
+A Y (rock L)
+A Z (rock W)
+C Y
+A Z (rock W)
+C Y
+A Y (rock L)
+A Y (rock L)
+C Z
+C Y
+A Y (rock L)
+A Y (rock L)
+B Y
+B Z
+A Z (rock W)
+C Z
+C Z
+C Z
+C X
+B X
+C Z
+C Y
+A Z (rock W)
+B Y
+C Z
+C Z
+B Y
+A Z (rock W)
+C Z
+B Z
+B Y
+C Y
+C Y
+A Z (rock W)
+C Z
+A Z (rock W)
+B Y
+C Y
+B X
+C X
+B Y
+A Z (rock W)
+C Z
+C Y
+C Z
+B X
+C Z
+C Y
+C X
+C Z
+A Y (rock L)
+A Z (rock W)
+C Y
+B Y
+A Z (rock W)
+B X
+C Z
+C Y
+C Y
+C Z
+A Z (rock W)
+A Z (rock W)
+B Y
+B X
+B X
+A Y (rock L)
+B X
+C Y
+A Y (rock L)
+A Y (rock L)
+B X
+C Y
+B Z
+A Z (rock W)
+B X
+C Y
+C X
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+C Z
+B Z
+C Z
+A Y (rock L)
+C Z
+C X
+A Z (rock W)
+B Y
+A Y (rock L)
+B Y
+C Z
+C X
+A Z (rock W)
+C Y
+B X
+A Y (rock L)
+C X
+C Y
+A Z (rock W)
+B Z
+A Y (rock L)
+C Z
+B Y
+A Y (rock L)
+C Y
+C X
+B X
+C Z
+B X
+C Y
+C X
+C Y
+C Y
+B X
+A Y (rock L)
+B X
+C Y
+C Z
+B X
+C Z
+B Y
+A Y (rock L)
+C Z
+A Z (rock W)
+A X (Rock tie)
+B Y
+A Z (rock W)
+A Y (rock L)
+C Z
+C X
+B Y
+C Y
+A Y (rock L)
+C Y
+A Z (rock W)
+A Z (rock W)
+A Z (rock W)
+C Y
+A Y (rock L)
+B Y
+C X
+C X
+C Z
+A Z (rock W)
+C Y
+C Z
+C Y
+C Y
+A X (Rock tie)
+B Z
+B Y
+A Y (rock L)
+A X (Rock tie)
+A Z (rock W)
+C Z
+A X (Rock tie)
+A Y (rock L)
+C Z
+C Z
+C Y
+C Z
+C Z
+C X
+B Y
+B Z
+B Y
+A Y (rock L)
+B Y
+B X
+A Z (rock W)
+B Y
+C Y
+A Z (rock W)
+B Y
+B Y
+C X
+C Z
+B X
+A Y (rock L)
+C Z
+C X
+A Z (rock W)
+A Y (rock L)
+A Z (rock W)
+C Z
+B Y
+B Y
+C Z
+A Y (rock L)
+A Y (rock L)
+C Y
+B Y
+C Y
+C Y
+C Y
+A Y (rock L)
+C Z
+B X
+A Y (rock L)
+B Z
+A Y (rock L)
+B X
+C Z
+C Y
+C Y
+A Y (rock L)
+A X (Rock tie)
+C Z
+B X
+B X
+B X
+C Y
+C Y
+A Z (rock W)
+A Y (rock L)
+C Z
+B Z
+C Z
+C Z
+C Y
+A Y (rock L)
+C Y
+A Z (rock W)
+A Y (rock L)
+B Y
+C Z
+C Y
+B Y
+A X (Rock tie)
+B Y
+A Z (rock W)
+B Y
+A X (Rock tie)
+A Y (rock L)
+B X
+A Y (rock L)
+B Y
+B X
+A X (Rock tie)
+A Z (rock W)
+C Z
+A Z (rock W)
+A Z (rock W)
+C Y
+A X (Rock tie)
+A Y (rock L)
+C Z
+C Y
+A Y (rock L)
+B Y
+A Z (rock W)
+A Y (rock L)
+B Y
+C Z
+C Z
+B X
+B Y
+C Y
+A Y (rock L)
+B Y
+A Y (rock L)
+B Y
+B Y
+B Y
+C Y
+C Z
+C Z
+B X
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+C Y
+C Y
+A Y (rock L)
+A Y (rock L)
+C Z
+C Z
+B Y
+B X
+A Y (rock L)
+C Z
+A Y (rock L)
+B Z
+B Y
+C Y
+C Y
+C Y
+B X
+A Y (rock L)
+C Z
+A Z (rock W)
+B X
+C Z
+B Y
+A Z (rock W)
+C Y
+C Y
+A Y (rock L)
+B X
+A Y (rock L)
+A Y (rock L)
+B X
+C Y
+C Y
+A Z (rock W)
+C Z
+C X
+C Y
+B Y
+B Y
+C Y
+C X
+A Y (rock L)
+B Z
+A Y (rock L)
+B Z
+A Z (rock W)
+A Y (rock L)
+C Z
+C Z
+C Z
+C Z
+C Z
+C Z
+C Y
+A Y (rock L)
+C Z
+A Z (rock W)
+B Z
+C Z
+A Z (rock W)
+A Y (rock L)
+C X
+A Z (rock W)
+A Y (rock L)
+C Z
+B Z
+A Y (rock L)
+C Y
+B X
+C Z
+C Z
+A Y (rock L)
+C Y
+B Y
+C Z
+C Y
+C X
+A Z (rock W)
+B Z
+A Z (rock W)
+A Y (rock L)
+B Z
+C Z
+C Z
+A Y (rock L)
+A Y (rock L)
+C Z
+A Y (rock L)
+A X (Rock tie)
+C Y
+B Y
+B X
+B Y
+B X
+C X
+C X
+A X (Rock tie)
+A Y (rock L)
+C Y
+A X (Rock tie)
+B X
+C Y
+A Z (rock W)
+B X
+C Z
+C Z
+B Y
+A Y (rock L)
+C Z
+C Z
+C Y
+A Z (rock W)
+B X
+C Y
+A Y (rock L)
+C Z
+C Z
+A Z (rock W)
+B Z
+B Z
+C Z
+C Y
+C Z
+A Y (rock L)
+C Z
+C Z
+B X
+C Z
+C Z
+B Z
+C Z
+B Y
+C X
+C Y
+C Z
+B Y
+A Z (rock W)
+C Z
+A Y (rock L)
+B Y
+C Z
+C Z
+C Z
+A Y (rock L)
+A Y (rock L)
+A X (Rock tie)
+C Z
+B X
+C Z
+C Y
+C Y
+A Z (rock W)
+B X
+C Z
+C Z
+B X
+C Y
+A Z (rock W)
+C X
+C Y
+B Y
+C Y
+C X
+A Z (rock W)
+B Z
+A Z (rock W)
+B X
+C Y
+B X
+C Z
+C Z
+B X
+B Y
+C Z
+B Y
+A Z (rock W)
+A Y (rock L)
+B Z
+C X
+C Z
+C Y
+C Z
+B Y
+A Z (rock W)
+C Z
+B Y
+B Y
+C X
+C Y
+A X (Rock tie)
+B Z
+C X
+A Z (rock W)
+B Z
+A Y (rock L)
+A Y (rock L)
+B X
+C Z
+C Z
+A Y (rock L)
+C Z
+A Z (rock W)
+C Y
+C Z
+C Z
+A Z (rock W)
+C Z
+C X
+A Y (rock L)
+C Y
+C X
+C X
+B X
+C X
+A Y (rock L)
+B Y
+C Y
+C Z
+C X
+C Z
+A Z (rock W)
+C Z
+A Y (rock L)
+A Y (rock L)
+B Z
+B X
+C X
+A Y (rock L)
+C Z
+A Y (rock L)
+C Y
+C X
+B Y
+C Z
+B X
+A Z (rock W)
+A Z (rock W)
+C X
+B X
+C Z
+C Z
+B X
+A Y (rock L)
+A Z (rock W)
+C Z
+C Z
+C Z
+A Y (rock L)
+C Z
+B Z
+A Y (rock L)
+B Z
+A Y (rock L)
+B Y
+C Y
+A Y (rock L)
+B Y
+A Z (rock W)
+A Z (rock W)
+C Y
+A Z (rock W)
+C Z
+B X
+C Y
+B X
+B X
+B Y
+B Z
+A Y (rock L)
+C Y
+C Z
+C Y
+B Z
+C Y
+C Y
+C Z
+A Y (rock L)
+B Z
+C Y
+C Z
+C Z
+B Z
+A X (Rock tie)
+C Z
+B Y
+C Y
+A Z (rock W)
+C Z
+A X (Rock tie)
+C X
+B Y
+A Z (rock W)
+A Z (rock W)
+B X
+C Z
+B X
+C Y
+C X
+C Z
+C X
+C Z
+C Z
+B X
+B Y
+A Y (rock L)
+B X
+C X
+B Y
+A Z (rock W)
+A Z (rock W)
+C Y
+C Y
+B X
+C Z
+B Y
+B X
+A Y (rock L)
+A X (Rock tie)
+C Y
+A X (Rock tie)
+C Y
+C Z
+C Y
+C X
+C Z
+B X
+B Z
+B Z
+C Z
+B Y
+C Z
+C Y
+A Y (rock L)
+C Y
+A Y (rock L)
+C Z
+A Y (rock L)
+A Y (rock L)
+A Z (rock W)
+C X
+C Z
+C Z
+C Z
+B Y
+C Z
+B X
+A Y (rock L)
+A Z (rock W)
+C Z
+B X
+A Z (rock W)
+C Z
+A Z (rock W)
+A Y (rock L)
+B Y
+A Z (rock W)
+C Z
+B Y
+C Y
+C Z
+A X (Rock tie)
+C Z
+C Z
+C X
+C Z
+C Z
+C Z
+B Y
+C Y
+B Y
+B Y
+C Z
+B X
+A Z (rock W)
+A Y (rock L)
+C Z
+C Y
+B X
+C X
+A Y (rock L)
+C Z
+A Y (rock L)
+B Y
+C Z
+C Y
+B Y
+C X
+B X
+B X
+B X
+C Y
+C Y
+C Y
+C X
+C X
+A Y (rock L)
+B X
+C Z
+A Z (rock W)
+A X (Rock tie)
+B Y
+C Z
+C Y
+A Y (rock L)
+C Y
+C Y
+C Y
+C Y
+B Y
+B Y
+C Y
+B X
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+B Y
+A Y (rock L)
+C Z
+C Y
+A Y (rock L)
+B Y
+B Y
+B Y
+C Y
+C Z
+B X
+B Y
+C Z
+C Y
+C Z
+C Z
+C Z
+B Y
+C X
+C Y
+C Z
+C Z
+B Y
+A Y (rock L)
+B Y
+C Z
+A Y (rock L)
+A Z (rock W)
+B X
+B X
+C Z
+B X
+A Y (rock L)
+C Z
+B Y
+B Y
+C Z
+B X
+A Y (rock L)
+A Y (rock L)
+B X
+C Z
+A Z (rock W)
+C Z
+C Y
+B X
+B Y
+A Y (rock L)
+C Z
+C Y
+C Z
+C Z
+B X
+B Z
+C Z
+C X
+A Y (rock L)
+C X
+B Z
+C Z
+C Z
+A X (Rock tie)
+C Z
+A Y (rock L)
+C Y
+A Y (rock L)
+A Z (rock W)
+C Y
+B Z
+A Z (rock W)
+C Z
+C Z
+C Z
+A Y (rock L)
+C X
+C X
+B Y
+C Y
+A Z (rock W)
+A Z (rock W)
+B X
+B Z
+C X
+C X
+C Y
+C Y
+C Z
+A Y (rock L)
+C Y
+B Z
+B X
+C Y
+C Z
+B Z
+A Y (rock L)
+A Y (rock L)
+C Z
+B Y
+C Y
+B Y
+C X
+C X
+C Z
+B Y
+A Y (rock L)
+C Z
+B Z
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+A Z (rock W)
+B X
+C Z
+A Z (rock W)
+C Y
+C Z
+B Z
+B Z
+B Y
+C Y
+C Z
+C X
+B Y
+B X
+A Y (rock L)
+C Y
+A Z (rock W)
+C Z
+C Z
+A Y (rock L)
+A Z (rock W)
+C X
+C Z
+A Z (rock W)
+C Z
+B X
+C Y
+A Y (rock L)
+B Z
+B Z
+B Y
+C Z
+C Z
+B X
+A Z (rock W)
+C Z
+C Y
+B Y
+C Y
+C Z
+C Y
+B X
+B X
+C Z
+C Y
+B Y
+B X
+C Z
+B X
+C Y
+C Z
+C Y
+B Z
+C Z
+A Y (rock L)
+A Y (rock L)
+B X
+C Z
+B X
+B X
+A Y (rock L)
+B X
+B X
+C Y
+C X
+B X
+C Z
+C Z
+C Z
+C Z
+C Y
+B Y
+C Z
+C Z
+A Y (rock L)
+A Z (rock W)
+C X
+C Y
+A Z (rock W)
+C Z
+B X
+B Y
+C Z
+A Z (rock W)
+C X
+A Y (rock L)
+B Y
+C Z
+A Y (rock L)
+C X
+A Y (rock L)
+C Z
+C X
+A Z (rock W)
+C Y
+A X (Rock tie)
+C Y
+C X
+B Y
+A Y (rock L)
+C X
+C X
+A Y (rock L)
+B X
+C Z
+C X
+A Z (rock W)
+A Y (rock L)
+C X
+C Z
+C Z
+C Z
+C Z
+C Y
+A Z (rock W)
+C X
+C Z
+C Z
+A Y (rock L)
+B X
+B X
+A Z (rock W)
+C Z
+B Y
+C Z
+B Y
+C Z
+C Z
+B X
+C Z
+C Z
+B Z
+C Y
+A Y (rock L)
+C Y
+B Z
+C Y
+C X
+C Z
+B X
+C Z
+A Y (rock L)
+A Y (rock L)
+C Y
+B Y
+A Z (rock W)
+A Y (rock L)
+A Z (rock W)
+C Y
+B Y
+A Z (rock W)
+C Z
+C Y
+C Y
+B Z
+B Z
+C X
+A Y (rock L)
+B X
+B Y
+B Y
+C Z
+A Z (rock W)
+C Z
+B X
+C Z
+C Y
+C Y
+C Y
+C X
+B X
+C Y
+A X (Rock tie)
+B Y
+A Z (rock W)
+C Z
+C Z
+C X
+A Z (rock W)
+B X
+C Y
+C Z
+B Y
+A X (Rock tie)
+B Y
+C Z
+A X (Rock tie)
+C Z
+B Y
+C Y
+A Y (rock L)
+C Y
+B Z
+C Z
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+A Z (rock W)
+C Z
+B Y
+C Z
+C Y
+B X
+A Y (rock L)
+C Z
+C Z
+C X
+B Z
+C X
+A X (Rock tie)
+B Z
+C Z
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+A Z (rock W)
+C Y
+B Y
+A Z (rock W)
+C Z
+B Y
+B Y
+C X
+A Z (rock W)
+C X
+A Z (rock W)
+C Y
+C X
+C Z
+A Y (rock L)
+B Y
+B Z
+C Z
+B X
+B X
+C Z
+C Z
+B Z
+C X
+A Y (rock L)
+B X
+B Y
+C Z
+C X
+B Z
+B X
+B X
+A Z (rock W)
+C Z
+A Z (rock W)
+C Z
+C Z
+A Y (rock L)
+C Z
+A Y (rock L)
+C Y
+A Y (rock L)
+C Z
+C Z
+C Z
+A Y (rock L)
+C Z
+A X (Rock tie)
+B X
+B Y
+C X
+C Z
+A Y (rock L)
+C Z
+C Y
+C Z
+C Y
+C X
+A Y (rock L)
+C Z
+C Y
+C Y
+C Z
+A Y (rock L)
+C Z
+C X
+C X
+B X
+B X
+C Z
+C Y
+A Z (rock W)
+C Z
+C X
+C Z
+C Y
+B Y
+C Z
+C X
+B X
+C X
+A Y (rock L)
+C Z
+A Z (rock W)
+A Y (rock L)
+C Z
+C Z
+B X
+B Y
+C Z
+C Z
+C Y
+C Y
+C Y
+C Z
+A Z (rock W)
+B Y
+B X
+B Y
+A Y (rock L)
+C Y
+A Y (rock L)
+B Y
+B X
+B X
+C X
+C Z
+C Z
+C Z
+A X (Rock tie)
+B Z
+A Z (rock W)
+C Z
+C Z
+B X
+B X
+B Y
+C Z
+C X
+A Y (rock L)
+C Z
+B X
+C Z
+B Y
+C X
+B Z
+C X
+A Y (rock L)
+B X
+C X
+C Y
+A Y (rock L)
+C Z
+A Y (rock L)
+B X
+B Z
+A Y (rock L)
+C Z
+C Y
+C Y
+C Y
+C Y
+C X
+C Z
+B Y
+B Y
+A Y (rock L)
+B Z
+A Y (rock L)
+C Y
+C Y
+B Z
+B Y
+C Z
+B Z
+C Z
+B X
+B Y
+A X (Rock tie)
+B X
+A Y (rock L)
+A Z (rock W)
+C X
+C X
+C Z
+B Z
+B Y
+A Z (rock W)
+A Y (rock L)
+A Y (rock L)
+C Z
+C Z
+C X
+B X
+C Z
+C Y
+C Y
+C Y
+C Y
+B Y
+A Y (rock L)
+B Y
+A Z (rock W)
+B X
+C Z
+C Y
+C Z
+B Y
+C X
+B X
+A X (Rock tie)
+C Z
+C Z
+B Y
+A Y (rock L)
+B Y
+B Y
+C Y
+A Z (rock W)
+B Z
+C X
+A Y (rock L)
+A Y (rock L)
+C Y
+A Z (rock W)
+C Z
+C X
+C X
+B Z
+C Y
+B X
+B Y
+C Z
+C Z
+C Y
+A Y (rock L)
+A Y (rock L)
+C X
+A Y (rock L)
+C X
+B Y
+C X
+C Z
+A Z (rock W)
+C X
+C Z
+C Z
+A Y (rock L)
+C Z
+C Y
+B X
+A Y (rock L)
+B Y
+C X
+A Y (rock L)
+A Y (rock L)
+C Z
+C Z
+B X
+C Y
+A Z (rock W)
+A Y (rock L)
+C Z
+C X
+C Z
+C Z
+A Y (rock L)
+A Y (rock L)
+C Z
+A Y (rock L)
+C Z
+B Y
+C Y
+C Z
+C Z
+B Z
+C Y
+B Z
+A Z (rock W)
+B Y
+B X
+B X
+C X
+C X
+A Z (rock W)
+C Z
+B X
+A Z (rock W)
+C X
+B Y
+B Y
+C Z
+A X (Rock tie)
+C X
+C X
+B X
+A Y (rock L)
+A Z (rock W)
+C Z
+C Y
+C Z
+A Y (rock L)
+B X
+C Z
+B Y
+C Y
+A Z (rock W)
+B Y
+C Z
+B X
+B Z
+C Z
+A Y (rock L)
+A Z (rock W)
+C Z
+C Y
+A Z (rock W)
+A Z (rock W)
+C Z
+B X
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+C Z
+A X (Rock tie)
+B Z
+A Y (rock L)
+B X
+C Z
+B X
+C Y
+B Y
+C Z
+B X
+B Z
+A Y (rock L)
+C Z
+B Y
+C Z
+A Y (rock L)
+A Z (rock W)
+C Z
+B Y
+A Y (rock L)
+C Y
+C X
+B Y
+B X
+B Y
+C Z
+C Z
+C Y
+A Y (rock L)
+A Z (rock W)
+C Y
+C Z
+C Z
+B Y
+B X
+C Z
+B X
+A Y (rock L)
+C Y
+A Z (rock W)
+A Y (rock L)
+C Z
+B Y
+C Y
+A Y (rock L)
+B X
+B Z
+C Y
+C Y
+A X (Rock tie)
+C X
+C Y
+C Y
+C Z
+B Z
+C Z
+A Z (rock W)
+A Y (rock L)
+C Y
+C Y
+B Y
+C Y
+C Y
+C Y
+C Z
+B Z
+C Y
+C Y
+B X
+B Z
+B Z
+C Z
+B Z
+C X
+A X (Rock tie)
+C Z
+B X
+C Z
+A Y (rock L)
+A Z (rock W)
+C Z
+C Z
+B X
+B X
+A Y (rock L)
+A Z (rock W)
+B X
+B Z
+C X
+A Y (rock L)
+A Y (rock L)
+C Z
+A Y (rock L)
+B Y
+B Z
+A Z (rock W)
+B X
+C Z
+C Z
+B Z
+B Y
+C Z
+C Y
+A Y (rock L)
+C Z
+C Z
+A Y (rock L)
+A Y (rock L)
+B X
+B Y
+A Y (rock L)
+C Y
+B Y
+C Z
+A Y (rock L)
+C Z
+B Y
+B X
+C X
+A Y (rock L)
+A Y (rock L)
+B X
+C Y
+A Y (rock L)
+A Y (rock L)
+B Y
+C Z
+A Z (rock W)
+C Y
+C Z
+C Z
+C Z
+A Z (rock W)
+A Z (rock W)
+A Y (rock L)
+A Z (rock W)
+C X
+B Z
+A Y (rock L)
+A Y (rock L)
+C Y
+C X
+B X
+C Y
+C Y
+C Z
+C Z
+A Z (rock W)
+A Y (rock L)
+C Y
+B Y
+C Y
+C Z
+C Z
+B Y
+B Y
+A Y (rock L)
+B Y
+C Z
+A X (Rock tie)
+B X
+C X
+C Z
+B Y
+A Z (rock W)
+A Y (rock L)
+B Z
+C Z
+B Y
+C Z
+C Y
+C Z
+A Y (rock L)
+A Y (rock L)
+A Z (rock W)
+C X
+C Z
+A Y (rock L)
+B Z
+B X
+C X
+C Z
+C Z
+C Z
+C Y
+C Z
+B X
+C Z
+C Z
+C Y
+C X
+B Z
+B X
+C Y
+C Z
+B Y
+A Y (rock L)
+C Y
+A Z (rock W)
+C Z
+B Z
+A Y (rock L)
+A Z (rock W)
+A Z (rock W)
+A Y (rock L)
+C Z
+C Y
+A Y (rock L)
+B X
+B Y
+C Y
+C Z
+B Y
+B X
+B Y
+B Y
+C Y
+B Y
+C Z
+A Z (rock W)
+C Y
+A Y (rock L)
+B X
+B Z
+B Y
+A Y (rock L)
+B X
+B Z
+A Y (rock L)
+C Y
+B Y
+C Y
+C Y
+B Y
+C Z
+B Z
+A Z (rock W)
+C Y
+C Z
+A X (Rock tie)
+C Z
+C Z
+A Y (rock L)
+C Z
+A Z (rock W)
+A Y (rock L)
+A X (Rock tie)
+C Y
+B Y
+C Y
+C X
+B X
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+C X
+C Y
+C X
+A Y (rock L)
+B X
+C Z
+A Z (rock W)
+C Y
+B Z
+C Z
+B Y
+C X
+C Z
+C Z
+C Z
+C Z
+B X
+C Y
+B X
+A Y (rock L)
+A Y (rock L)
+C Z
+C X
+C Z
+C X
+C Y
+C Y
+B X
+C Z
+B X
+C Z
+C Z
+A Y (rock L)
+C Z
+C Z
+C Z
+B Z
+C Z
+A X (Rock tie)
+C Z
+C X
+C X
+C Y
+A Z (rock W)
+B X
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+C Z
+C Y
+B X
+A Z (rock W)
+C Z
+C Z
+C Z
+C Z
+B X
+C Z
+C Z
+C Y
+B Y
+A Z (rock W)
+A Y (rock L)
+A Z (rock W)
+B X
+C Z
+C Y
+B Y
+A Y (rock L)
+C Z
+B X
+A Y (rock L)
+A Y (rock L)
+C Z
+B Y
+C Y
+C Z
+C Y
+A Y (rock L)
+B X
+C Z
+A X (Rock tie)
+C Y
+C Z
+B Y
+A Y (rock L)
+B X
+B Y
+C Y
+B Y
+C Z
+C Z
+A Z (rock W)
+B X
+B Y
+B Y
+A Y (rock L)
+B X
+C Y
+A Y (rock L)
+B Y
+A Y (rock L)
+C Y
+C Y
+B Y
+C Z
+C X
+B Z
+A Z (rock W)
+A Y (rock L)
+B X
+B Y
+C Y
+C Z
+A Z (rock W)
+B Z
+B X
+C X
+C Y
+C X
+A Y (rock L)
+A Y (rock L)
+C Z
+C Y
+C X
+B X
+B Z
+C Z
+C Z
+B X
+C Y
+C Z
+C X
+C Y
+C X
+A Z (rock W)
+C Y
+B Y
+B Y
+C Y
+A Z (rock W)
+B Y
+C Z
+C Y
+A Z (rock W)
+A Y (rock L)
+C Z
+C X
+B Z
+C Z
+C Z
+A Y (rock L)
+C Y
+C Z
+C Y
+B Z
+B Y
+B Y
+A Z (rock W)
+C X
+A Y (rock L)
+C Z
+C Y
+A Y (rock L)
+C X
+C Z
+C Z
+B Z
+C X
+C Z
+A Y (rock L)
+A Y (rock L)
+B Y
+C X
+A Y (rock L)
+C Z
+A Z (rock W)
+C Y
+B Y
+A Y (rock L)
+A Z (rock W)
+C Z
+B X
+A Y (rock L)
+C Z
+A Z (rock W)
+C Z
+C Y
+C Z
+C Z
+C Y
+A Y (rock L)
+C Z
+A Y (rock L)
+B X
+B Z
+C Z
+C Z
+C Y
+C Z
+C Y
+C Y
+B X
+C X
+B Y
+C Y
+C Z
+B Y
+B Y
+A Z (rock W)
+A Y (rock L)
+B Y
+B X
+C Z
+C X
+A Y (rock L)
+C Z
+C Y
+A Y (rock L)
+C Z
+A X (Rock tie)
+A Z (rock W)
+A X (Rock tie)
+C Z
+A X (Rock tie)
+B Y
+C X
+C Y
+C Z
+B Z
+C Y
+B Y
+C Z
+B Y
+C Y
+C Z
+A Y (rock L)
+B Y
+A Z (rock W)
+B Z
+C Z
+A Y (rock L)
+C Y
+B X
+C Y
+A X (Rock tie)
+A Y (rock L)
+C Z
+C X
+C X
+B Y
+B Z
+B Z
+C Y
+C Z
+B Y
+C Z
+C Y
+A Y (rock L)
+B Y
+C Y
+C Z
+B Z
+C Z
+C Z
+A Y (rock L)
+B Y
+A Y (rock L)
+C Z
+A Y (rock L)
+A Y (rock L)
+C Y
+A Z (rock W)
+C X
+A Y (rock L)
+A Z (rock W)
+B Y
+A Y (rock L)
+B Y
+C Z
+B X
+C Y
+A Y (rock L)
+C Y
+C Z
+A Y (rock L)
+C Y
+C Y
+A Y (rock L)
+C Y
+C Y
+B X
+A Y (rock L)
+C Z
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+B Y
+C Y
+A Y (rock L)
+C Z
+B X
+C Z
+A Y (rock L)
+B Y
+C Y
+A Y (rock L)
+C Y
+C Y
+C Y
+C Y
+C X
+C X
+A Y (rock L)
+C X
+C Z
+B Z
+A Y (rock L)
+B Y
+C Z
+B X
+C X
+A Y (rock L)
+B X
+C Y
+B Z
+B Y
+C Y
+C Z
+C Z
+C X
+A Z (rock W)
+C Y
+A Z (rock W)
+C Z
+B Z
+A Y (rock L)
+C Y
+B Y
+A Y (rock L)
+B X
+C Z
+C Y
+A Y (rock L)
+A Y (rock L)
+A Z (rock W)
+C Z
+C Z
+C Y
+C Z
+B X
+C Y
+C Z
+A Y (rock L)
+B Y
+B X
+A Z (rock W)
+C Z
+C Y
+C Z
+B Y
+C X
+C Y
+C Z
+B Y
+A Y (rock L)
+A Z (rock W)
+B X
+C Z
+C X
+A Y (rock L)
+B X
+C Z
+C Y
+B Z
+C Z
+C Z
+C Z
+A Y (rock L)
+A Y (rock L)
+A X (Rock tie)
+B Z
+A Y (rock L)
+C Z
+C Z
+C Z
+B X
+B Y
+C Y
+B Y
+A Y (rock L)
+A Z (rock W)
+A Y (rock L)
+A Y (rock L)
+B Z
+A Y (rock L)
+C X
+C Y
+A Z (rock W)
+C Z
+C Y
+C Z
+B Y
+C Z
+B X
+B X
+A Y (rock L)
+B Z
+B X
+B Y
+B Y
+B X
+B Y
+A Z (rock W)
+C Z
+C Y
+C Y
+A Z (rock W)
+B Y
+C Z
+A Y (rock L)
+C Y
+A Y (rock L)
+A Y (rock L)
+B X
+C Y
+A Z (rock W)
+B X
+B X
+A Y (rock L)
+C Y
+A Y (rock L)
+C Z
+B Y
+C Z
+C Y
+A X (Rock tie)
+C Z
+C Z
+C Z
+A Y (rock L)
+C Z
+C X
+C Z
+C X
+C Z
+B Y
+A Y (rock L)
+A Y (rock L)
+A Y (rock L)
+B X
+B Y
+B Z
+B X
+C Z
+C Y
+B Z
+A Z (rock W)
+A Z (rock W)
+C X
+C Z
+B X
+A Z (rock W)
+C X
+A X (Rock tie)
+B Y
+B X
+B X
+C Z
+C Y
+A X (Rock tie)
+C Y
+C Y
+C Y
+B X
+A Z (rock W)
+B Y
+B X
+A Z (rock W)
+C Z
+B X
+A Z (rock W)
+A Y (rock L)
+B Z
+B Y
+C X
+C Z
+B X
+C Y
+C Y
+C Y
+A Y (rock L)
+C Z
+A Z (rock W)
+A Z (rock W)
+C Y
+C Y
+A Y (rock L)
+C Z
+C Z
+B X
+C Z
+C Z
+B Y
+A Y (rock L)
+C Z
+B X
+C Y
+C Y
+C Z
+C Z
+A Y (rock L)
+C Z
+C Y
+B X
+C X
+A X (Rock tie)
+A Z (rock W)

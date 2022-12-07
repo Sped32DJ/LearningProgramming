@@ -1,0 +1,41 @@
+first column
+# Rock  = "A"
+# Paper = "B"
+# Scssr = "C"
+second column
+# Rock  = "X"
+# Paper = "Y"
+# Scssr = "Z"
+
+wait, it's more complex than that
+ex:
+    A Y
+    B X
+    C Z
+
+Honestly, bash this lol.
+sed, and vim macros
+
+Make 3 versions of the output
+1.Paper + Rock = positive # Paper win
+2.Rock + scsrs = positive # Rock win
+3.scsr + Paper = positive # scissors win
+
+Combinations:
+A X: 55  (tie)
+A Y: 401 (Rock L)
+A Z: 223 (Rock W)
+
+B X: 252 (Paper L)
+B Y: 275 (tie)
+B Z: 134 (Paper W)
+
+C X: 188 (scissors L)
+C Y: 373 (scissors W)
+C Z: 599 (tie)
+
+How did I find the combinations?
+    rg -i (A, B, C)(X, Y, Z) input.txt | wc --lines # Make this real, especially the part where it multiplies the combinations
+# Please don't laugh :sob:
+
+Round 1:

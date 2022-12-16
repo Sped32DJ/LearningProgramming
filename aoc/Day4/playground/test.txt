@@ -1,0 +1,37 @@
+# Why is there 14 valid out of 25
+8-82,3-96 # Second bigger than first in every way
+13-95,99-99 # Self
+4-92,5-93
+16-80,16-80 # Dupe
+23-36,6-10
+82-98,24-83
+48-48,47-48 # Self
+58-81,58-80 # Same start
+14-14,13-98 # Self
+46-66,45-46
+38-73,37-72
+46-99,47-47 # Self
+15-59,6-56
+13-54,12-53
+60-61,60-71 # Same start
+4-97,2-97 # Same end
+6-94,6-94 # Dupe
+47-48,38-48 # Same end
+10-95,10-95 # Dupe
+84-87,86-86 # Self
+51-88,70-84 # First bigger
+3-52,51-53
+21-55,21-21 # Self
+55-84,31-56
+
+The output to
+aoc/Day4/playground on  main
+➜ python3 Day4.py
+Part 1:  14
+
+Objective of the code?
+Remove dupes, where they start or stop in the same location
+
+What the code does
+    Looks to see which elfs completely overlap (making the other elf useless)
+    You can see how many you need to fire using that algorithm

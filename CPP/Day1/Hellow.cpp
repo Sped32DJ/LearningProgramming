@@ -7,7 +7,7 @@ int main() {
   int characterAge;
   characterAge = 35;
   string sex;
-  sex = "Gay";
+  sex = "male";
   cout << "There once was a man named " << characterName << endl;
   cout << "He was " << characterAge << " years old" << endl;
   cout << "He liked the name " << characterName << endl;

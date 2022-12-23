@@ -11,5 +11,11 @@ int main(){
 
   cout << luckyNums[0] << endl;
 
+  int location;
+  cout << "Enter Index: ";
+  cin >> location;
+
+  cout << luckyNums[location] << endl;
+
   return 0;
 }

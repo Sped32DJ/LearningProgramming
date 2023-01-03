@@ -12,7 +12,7 @@ int getMax(int num1, int num2, int num3) {
   } else {
     result = num3;
   }
-  // There has to be a 1337 way to get the get the Max num
+  // There has to be a 1337 way to get the get the Max num (while loop)
 
   /* if (num1 > num2) {
     result = num1;
@@ -27,6 +27,7 @@ int getMin(int one, int two, int three){
 
   result Mini;
 }
+
 int main() {
 
   int uno, dos, tres;

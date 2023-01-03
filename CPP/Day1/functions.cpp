@@ -2,6 +2,7 @@
 
 using namespace std;
 
+/* Declare function, then define function later */
 void SayHi(string name, int age);
 
 int main() {

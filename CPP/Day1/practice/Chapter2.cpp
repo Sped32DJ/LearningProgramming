@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -34,27 +35,34 @@ int main() {
   int howManyLetters = 0, howManyPositions = 0;
   bool duplicatesAllowed = false;
   int round = 1;
+  string choice;
 
   cout << "How many letters? (";
   cout << minLetters << "-" << maxLetters << "): ";
-  cin >> howManyLetters;
+  /* cin >> howManyLetters; */
+  getline(cin, howManyPositions);
 
   cout << "How many positions? (";
-  cout << minPositions << "-" << maxPositions << " ): ";
-  cin >> howManyPositions;
+  cout << minPositions << "-" << maxPositions << "): ";
+  /* cin >> howManyPositions; */
+  getline(cin, howManyPositions);
 
-  char y = 'y';
-  char n = 'n';
-  char choice; // Probably better as a bool
-  cout << "Allow duplicates (Y/n): ";
-  cin >> choice;
-  if (choice == y) {
-    cout << "You said yes" << endl;
-  } else if (choice == n) {
-    cout << "lol no" << endl;
+  cout << "Yes or no? [Y/n]: ";
+  /* cin >> choice; */
+  getline(cin, choice); // I can not explain why this doesn't work
+
+  if (choice.empty() || choice[0] == 'y' || choice[0] == 'Y') {
+    cout << "Hello" << endl;
+  } else if (choice[0] == 'n' || choice[0] == 'N') {
+    cout << "Bye" << endl;
   } else {
     cout << "Nice null" << endl;
   }
+
+  cout << "\n"
+       << "\n Letters: " << howManyLetters
+       << "\n Positions: " << howManyPositions << "\n choice: " << choice
+       << endl;
 
   return 0;
 }

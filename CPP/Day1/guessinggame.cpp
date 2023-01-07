@@ -32,7 +32,7 @@ int main() {
       outOfGuesses = true;
     }
 
-    if (secretNum > guess) {
+    if (secretNum > guess) { // Combine this with the if statement above, you get bugs :)
       cout << "Go Bigger!\n";
     } else if (secretNum < guess) {
       cout << "Go Smaller!\n";
@@ -40,10 +40,10 @@ int main() {
   }
 
   if (outOfGuesses) {
-    cout << "You Lose!";
+    cout << "You Lose!" << endl;
   } else {
-    cout << "You guessed it!"
-         << "in" << guessCount << " tries.";
+    cout << "You guessed it!\n"
+         << "Only took you " << guessCount << " tries." << endl;
   }
   return 0;
   /* return guess, secretNum; */

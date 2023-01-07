@@ -24,24 +24,18 @@ int main() {
       cout << "You lose!";
     } */
   while (secretNum != guess && !outOfGuesses) {
-    if (guessCount < guessLimit && guessCount < one) { // This works
+    if (guessCount < guessLimit) {
       cout << "Guess what number I'm thinking of [1-100]: ";
       cin >> guess;
       guessCount++;
-    } else if (secretNum > guess) {
-      cout << "Go Bigger!\n";
-      cin >> guess;
-      guessCount++;
-    } else if (secretNum < guess) {
-      cout << "Go Smaller!\n";
-      cin >> guess;
-      guessCount++;
-    } else if (secretNum = guess) {
-      cout << "You win!\tpenis\n";
-      cout << "Took " << guessCount << "Tries :)" << endl;
     } else {
       outOfGuesses = true;
-      cout << "You lose!";
+    }
+
+    if (secretNum > guess) {
+      cout << "Go Bigger!\n";
+    } else if (secretNum < guess) {
+      cout << "Go Smaller!\n";
     }
   }
 
@@ -51,7 +45,6 @@ int main() {
     cout << "You guessed it!"
          << "in" << guessCount << " tries.";
   }
-
   return 0;
   /* return guess, secretNum; */
 }

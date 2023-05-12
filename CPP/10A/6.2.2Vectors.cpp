@@ -2,29 +2,88 @@
 #include <vector>
 using namespace std;
 
-#include <iostream>
-#include <vector>
-using namespace std;
-
 int main() {
-   int numDistance;
-   double firstDistance;
-   double lastDistance;
-   unsigned int i;
+  int numMembers;
+  int i;
 
-   cin >> numDistance;
-   cin >> firstDistance;
-   cin >> lastDistance;
+  cin >> numMembers;
+  vector<int> bikingListings(numMembers);
 
-   /* Your code goes here */
+  // filling in vector
+  for (i = 0; i < bikingListings.size(); ++i) {
+    cin >> bikingListings.at(i);
+  }
 
-   for (i = 0; i < swimmingNumbers.size(); ++i) {
-      cout << swimmingNumbers.at(i) << " ";
-   }
-   cout << endl;
+  // output at even indices; start at 0, iterate every other element
+  for (i = 0; i < bikingListings.size(); i += 2) {
+    cout << bikingListings.at(i) << '-';
+  }
+  cout << endl;
 
-   return 0;
+  // output at odd indices; start at 1, iterate every other element
+  for (i = 1; i < bikingListings.size(); i += 2) {
+    cout << bikingListings.at(i) << '-';
+  }
+  cout << endl;
+
+  return 0;
 }
+
+// Exercise 3
+/* int main() {
+  int numMembers;
+  unsigned int i;
+  double averageMembers;
+  int sumElementData = 0;
+
+  cin >> numMembers;
+  vector<int> runningNumbers(numMembers);
+
+  for (i = 0; i < runningNumbers.size(); ++i) {
+    cin >> runningNumbers.at(i);
+    sumElementData += runningNumbers.at(i);
+  }
+
+  averageMembers = sumElementData / runningNumbers.size();
+
+  cout << "Average: " << averageMembers << endl;
+  cout << "Numbers less than average: ";
+
+  // grab the average, then list all Numbers below average
+  for (i = 0; i < runningNumbers.size(); ++i) {
+    if (runningNumbers.at(i) < averageMembers) {
+      cout << runningNumbers.at(i) << " ";
+    }
+  }
+
+  return 0;
+} */
+
+// Exercise 2
+/* int main() {
+  int numEmployees;
+  double firstEmployee;
+  double middleEmployee;
+  double lastEmployee;
+  unsigned int i;
+
+  cin >> numEmployees;
+  cin >> firstEmployee;
+  cin >> middleEmployee;
+  cin >> lastEmployee;
+
+  vector <double> runningRoster(numEmployees);
+  runningRoster.at(0) = firstEmployee;
+  runningRoster.at(numEmployees-1) = lastEmployee;
+  runningRoster.at(numEmployees/2) = middleEmployee;
+
+  for (i = 0; i < runningRoster.size(); ++i) {
+    cout << runningRoster.at(i) << " ";
+  }
+  cout << endl;
+
+  return 0;
+} */
 
 // Exercise 1
 /* int main() {

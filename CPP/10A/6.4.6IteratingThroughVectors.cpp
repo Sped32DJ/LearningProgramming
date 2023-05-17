@@ -2,51 +2,85 @@
 #include <vector>
 using namespace std;
 
+// Exercise 1
 int main() {
-  vector<int> hourlyPrices;
+  vector<int> averageMiles;
   int i;
-  int vecVals;
+  int numElements;
 
-  cin >> vecVals;
-  // Creates a vector of size vecVals and initialize all values to 0
-  hourlyPrices.resize(vecVals);
+  cin >> numElements;
+  // Creates a vector of size numElements and initialize all values to 0
+  averageMiles.resize(numElements);
 
-  for (i = 0; i < hourlyPrices.size(); ++i) {
-    cin >> hourlyPrices.at(i);
+  for (i = 0; i < averageMiles.size(); ++i) {
+    cin >> averageMiles.at(i);
   }
 
-  for (i = hourlyPrices.size() - 1; i >= hourlyPrices.size() / 2; --i) {
-    if (i - 1 > 0) {
-      cout << hourlyPrices.at(i);
-      cout << " | ";
+  // start at an index halfway through
+  // Then iterate until reaches 0
+  for (i = averageMiles.size() / 2 - 1; i >= 0; --i) {
+    if (i > 0) {
+      cout << averageMiles.at(i);
+      cout << ", ";
 
     } else {
-      cout << hourlyPrices.at(i);
+      cout << averageMiles.at(i);
     }
   }
+
   cout << endl;
 
   return 0;
 }
 
 // exercise 2
-int kek() {
-  for (i = averageScore.size() - 1; i > averageScore.size() / 2 - 1; --i) {
-    cin >> averageScore.at(i)
+int main() {
+  vector<int> averageScores;
+  int i;
+  int numElements;
+
+  cin >> numElements;
+  // Creates a vector of size numElements and initialize all values to 0
+  averageScores.resize(numElements);
+
+  // i = at the last index
+  // Start filling in the vector halfway until you reach the end
+  for (i = averageScores.size() - 1; i > averageScores.size() / 2 - 1; --i) {
+    cin >> averageScores.at(i);
   }
 
-  return 2;
+  for (i = 0; i < averageScores.size(); ++i) {
+    cout << averageScores.at(i) << " ";
+  }
+
+  return 0;
 }
 
 // Exercise 3
-int exerciseTree() {
+//
+int main() {
+  vector<int> averageSalary;
+  unsigned int i;
+  int numIn;
+  int maxSum;
 
-  numMatches = 0;
-  for (i = 0; i < averageScore.size(); ++i) {
-    if (averageScore.at(i) == 5) {
-      ++numMatches;
+  cin >> numIn;
+  // Creates a vector of size numIn and initialize all values to 0
+  averageSalary.resize(numIn);
+
+  for (i = 0; i < averageSalary.size(); ++i) {
+    cin >> averageSalary.at(i);
+  }
+
+  maxSum = 0;
+  for (i = 0; i < averageSalary.size(); ++i) {
+      // keep filling up maxSum until it reaches 450 or greater
+    if (maxSum <= 450) {
+      maxSum += averageSalary.at(i);
     }
   }
 
-  return 3;
+  cout << "maxSum: " << maxSum << endl;
+
+  return 0;
 }

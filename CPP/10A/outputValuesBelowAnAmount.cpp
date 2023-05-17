@@ -11,23 +11,24 @@ int main() {
   // fill vector, starts filling after second input
   for (int i = 0; i < size; ++i) {
     cin >> input;
-    vlist.push_back(input);
+    vlist.at(i) = input;
   }
 
   // min and max
-  min = vlist.at(0);                // broken
-  max = vlist.at(vlist.size() - 1); // Working
+  min = vlist.at(0);
+  max = vlist.at(vlist.size() - 1);
 
-  // debugging
-  cout << "min max size++ input .size()\n";
-  cout << "debugging: " << min << ' ' << max << ' ' << size << ' ' << input
-       << ' ' << vlist.size() << endl;
+  // Testing to see if the vector was filled out (it was)
+  /* for (int i = 0; i < size; ++i) {
+    cout << vlist.at(i) << ' ';
+  }
+  cout << endl; */
+
 
   // output; not working kekw
-  cout << "Output for code: \n";
   for (int i = 0; i < size; ++i) {
-    if (vlist.at(i) > min && vlist.at(i) < max) {
-      cout << vlist.at(i) << ' ';
+    if (vlist.at(i) >= min && vlist.at(i) < max) {
+      cout << vlist.at(i) << ',';
     }
   }
   cout << endl;

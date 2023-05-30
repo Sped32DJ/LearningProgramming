@@ -8,6 +8,7 @@ using namespace std;
 double AverageScore(int mid1, int mid2, int finalscore) {
   return (mid1 + mid2 + finalscore) / 3.0;
 }
+
 double ExamAvg(const vector<int> &v) {
   double sum = 0;
   for (size_t i = 0; i < v.size(); ++i) {
@@ -23,7 +24,7 @@ int main() {
   string name;
   string fileName;
   int score;
-  int average;
+  double average;
   vector<string> vLastNames;
   vector<string> vFirstNames;
   vector<int> vMidterm1;
@@ -41,7 +42,6 @@ int main() {
   }
 
   while (inputStream >> name) {
-    inputStream >> name;
     vLastNames.push_back(name);
 
     inputStream >> name;
@@ -65,11 +65,11 @@ int main() {
     average = AverageScore(vMidterm1.at(i), vMidterm2.at(i), vFinal.at(i));
     if (average >= 90)
       vGrade.push_back('A');
-    if (average >= 80)
+    else if (average >= 80)
       vGrade.push_back('B');
-    if (average >= 70)
+    else if (average >= 70)
       vGrade.push_back('C');
-    if (average >= 60)
+    else if (average >= 60)
       vGrade.push_back('D');
     else
       vGrade.push_back('F');
@@ -78,10 +78,13 @@ int main() {
                  << vMidterm1.at(i) << '\t' << vMidterm2.at(i) << '\t'
                  << vFinal.at(i) << '\t' << vGrade.at(i) << endl;
   }
+
   // Put information into report.txt file
-  cout << fixed << setprecision(2);
-  outputStream << "Averages: midterm1 " << ExamAvg(vMidterm1) << ", midterm2 "
-               << ExamAvg(vMidterm2) << ", final " << ExamAvg(vFinal) << endl;
+  outputStream << endl
+               << fixed << setprecision(2) << "Averages: midterm1 "
+               << ExamAvg(vMidterm1) << ", midterm2 " << ExamAvg(vMidterm2)
+               << ", final " << ExamAvg(vFinal) << endl;
+
   outputStream.close();
   return 0;
 }

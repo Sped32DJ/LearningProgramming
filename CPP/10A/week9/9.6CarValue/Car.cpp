@@ -4,15 +4,15 @@
 #include <iostream>
 using namespace std;
 
-void Car::SetModelYear(int userYear) { modelYear = userYear; }
+void Car::SetModelYear(int year) { modelYear = year; }
 
 int Car::GetModelYear() const { return modelYear; }
 
 // TODO: Implement SetPurchasePrice() function
-void Car::SetPurchasePrice(double userPrice) { purchasePrice = userPrice; }
+void Car::SetPurchasePrice(int price) { purchasePrice = price; }
 
 // TODO: Implement GetPurchasePrice() function
-int Car::GetPurchasePrice() { return purchasePrice; };
+int Car::GetPurchasePrice() const { return purchasePrice; }
 
 void Car::CalcCurrentValue(int currentYear) {
   double depreciationRate = 0.15;
@@ -27,7 +27,8 @@ void Car::CalcCurrentValue(int currentYear) {
 void Car::PrintInfo() const {
   cout << fixed << setprecision(0);
   cout << "Car's information:" << endl
-       << " Model year: " << modelYear << endl
-       << " Purchase price: " << purchasePrice << endl
-       << " Current value: " << currentValue << endl;
+       << "  Model year: " << modelYear << endl
+       << "  Purchase price: $" << purchasePrice << endl
+       << "  Current value: $" << currentValue << endl;
 }
+

@@ -2,28 +2,28 @@
 #define CARH
 
 class Car {
-private:
-  int modelYear;
-  // TODO: Declare purchasePrice member (int)
-  double purchasePrice;
-  double currentValue;
-
 public:
-  void SetModelYear(int userYear);
-
+  void SetModelYear(int year);
   int GetModelYear() const;
 
-  // TODO: Declare SetPurchasePrice() function
-  void SetPurchasePrice(int purchasePrice) const;
+  // TODO: Declare Setint() function
+  void SetPurchasePrice(int price);
 
   // TODO: Declare GetPurchasePrice() function
-  double GetPurchasePrice() const;
+  int GetPurchasePrice() const;
 
-  void CalcCurrentValue(int currentYear) const;
+  void CalcCurrentValue(int currentYear);
 
   // TODO: Declare PrintInfo() method to output modelYear, purchasePrice, and
   // currentValue
   void PrintInfo() const;
+
+private:
+  int modelYear;
+  // TODO: Declare purchasePrice member (int)
+  int purchasePrice;
+  int currentValue;
 };
 
 #endif
+

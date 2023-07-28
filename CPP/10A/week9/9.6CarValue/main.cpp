@@ -1,23 +1,22 @@
-#include "Car.h"
 #include <iostream>
+#include "Car.h"
 using namespace std;
 
 int main() {
-  int userYear;
-  int userPrice;
-  int userCurrentYear;
-  Car myCar;
+   int userYear;
+   int userPrice;
+   int userCurrentYear;
+   Car myCar;
 
-  cin >> userYear;
-  cin >> userPrice;
-  cin >> userCurrentYear;
+   cin >> userYear;
+   cin >> userPrice;
+   cin >> userCurrentYear;
 
-  myCar.SetModelYear(userYear);
-  myCar.SetPurchasePrice(userPrice);
+   myCar.SetModelYear(userYear);
+   myCar.SetPurchasePrice(userPrice);
+   myCar.CalcCurrentValue(userCurrentYear);
 
-  myCar.CalcCurrentValue(userCurrentYear);
+   myCar.PrintInfo();
 
-  myCar.PrintInfo();
-
-  return 0;
+   return 0;
 }

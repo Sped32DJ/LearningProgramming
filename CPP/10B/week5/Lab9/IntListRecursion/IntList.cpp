@@ -19,9 +19,9 @@ void IntList::push_front(int val) {
 // cout a single node, global member function
 // Helper local function
 ostream &operator<<(ostream &out, IntNode *Node) {
-  if (Node) {
+  if (Node) { // (if Node != nullptr)
     out << Node->value;
-    if (Node->next) {
+    if (Node->next) { // if(Node->next != nullptr)
       out << ' ';
       out << Node->next;
     }
@@ -31,17 +31,24 @@ ostream &operator<<(ostream &out, IntNode *Node) {
 
 // cout a list, friend member
 ostream &operator<<(ostream &out, const IntList &list) {
-  out << list.head;
+  out << list.head; // Calling private local member function
   return out;
 }
 
+// Has head in scope, is passed to private function (below)
 bool IntList::exists(int value) const { return exists(head, value); }
 
 // Checks if value is located in IntList
+// Does all the recursing
 bool IntList::exists(IntNode *curr, int value) const {
+  // base cases
   if (curr == nullptr)
-    return false;
+    return false; // does not exist
   if (curr->value == value)
-    return true;
+    return true; // exists
+
+  // keeps looping until it reaches a basecase
+  // Iterating past every node
+  // curr->next is keeping up the iterations
   return exists(curr->next, value);
 }

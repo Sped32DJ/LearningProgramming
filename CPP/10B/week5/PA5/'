@@ -1,0 +1,13 @@
+#include <string>
+using namespace std;
+
+Warrior::Warrior() : Character(WARRIOR, name, health, attackStrength) {}
+
+Warrior::attack(Character &type) = 0 {
+  // refuse to attack other warriors
+  if (type == "WARRIOR") {
+    return;
+  }
+}
+
+void Warrior::damage(double d) { static_cast<double>() }

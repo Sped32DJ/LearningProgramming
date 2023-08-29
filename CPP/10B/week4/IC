@@ -1,0 +1,37 @@
+Linked Lists vs Vectors
+Fast access to head and tail
+
+Help find segfaults
+    You know where segfaults happen because output doesn't produce
+Dereference operators
+->
+*
+[]
+
+void IntListPushFront(int val){
+    IntNode *tmp = new IntNode (val);
+    tmp->next = this->head;
+    this->head = tmp;
+    if(this->tail == nullptr){
+        this->tail = tmp;
+    }
+}
+// New temp points to where head once pointed
+// Then head now points to tmp
+Draw out your pointers and link lists
+    Times where you need to trace your code
+    Find dangling pointers and so on
+    Will be drawn in the final exam
+
+IntNode *Curr =head;
+wihle(curr != nullptr){
+    cout << curr->value << ' ';
+    curr = curr->next;
+}
+while(head){
+    ElkNode *newNode = new IntNode()
+
+    delete head
+}
+
+For PA4, just call pop_front for destructor

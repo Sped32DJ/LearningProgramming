@@ -1,0 +1,262 @@
+#include "IntList.h"
+#include <iostream>
+
+using namespace std;
+
+// Empty list
+IntList::IntList() : head(nullptr), tail(nullptr) {}
+
+// Performs a deep copy of the item
+// Current goes through the list and copies each item
+// NOTE  CONSTRUCTION
+// FIXME
+IntList::IntList(const IntList &cpy) {
+  IntNode *curr = cpy.head;
+  /* IntList listCopy; // Implicit, not required*/
+  // loops until it reaches tail
+  while (curr != nullptr) {
+    push_back(curr->value);
+    curr = curr->next;
+  }
+}
+
+IntList::~IntList() {
+  while (head) {
+    pop_front();
+  }
+}
+
+// Clears all
+void IntList::clear() {
+  IntNode *curr = head;
+  while (curr != nullptr) {
+    IntNode *next = curr->next;
+    delete curr;
+    curr = next;
+  }
+  head = nullptr;
+  tail = nullptr;
+}
+
+// Add to front of linked list
+void IntList::push_front(int value) {
+  IntNode *tmp = new IntNode(value);
+  tmp->next = this->head;
+  this->head = tmp;
+  if (empty()) {
+    this->tail = tmp;
+  }
+}
+
+// delete front
+void IntList::pop_front() {
+  if (head != nullptr) {
+    IntNode *next = head->next;
+    delete head;
+    head = next;
+    if (head == nullptr) {
+      tail = nullptr;
+    }
+  }
+}
+
+bool IntList::empty() const {
+  return (this->head == nullptr || this->tail == nullptr);
+}
+
+// throw out_of_range to prevent undefined behavior
+const int &IntList::front() const {
+  if (empty()) {
+    throw out_of_range("empty list");
+  } else {
+    return head->value;
+  }
+}
+
+const int &IntList::back() const {
+  if (empty()) {
+    throw out_of_range("empty list");
+  } else {
+    return tail->value;
+  }
+}
+
+// print Space seperated int list
+ostream &operator<<(ostream &out, const IntList &List) {
+  IntNode *curr = List.head;
+  while (curr != nullptr) {
+    if (curr != List.tail) {
+      out << curr->value << ' ';
+    } else {
+      out << curr->value;
+    }
+    curr = curr->next;
+  }
+  return out;
+}
+
+// Assignment function
+// NOTE  "Make sure this makes a deep copy"
+IntList &IntList::operator=(const IntList &rhs) {
+  if (this != &rhs) { // & very important
+    clear();
+
+    // Grabs rhs and Implicitly copies it
+    IntNode *rhsCurr = rhs.head;
+    while (rhsCurr != nullptr) {
+      push_back(rhsCurr->value);
+      rhsCurr = rhsCurr->next;
+    }
+  }
+  return *this; // returns the reference
+}
+
+// Reverse push_front
+void IntList::push_back(int value) {
+  IntNode *newtail = new IntNode(value);
+  if (empty()) {
+    this->tail = newtail;
+    this->head = newtail;
+    return;
+  }
+
+  newtail->next = nullptr;
+
+  // Makes sure tail->next and tail both points to newtail
+  this->tail->next = newtail;
+  this->tail = newtail;
+}
+
+// NOTE  CONSTRUCTION
+// Sort into Ascending order
+// Nestted forloop, (nvm, we have helper functions)
+// look for min, then push_back (use insert_ordered)
+// Straight up deletes the nodes...
+// FIXME
+void IntList::selection_sort() {
+  if (empty()) {
+    return;
+  }
+
+  IntList dupe(*this); // declares and dupes constructor
+  IntNode *curr = dupe.head;
+  // Implicitly clears to later fill
+  clear();
+
+  while (curr != nullptr) {
+    // Perfect because of built in push_back
+    insert_ordered(curr->value);
+    curr = curr->next;
+  }
+}
+
+// NOTE  CONSTRUCTION
+// Inserts a node, and puts it in order
+// FIXME
+void IntList::insert_ordered(int value) {
+
+  IntNode *insNode = new IntNode(value);
+
+  IntNode *prev = head;
+  IntNode *curr = head->next;
+
+  if (empty()) {
+    this->tail = insNode;
+    this->head = insNode;
+    return;
+  }
+
+  // Loops until it inserts intself
+  while (curr != nullptr) {
+    /* if (value > prev->value && value > prev->next) { */
+    // iteratres until it finds a place to insert itself
+    if (value <= curr->value) {
+      prev->next = insNode;
+      insNode->next = curr;
+      return;
+    }
+
+    prev = curr;
+    curr = curr->next;
+  }
+  // If insNode is the largest node
+  prev->next = insNode;
+  tail = insNode;
+}
+
+// NOTE  TEST
+// Yes, I know that linked lists are not arrays
+// FIXME
+void IntList::remove_duplicates() {
+  if (empty()) {
+    return;
+  }
+
+  size_t size = 0;
+  IntNode *curr = this->head;
+
+  // size of array
+  while (curr != nullptr) {
+    ++size;
+    curr = curr->next;
+  }
+
+  curr = this->head; // starts with head
+  int *arrNodes = new int[size];
+  size_t i = 0;
+
+  // fill array with vals
+  while (curr != nullptr) {
+    arrNodes[i] = curr->value;
+    curr = curr->next;
+    ++i;
+  }
+  i = 0;
+
+  int laterDupes[size] = {0}; // Treated like bool, 0 = false, 1 = true
+  int indexMap[size] = {0};   // Checks if value repeated
+  size_t nextIndex = 1;       // Flags later dupes
+  // Returns indexes of duped items
+  for (i = 0; i < size; ++i) {
+    int value = arrNodes[i];
+
+    if (indexMap[value] != 0) {
+      laterDupes[indexMap[value] - 1] = i;
+    } else {
+      indexMap[value] = 1;
+      ++nextIndex;
+    }
+  }
+  delete[] arrNodes;
+
+  // Now, laterDupes has the index of all unwanted nodes
+
+  // TODO  Method:
+  // Get previous node, middle
+  // and after node.
+  // Delete middle and join prev with post
+  IntNode *prev = nullptr;
+  curr = head;
+
+  for (i = 0; i < size; ++i) {
+    if (laterDupes[i] != 0) { // If dupe is found
+      curr = head;
+      size_t deleteIndex = laterDupes[i];
+
+      // Loads the pointers to location
+      for (size_t j = 0; j < deleteIndex; ++j) {
+        prev = curr;
+        curr = curr->next;
+      }
+
+      // Updates pointers, node removed
+      if (prev != nullptr) {
+        prev->next = curr->next;
+      } else {
+        head = curr->next;
+      }
+
+      delete curr;
+    }
+  } // end of for loop }
+}

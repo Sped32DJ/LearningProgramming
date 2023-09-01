@@ -9,6 +9,7 @@ const int *min(const int arr[], int arrSize) {
   }
   // Building the stack
   const int *minimun = min(arr + 1, arrSize - 1);
+  // arr[] = {6, 4, 8, 23, 1}
 
   // Does not run until the stack is being deconstructed
   if (arr[0] < *minimun) {

@@ -1,0 +1,68 @@
+#include <iostream>
+#include <string>
+
+class Solution {
+public:
+  string intToRoman(int num) {
+    size_t amount = 0;
+    string roman;
+
+    // M == 1000
+    if (num / 1000 > 0) {
+      amount = num / 1000;
+      for (size_t i = 0; i < amount; ++i) {
+        roman.push_back('M');
+      }
+      if (num % 1000 = 999) {
+        roman.pop_back();
+        roman.push_back('I');
+        roman.push_back('M');
+      }            // If something about 999 = IM
+      amount = 0;  // reset back to 0
+      num %= 1000; // takes away what we just push_back
+    }
+
+    // D == 500
+    if (num / 500 > 0) {
+      amount = num / 500;
+      for (size_t i = 0; i < amount; ++i) {
+        roman.push_back('D');
+      }
+      if (num % 500 = 499) {
+        roman.pop_back();
+        roman.push_back('I');
+        roman.push_back('D');
+      }
+      amount = 0;
+    }
+
+    // C == 100
+    if (num / 100 > 0) {
+      amount = num / 100;
+      if ()
+    }
+
+    // L == 50
+    if (num / 50 > 0) {
+    }
+
+    // X == 10
+    if (num / 10 > 0) {
+    }
+
+    // V == 5
+    if (num / 5 > 0) {
+    }
+
+    // Enter what ever is left
+    for (size_t i = 0; i < amount; ++i) {
+      if (num = 4) {
+        roman.push_back('I');
+        roman.push_back('V');
+        continue; // this or break?
+      }
+    }
+
+    return roman;
+  }
+}

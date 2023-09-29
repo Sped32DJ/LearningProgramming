@@ -223,6 +223,7 @@ void IntList::remove_duplicates() {
         checker->next = checker->next->next;
 
         // just call deconstructor
+        // removes dupe
         delete dupe;
       } else {
         checker = checker->next;

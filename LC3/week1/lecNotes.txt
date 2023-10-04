@@ -1,0 +1,51 @@
+State machines vs finite state machines?
+    Part of Turing machines
+vacuum tube transistors
+talked for half an hour about transistors, and flow of electrons
+programming is just the flow of electrons
+Talked about Moore's Law, size of transistors
+
+Turing machines can solve any problem
+goes left and right in memory
+Reads and writes
+    Only 4 instructions are required
+        LC3 has 15 instructions
+    Computerphile, turing machines explained (on YT)
+
+Assignment 1 will just consist of copying code
+    Download .zip from canvas/Gradescope
+    You can turn it in starting today and Dr Allan Knight will grade them by hand daily
+    There is no multiplication instructions, so while loops of adding
+
+This lecture was mostly explaining what will be taught in the class
+    / sparking interest about low level computing
+
+===============================================================
+Putting electrons to work:
+
+The problem... Words
+
+THe algorithm ...  Words on how to solve problem
+
+THe program... captures algorithm rigorously in specific syntax such as C++, Python
+
+ISA.. Instruction Set Architecture, specifies design parameters as what operations a microprocessor can perform, the memory and bus structures, etc
+    A HLL program will be translated to the machine language of the ISA.
+    Description of what the processor does
+
+Microarchitecture... Implementation in circuits to interpret the ISA.
+    Implementation of the processor
+    The way you put logic together in the circuits that can interpret the ISA
+        (This is changed every year to be made even slightly more efficient every year by Intel or AMD)
+
+The logic circuits... Implement various componenets of Microarchitecture as assemblies of logic gates
+
+The devices.. logic gates are built from transistors
+===============================================================
+
+This class can teach you how to build a processor
+
+n-bits
+    2^n distinct values
+    bits go up to the power of 2^n, 1bit, 2bit, 4bit, 8bit, 16bit, 32bit, 64bit, 128,256,512,1024,2048...
+    1024 = kibi (but people call it kilobytes all the time, kilo = 1000; kibi = 1024)

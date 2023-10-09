@@ -29,7 +29,7 @@ int main() {
       Songs.SetNext();
     } else if (option == 'd') { // remove song
       string songID;
-      cout << "Enter song's unique ID: " << endl;
+      cout << "REMOVE SONG" << endl << "Enter song's unique ID:" << endl;
       cin >> songID;
 
       Songs.RemoveSong(songID);
@@ -41,24 +41,21 @@ int main() {
       cout << "Enter new position for song:" << endl;
       cin >> newPos;
       Songs.ChangePosition(currPos, newPos);
-    } else if (option == 's') { // Output song by specific artist
-      string artist;
-      size_t SongPos = 0;
-      cout << "Enter artist's name: ";
-      cin >> artist;
-      cout << endl << endl;
 
-      while (Songs.GetNext()) {
-        ++SongPos; // NOTE  Not sure if jank, or proper way
-                   // Never, we need to keep track of this
-        if (Songs.GetArtistName() == artist) {
-          cout << SongPos << '.' << endl;
-          Songs.PrintPlaylistNode();
-        }
-      }
+    } else if (option == 's') { // FIXME  Extra << endl is printed
+      string artist;
+
+      cout << "OUTPUT SONGS BY SPECIFIC ARTIST" << endl;
+      cout << "Enter artist's name:" << endl;
+      getline(cin >> ws, artist);
+      cout << endl;
+
+      Songs.PrintArtistSongs(artist);
+
     } else if (option == 't') { // Output total time of playlist
       size_t length = 0;
-      cout << "Total time: ";
+      cout << "OUTPUT TOTAL TIME OF PLAYLIST (IN SECONDS)" << endl
+           << "Total time: ";
 
       // TODO  Not sure if this works
       PlaylistNode *curr = Songs.GetHead();
@@ -67,9 +64,9 @@ int main() {
         curr = curr->GetNext();
       }
 
-      cout << length << " seconds " << endl;
-    } else if (option == 'o') {  // Output full playlist
-      Songs.PrintPlaylistNode(); // or is this -> instead of . ?
+      cout << length << " seconds" << endl;
+    } else if (option == 'o') { // Output full playlist
+      Songs.PrintPlaylistNode();
     }
 
     cout << endl << playlistTitle << " PLAYLIST MENU" << endl;

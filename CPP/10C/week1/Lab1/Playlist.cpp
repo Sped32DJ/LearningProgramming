@@ -2,6 +2,18 @@
 #include <iostream>
 using namespace std;
 
+void PlaylistNode::InsertAfter(PlaylistNode *song) {
+  PlaylistNode *temp = nextNodePtr;
+  nextNodePtr = song; // NOTE  Not sure if bulletproof, works in my head
+  nextNodePtr->SetNext(temp);
+}
+void PlaylistNode::PrintPlaylistNode() const {
+  cout << "Unique ID: " << GetID() << endl
+       << "Song Name: " << GetSongName() << endl
+       << "Artist Name: " << GetArtistName() << endl
+       << "Song Length (in seconds): " << GetSongLength() << endl;
+}
+
 Playlist::Playlist(string artistName, string songName, string uniqueID,
                    string playlistTitle)
     : uniqueID(uniqueID), songName(songName), artistName(artistName),
@@ -32,56 +44,73 @@ void Playlist::ChangePosition(int currPos, int newPos) {
   if (currPos == newPos || currPos < 1 || newPos < 1) {
     return;
   }
+  int initIndex = 1;
 
   PlaylistNode *curr = head;
   PlaylistNode *prev = nullptr;
-  PlaylistNode *target = nullptr;
 
-  int songPos = 1;
-
-  // Find currPos
-  // no way this is efficient :sob:
-  while (curr && songPos != currPos) {
-    prev = curr;
-    curr = curr->nextNodePtr;
-    ++songPos;
-  }
-
-  if (curr && songPos == currPos) {
-    target = curr;
-    if (prev) {
-      prev->nextNodePtr = curr->nextNodePtr;
+  // Points the pointers
+  while (initIndex < currPos) {
+    if (curr) {
+      prev = curr;
+      curr = curr->GetNext();
+      ++initIndex;
+      if (!curr) {
+        return;
+      }
     } else {
-      head = curr->nextNodePtr;
+      return;
     }
-  } else {
-    cout << "Failed pos" << endl;
-    return;
   }
 
-  // Find new pos
-  curr = head;
-  prev = nullptr;
-  while (curr && songPos != newPos) {
-    prev = curr;
-    curr = curr->nextNodePtr;
-    ++songPos;
+  // NOTE  Logic begins to start shifting nodes
+  string songName = curr->GetSongName();
+
+  if (!prev) { // If curr is head
+    head = curr->GetNext();
+  } else {
+    prev->SetNext(curr->GetNext());
   }
 
-  // Insert node to new pos
-  if (curr) {
-    target->nextNodePtr = curr;
-    if (prev) {
-      prev->nextNodePtr = target;
-    } else {
-      head = target;
-    }
-  } else {
-    tail->nextNodePtr = target;
-    tail = target;
+  if (!curr->GetNext()) { // If curr is tail
+    tail = prev;
   }
-  cout << '"' << target->GetSongName() << '"' << " moved to position " << newPos
-       << endl;
+
+  // If moved to head
+  if (newPos <= 1) {
+    if (isEmpty()) {
+      tail = curr;
+    }
+    curr->SetNext(head);
+    head = curr;
+    cout << '"' << songName << '"' << " moved to position 1" << endl;
+  } else { // Any shifting that does not include head or tail
+    initIndex = 2;
+    // Used to stich curr between prev1 and post
+    PlaylistNode *prev1;
+    PlaylistNode *post;
+    prev1 = head;
+    post = head->GetNext();
+
+    // Iterates until it reaches target position
+    while (post && initIndex < newPos) {
+      prev1 = post;
+      post = post->GetNext();
+      ++initIndex;
+    }
+
+    // Curr inserted between two nodes
+    prev1->SetNext(curr);
+    curr->SetNext(post);
+
+    // If while loop exited in the while(post)
+    if (!post) {
+      tail = curr;
+    }
+
+    cout << '"' << songName << '"' << " moved to position " << initIndex
+         << endl;
+  }
 }
 
 void Playlist::RemoveSong(string songID) {
@@ -90,45 +119,49 @@ void Playlist::RemoveSong(string songID) {
   string removedSong;
 
   while (curr) {
-    if (curr->uniqueID == songID) {
+    if (curr->GetID() == songID) {
       if (prev) {
-        prev->nextNodePtr = curr->nextNodePtr;
+        prev->SetNext(curr->GetNext());
+
       } else {
-        head = curr->nextNodePtr;
+        head = curr->GetNext();
       }
-      removedSong = curr->songName;
+      removedSong = curr->GetSongName();
       delete curr;
     }
 
     prev = curr;
-    curr = curr->nextNodePtr;
+    curr = curr->GetNext();
   }
-  cout << '"' << removedSong << '"' << " removed" << endl;
+  cout << '"' << removedSong << '"' << " removed." << endl;
 }
 
 void Playlist::SetNext() {
   string uniqueID, songName, artistName;
   int songLength;
 
-  cout << "Enter song's unique ID:" << endl;
-  cin >> uniqueID;
   cin.ignore();
+
+  cout << "Enter song's unique ID:" << endl;
+  getline(cin, uniqueID);
 
   cout << "Enter song's name:" << endl;
-  cin.ignore();
   getline(cin, songName);
 
-  cout << "Enter Artist's name:" << endl;
+  cout << "Enter artist's name:" << endl;
   getline(cin, artistName);
 
   cout << "Enter song's length (in seconds):" << endl;
   cin >> songLength;
 
   PlaylistNode *newSong =
-      new PlaylistNode(uniqueID, songName, artistName, songLength, nullptr);
+      new PlaylistNode(uniqueID, songName, artistName, songLength);
 
-  if (tail) {
-    tail->nextNodePtr = newSong;
+  if (tail != nullptr) {
+    tail->SetNext(newSong);
+  }
+  if (head == nullptr) {
+    head = newSong;
   }
 
   tail = newSong;
@@ -141,28 +174,28 @@ void Playlist::InsertSong(int pos, PlaylistNode *song) {
   int songCap = 1;
 
   while (curr) {
-    curr = curr->nextNodePtr;
+    curr = curr->GetNext();
     ++songCap;
   }
   curr = head;
 
   if (pos == 1) {
-    song->nextNodePtr = head;
+    song->SetNext(head);
     head = song;
     if (!tail) {
       tail = song;
     }
   } else if (pos >= songCap) {
-    tail->nextNodePtr = song;
+    tail->SetNext(song);
     tail = song;
   } else {
     while (songPos < pos) {
       prev = curr;
-      curr = curr->nextNodePtr;
+      curr = curr->GetNext();
       ++songPos;
     }
-    prev->nextNodePtr = song;
-    song->nextNodePtr = curr;
+    prev->SetNext(song);
+    song->SetNext(curr);
   }
 }
 
@@ -172,25 +205,42 @@ PlaylistNode *Playlist::GetHead() const { return head; }
 void Playlist::PrintPlaylistNode() {
   cout << playlistTitle << " - OUTPUT FULL PLAYLIST" << endl;
 
-  if (!isEmpty()) {
+  if (isEmpty()) {
     cout << "Playlist is empty" << endl;
-  } else if (head == nullptr) {
-    cout << "Playlist is empty" << endl;
+    return;
+
   } else {
     PlaylistNode *curr = head;
-    size_t songPos = 0;
+    size_t songPos = 1;
 
-    while (curr != nullptr) {
-      ++songPos;
+    while (curr) {
       cout << songPos << '.' << endl;
-      cout << "Unique ID: " << curr->uniqueID << endl
-           << "Song Name: " << curr->songName << endl
-           << "Artist Name: " << curr->artistName << endl
-           << "Song Length (in seconds): " << curr->songLength << endl
-           << endl;
-      curr = curr->nextNodePtr;
+      curr->PrintPlaylistNode();
+      if (curr->GetNext()) // All but last get an endl
+        cout << endl;
+
+      curr = curr->GetNext();
+      ++songPos;
     }
   }
 }
 
-bool Playlist::isEmpty() { return head == nullptr; }
+// Best working
+void Playlist::PrintArtistSongs(string name) {
+  int pos = 1;
+  PlaylistNode *curr = head;
+
+  // Iterate the list, prints artist specific songs
+  while (curr) {
+    if (curr->GetArtistName() == name) {
+      cout << pos << '.' << endl;
+      curr->PrintPlaylistNode();
+      if (pos == 1)
+        cout << endl;
+    }
+    ++pos;
+    curr = curr->GetNext();
+  }
+}
+
+bool Playlist::isEmpty() { return !head; }

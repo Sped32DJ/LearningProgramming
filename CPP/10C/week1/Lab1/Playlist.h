@@ -8,22 +8,11 @@ using namespace std;
 
 class PlaylistNode {
 public:
-  // Parameterized Const
-  /* PlaylistNode(string uniqueID, string songName, string artistName,
-               int songLength)
-      : uniqueID(uniqueID), songName(songName), artistName(artistName),
-        songLength(songLength) {} */
-
   // Parameterized const | provides default vals
   PlaylistNode(string uniqueID = "none", string songName = "none",
                string artistName = "none", int songLength = 0)
       : uniqueID(uniqueID), songName(songName), artistName(artistName),
         songLength(songLength) {}
-
-  // Default Const
-  /* PlaylistNode()
-      : uniqueID("none"), songName("none"), artistName("none"), songLength(0) {}
-   */
 
   string GetArtistName() const { return artistName; }
   int GetSongLength() const { return songLength; }
@@ -61,12 +50,11 @@ public:
   string GetID() const;
   void RemoveSong(string songID);
   void ChangePosition(int currPos, int newPos);
-  void InsertAfter(PlaylistNode *); // TODO
+  void InsertAfter(PlaylistNode *);
   string GetSongName() const;
   string GetPlaylistTitle() const;
   string GetArtistName() const;
   int GetSongLength() const;
-  /* int GetSongPos() const; */
   PlaylistNode *GetNext() const;
   PlaylistNode *GetHead() const;
 

@@ -2,18 +2,7 @@
 #include <iostream>
 using namespace std;
 
-void PlaylistNode::InsertAfter(PlaylistNode *song) {
-  PlaylistNode *temp = nextNodePtr;
-  nextNodePtr = song; // NOTE  Not sure if bulletproof, works in my head
-  nextNodePtr->SetNext(temp);
-}
-void PlaylistNode::PrintPlaylistNode() const {
-  cout << "Unique ID: " << GetID() << endl
-       << "Song Name: " << GetSongName() << endl
-       << "Artist Name: " << GetArtistName() << endl
-       << "Song Length (in seconds): " << GetSongLength() << endl;
-}
-
+// Constructors
 Playlist::Playlist(string artistName, string songName, string uniqueID,
                    string playlistTitle)
     : uniqueID(uniqueID), songName(songName), artistName(artistName),
@@ -26,19 +15,84 @@ Playlist::Playlist(string playlistTitle)
       tail(nullptr) {}
 
 // Accessor Functions
-
 string Playlist::GetID() const { return uniqueID; }
 string Playlist::GetSongName() const { return songName; }
 string Playlist::GetArtistName() const { return artistName; }
 string Playlist::GetPlaylistTitle() const { return playlistTitle; }
 int Playlist::GetSongLength() const { return songLength; }
-/* Playlist *Playlist::GetNext() const { return head; } */
+PlaylistNode *Playlist::GetNext() const { return nextNodePtr; }
+PlaylistNode *Playlist::GetHead() const { return head; }
 
-/* int Playlist::GetSongPos() const {
-  int songPos;
-  while (GetNext()) {
+// Visual Functions
+void PlaylistNode::PrintPlaylistNode() const {
+  cout << "Unique ID: " << GetID() << endl
+       << "Song Name: " << GetSongName() << endl
+       << "Artist Name: " << GetArtistName() << endl
+       << "Song Length (in seconds): " << GetSongLength() << endl;
+}
+
+void Playlist::PrintPlaylistNode() {
+  cout << playlistTitle << " - OUTPUT FULL PLAYLIST" << endl;
+
+  if (isEmpty()) {
+    cout << "Playlist is empty" << endl;
+    return;
+
+  } else {
+    PlaylistNode *curr = head;
+    size_t songPos = 1;
+
+    while (curr) {
+      cout << songPos << '.' << endl;
+      curr->PrintPlaylistNode();
+      if (curr->GetNext()) // All but last get an endl
+        cout << endl;
+
+      curr = curr->GetNext();
+      ++songPos;
+    }
   }
-} */
+}
+
+void Playlist::PrintArtistSongs(string name) {
+  int pos = 1;
+  int nodeCount = 0;
+  int CurrCount = 1;
+  PlaylistNode *curr = head;
+
+  // Iterate the list, prints artist specific songs
+  while (curr) {
+    if (curr->GetArtistName() == name) {
+      ++nodeCount;
+    }
+    curr = curr->GetNext();
+  }
+
+  // Reinitialize
+  curr = head;
+
+  while (curr) {
+    if (curr->GetArtistName() == name) {
+      cout << pos << '.' << endl;
+      curr->PrintPlaylistNode();
+      if (nodeCount > CurrCount) {
+        cout << endl;
+      }
+      ++CurrCount;
+    }
+    ++pos;
+    curr = curr->GetNext();
+  }
+}
+
+bool Playlist::isEmpty() { return !head; }
+
+// Functions that modify linked list
+void PlaylistNode::InsertAfter(PlaylistNode *song) {
+  PlaylistNode *temp = nextNodePtr;
+  nextNodePtr = song;
+  nextNodePtr->SetNext(temp);
+}
 
 void Playlist::ChangePosition(int currPos, int newPos) {
   if (currPos == newPos || currPos < 1 || newPos < 1) {
@@ -86,6 +140,7 @@ void Playlist::ChangePosition(int currPos, int newPos) {
     cout << '"' << songName << '"' << " moved to position 1" << endl;
   } else { // Any shifting that does not include head or tail
     initIndex = 2;
+
     // Used to stich curr between prev1 and post
     PlaylistNode *prev1;
     PlaylistNode *post;
@@ -198,49 +253,3 @@ void Playlist::InsertSong(int pos, PlaylistNode *song) {
     song->SetNext(curr);
   }
 }
-
-PlaylistNode *Playlist::GetNext() const { return nextNodePtr; }
-PlaylistNode *Playlist::GetHead() const { return head; }
-
-void Playlist::PrintPlaylistNode() {
-  cout << playlistTitle << " - OUTPUT FULL PLAYLIST" << endl;
-
-  if (isEmpty()) {
-    cout << "Playlist is empty" << endl;
-    return;
-
-  } else {
-    PlaylistNode *curr = head;
-    size_t songPos = 1;
-
-    while (curr) {
-      cout << songPos << '.' << endl;
-      curr->PrintPlaylistNode();
-      if (curr->GetNext()) // All but last get an endl
-        cout << endl;
-
-      curr = curr->GetNext();
-      ++songPos;
-    }
-  }
-}
-
-// Best working
-void Playlist::PrintArtistSongs(string name) {
-  int pos = 1;
-  PlaylistNode *curr = head;
-
-  // Iterate the list, prints artist specific songs
-  while (curr) {
-    if (curr->GetArtistName() == name) {
-      cout << pos << '.' << endl;
-      curr->PrintPlaylistNode();
-      if (pos == 1)
-        cout << endl;
-    }
-    ++pos;
-    curr = curr->GetNext();
-  }
-}
-
-bool Playlist::isEmpty() { return !head; }

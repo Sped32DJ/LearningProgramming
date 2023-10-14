@@ -1,0 +1,18 @@
+LD (load direct)
+ST (Store direct)
+    ; Reverse, and goes backwards
+    ; Overwrites the original .FILL
+
+
+LDI (Load Indirect)
+    ; Pointers, you give it a memory address
+    ; Tell it to grab the value from this memory addr
+
+LDR (load relative)
+    ; Useful for arrays
+
+OUT
+    ; Prints char value at R0
+    ; Never store values in R0, because of it's dynamic nature
+
+

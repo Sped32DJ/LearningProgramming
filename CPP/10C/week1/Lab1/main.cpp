@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void DisplayMenu();
+void DisplayMenu(string playlistTitle);
 
 int main() {
   string playlistTitle;
@@ -15,25 +15,25 @@ int main() {
 
   Playlist Songs(playlistTitle);
 
-  /* DisplayMenu(); */
   cin >> option;
 
   if (option == 'q') {
-    cout << endl << playlistTitle << " PLAYLIST MENU" << endl;
-    DisplayMenu();
+    DisplayMenu(playlistTitle);
   }
 
   while (option != 'q') { // q for quit
     if (option == 'a') {  // Add song
       cout << "ADD SONG" << endl;
       Songs.SetNext();
+
     } else if (option == 'd') { // remove song
       string songID;
       cout << "REMOVE SONG" << endl << "Enter song's unique ID:" << endl;
       cin >> songID;
 
       Songs.RemoveSong(songID);
-    } else if (option == 'c') { // TODO  Change position of song
+
+    } else if (option == 'c') { // Change position of song
       int currPos, newPos;
       cout << "CHANGE POSITION OF SONG" << endl;
       cout << "Enter song's current position:" << endl;
@@ -42,12 +42,12 @@ int main() {
       cin >> newPos;
       Songs.ChangePosition(currPos, newPos);
 
-    } else if (option == 's') { // FIXME  Extra << endl is printed
+    } else if (option == 's') { // Print Artist Song Names
       string artist;
 
       cout << "OUTPUT SONGS BY SPECIFIC ARTIST" << endl;
       cout << "Enter artist's name:" << endl;
-      getline(cin >> ws, artist);
+      getline(cin >> ws, artist); // >> ws fixed bug
       cout << endl;
 
       Songs.PrintArtistSongs(artist);
@@ -65,24 +65,23 @@ int main() {
       }
 
       cout << length << " seconds" << endl;
+
     } else if (option == 'o') { // Output full playlist
       Songs.PrintPlaylistNode();
     }
 
-    cout << endl << playlistTitle << " PLAYLIST MENU" << endl;
-    DisplayMenu();
+    // Shows menu and prompts -> while()
+    DisplayMenu(playlistTitle);
     cin >> option;
   }
-
-  // I don't think this is needed
-  /* DisplayMenu();
-  cin >> option; */
 
   return 0;
 }
 
-void DisplayMenu() {
-  cout << "a - Add song" << endl
+void DisplayMenu(string playlistTitle) {
+  cout << endl
+       << playlistTitle << " PLAYLIST MENU" << endl
+       << "a - Add song" << endl
        << "d - Remove song" << endl
        << "c - Change position of song" << endl
        << "s - Output songs by specific artist" << endl

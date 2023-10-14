@@ -10,7 +10,7 @@
 
 ; First REAL Program
 .ORIG x3000
-    LD R1, x0 ; Inserting literal 0 is more efficient
+    AND R1, R1, x0 ; Inserting literal 0 is more efficient
     LD R2, DEC_12 ; R2 = #12
     LD R3, DEC_6  ; R3 = #6
 
@@ -31,6 +31,7 @@ END_DO_WHILE_LOOP
 HALT ; halts the processor
 
 ; Defining variables
+DEC_0   .FILL #0
 DEC_12  .FILL #12
 DEC_6   .FILL #6
 

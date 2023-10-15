@@ -7,7 +7,10 @@ IntList::IntList() {
   dTail = new IntNode(0);
 
   dHead->next = dTail;
+  dHead->prev = nullptr;
+
   dTail->prev = dHead;
+  dTail->next = nullptr;
 }
 
 // Dupe List
@@ -47,7 +50,14 @@ void IntList::push_front(int value) {
 }
 
 // TODO
-void IntList::pop_front() {}
+void IntList::pop_front() {
+  IntNode *curr = dHead->next;
+  IntNode *next = curr->next;
+  IntNode *prev = dHead;
+
+  prev = next;
+  next->prev = prev;
+}
 
 void IntList::push_back() {}
 // TEST
@@ -57,11 +67,11 @@ bool IntList::empty() const {
 
 // TEST
 ostream &operator<<(ostream &out, const IntList &rhs) {
-  IntNode *curr = List.head;
-  while (curr) {
+  IntNode *curr = List.head.next;
+  while (curr || curr != List.tail.prev) {
     out << curr->value;
     // NOTE  I think this prints tail, not dTail
-    if (curr != List.tail) {
+    if (curr != List.tail.prev.prev) {
       cout << ' ';
     }
 

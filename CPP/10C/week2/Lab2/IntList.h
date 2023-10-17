@@ -1,25 +1,28 @@
+#include <iostream>
+
 using namespace std;
 
 #ifndef __INTLIST_H__
 #define __INTLIST_H__
 
 struct IntNode {
-  int data;
+  int value;
   IntNode *prev;
   IntNode *next;
-  IntNode(int data) : data(data), prev(nullptr), next(nullptr) {}
+  IntNode(int value) : value(value), prev(nullptr), next(nullptr) {}
 };
 
-class IntList() {
+class IntList {
 public:
   IntList();
   ~IntList();
-  void push_front(int value);
   void pop_front();
-  void push_back();
+  void pop_back();
+  void push_front(int value);
+  void push_back(int value);
   bool empty() const;
   friend ostream &operator<<(ostream &out, const IntList &rhs);
-  void PrintReverse() const;
+  void printReverse() const;
 
 private:
   IntNode *dHead;

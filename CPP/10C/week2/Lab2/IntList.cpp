@@ -1,29 +1,28 @@
 #include "IntList.h"
 #include <iostream>
 
-// Default Const
-IntList::IntList() {
+// Default Constrct
+IntList::IntList()
+    : dHead(nullptr), dTail(nullptr), head(nullptr), tail(nullptr) {
   dHead = new IntNode(0);
   dTail = new IntNode(0);
 
   dHead->next = dTail;
-  dHead->prev = nullptr;
-
   dTail->prev = dHead;
-  dTail->next = nullptr;
 }
 
-// Dupe List
-// TODO  Shit, forgot to add prevs
-IntList::IntList(const IntList &cpy) {
+// Copy Constrct
+IntList::IntList(const IntList &cpy)
+    : dHead(nullptr), dTail(nullptr), head(nullptr), tail(nullptr) {
   dHead = new IntNode(0);
   dTail = new IntNode(0);
 
-  dHead->next = dTail;
-  dTail->prev = dHead;
+  if (cpy.empty()) {
+    return; // job here is done, an empty list was made!
+  }
 
-  IntNode *curr = cpy.head;
-  while (curr != nullptr) {
+  IntNode *curr = cpy.dHead->next;
+  while (curr) {
     push_back(curr->value);
     curr = curr->next;
   }
@@ -36,43 +35,85 @@ IntList::~IntList() {
   }
   tail = nullptr;
   head = nullptr;
+  dTail = nullptr;
+  dHead = nullptr;
 }
 
-// TODO
 void IntList::push_front(int value) {
   IntNode *tmp = new IntNode(value);
+  IntNode *prev1 = dHead;
+  IntNode *next1 = dHead->next;
 
-  if (empty()) {
-    dHead->next = tmp;
-    dTail->prev = tmp;
-    return;
-  }
+  // pointers to temp
+  prev1->next = tmp;
+  next1->prev = tmp;
+
+  // tmp pointers
+  tmp->next = next1;
+  tmp->prev = prev1;
 }
 
-// TODO
+void IntList::push_back(int value) {
+  IntNode *tmp = new IntNode(value);
+  IntNode *next1 = dTail;
+  IntNode *prev1 = dTail->prev;
+
+  prev1->next = tmp;
+  next1->prev = tmp;
+
+  tmp->prev = prev1;
+  tmp->next = next1;
+}
+
+// Pop functions seem right
 void IntList::pop_front() {
-  IntNode *curr = dHead->next;
-  IntNode *next = curr->next;
-  IntNode *prev = dHead;
+  if (empty()) {
+    throw runtime_error("List is empty, can't pop_front");
+  }
 
-  prev = next;
-  next->prev = prev;
+  IntNode *prev1 = dHead;
+  IntNode *curr = dHead->next;
+  IntNode *next1 = curr->next;
+
+  prev1->next = next1;
+  next1->prev = prev1;
+
+  delete curr;
 }
 
-void IntList::push_back() {}
-// TEST
+void IntList::pop_back() {
+  if (empty()) {
+    throw runtime_error("List is empty, can't pop_back");
+  }
+
+  IntNode *next1 = dTail;
+  IntNode *curr = dTail->prev;
+  IntNode *prev1 = curr->prev;
+
+  prev1->next = next1;
+  next1->prev = prev1;
+
+  delete curr;
+}
+
 bool IntList::empty() const {
   return dHead->next == dTail && dTail->prev == dHead;
 }
 
-// TEST
 ostream &operator<<(ostream &out, const IntList &rhs) {
-  IntNode *curr = List.head.next;
-  while (curr || curr != List.tail.prev) {
+  if (rhs.empty()) {
+    out << "List is empty" << endl; // throwing out error
+    return out;
+  }
+
+  IntNode *curr = rhs.dHead->next;
+
+  while (curr != rhs.dTail) {
     out << curr->value;
-    // NOTE  I think this prints tail, not dTail
-    if (curr != List.tail.prev.prev) {
-      cout << ' ';
+
+    // Prints all but last
+    if (curr->next != rhs.dTail) {
+      out << ' ';
     }
 
     curr = curr->next;
@@ -81,10 +122,21 @@ ostream &operator<<(ostream &out, const IntList &rhs) {
   return out;
 }
 
-// TEST
-void IntList::PrintReverse() const {
+void IntList::printReverse() const {
+  if (empty()) {
+    throw runtime_error("Can't print empty list!");
+  }
+
   IntNode *curr = dTail->prev;
-  while (curr || curr == dHead) {
+
+  // Single node
+  if (curr->prev == dHead) {
+    cout << curr->value;
+    return;
+  }
+
+  // Multiple nodes
+  while (curr != dHead) {
     cout << curr->value;
     if (curr->prev != dHead) {
       cout << ' ';

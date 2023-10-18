@@ -59,6 +59,9 @@ void print(Node *start) { // prints list
 // FIXME  Bug somewhere here
 // It just returns the first name entered
 // Segfault resolved
+// Questions to ask, who holds the last character
+// Are the iterations correct?
+// Are they skipping correctly?
 Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
   Node *curr = start;
   /* Node *prev = curr; */
@@ -70,7 +73,7 @@ Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
       curr = curr->next;              // circles k times
     }
 
-    if (curr->next != start) {
+    if (curr->next != curr) {
       prev = nullptr;
       curr = nullptr;
       return start;
@@ -91,7 +94,7 @@ Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
     delete tmp;
   }
 
-  return start; // last person standing (list links to it's self)
+  return curr; // last person standing (list links to it's self)
 }
 
 /* Driver program to test above functions */

@@ -57,18 +57,20 @@ void print(Node *start) { // prints list
 }
 
 // FIXME  Bug somewhere here
+// It just returns the first name entered
+// Segfault resolved
 Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
   Node *curr = start;
   /* Node *prev = curr; */
   Node *prev = nullptr;
 
-  while (start->next != start) {      // exit condition, last person standing
+  while (curr->next != curr) {        // exit condition, last person standing
     for (int i = 0; i < k - 1; ++i) { // find kth node
       prev = curr;                    // always trailing curr
       curr = curr->next;              // circles k times
     }
 
-    if (start->next != start) {
+    if (curr->next != start) {
       prev = nullptr;
       curr = nullptr;
       return start;
@@ -76,10 +78,6 @@ Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
 
     Node *tmp = curr; // safer to use a tmp
     curr = curr->next;
-
-    /* if (curr != start) {
-      delete tmp;
-    } */
 
     if (prev != nullptr) {
       prev->next = curr;

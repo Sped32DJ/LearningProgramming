@@ -39,7 +39,6 @@ IntList::~IntList() {
   dHead = nullptr;
 }
 
-// TEST
 void IntList::push_front(int value) {
   IntNode *tmp = new IntNode(value);
   IntNode *prev1 = dHead;
@@ -54,7 +53,6 @@ void IntList::push_front(int value) {
   tmp->prev = prev1;
 }
 
-// TEST
 void IntList::push_back(int value) {
   IntNode *tmp = new IntNode(value);
   IntNode *next1 = dTail;

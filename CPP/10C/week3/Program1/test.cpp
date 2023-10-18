@@ -57,43 +57,38 @@ void print(Node *start) { // prints list
 }
 
 // FIXME  Bug somewhere here
-Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
+Node *runGame(Node *start, int k) {
   Node *curr = start;
-  /* Node *prev = curr; */
   Node *prev = nullptr;
 
-  while (start->next != start) {      // exit condition, last person standing
-    for (int i = 0; i < k - 1; ++i) { // find kth node
-      prev = curr;                    // always trailing curr
-      curr = curr->next;              // circles k times
+  while (start->next != start) {
+    for (int i = 0; i < k - 1; ++i) {
+      prev = curr;
+      curr = curr->next;
     }
 
-    if (start->next != start) {
-      prev = nullptr;
-      curr = nullptr;
+    if (start == curr) {
       return start;
     }
 
-    Node *tmp = curr; // safer to use a tmp
+    Node *tmp = curr;
     curr = curr->next;
-
-    /* if (curr != start) {
-      delete tmp;
-    } */
 
     if (prev != nullptr) {
       prev->next = curr;
     } else {
-      start = curr; // update if first person removed
-    }
-
-    if (tmp == start) {
       start = curr;
     }
+
+    /* if (tmp == start) {
+      start = curr;
+    } */
+
+    tmp->next = nullptr; // Break the link to prevent issues with delete
     delete tmp;
   }
 
-  return start; // last person standing (list links to it's self)
+  return start;
 }
 
 /* Driver program to test above functions */
@@ -109,6 +104,7 @@ int main() {
     return 1;
   }
 
+  cout << "Gathering names" << endl;
   while (cin >> name && name != ".") {
     if (cin.fail()) {
       throw runtime_error("Invalid input");
@@ -117,19 +113,20 @@ int main() {
     names.push_back(name);
   } // EOF or . ends input
 
+  cout << "initializing game" << endl;
   // initialize and run game
   Node *startPerson = loadGame(n, names);
   Node *lastPerson = runGame(startPerson, k);
 
+  cout << "Looking for last person" << endl;
   if (lastPerson != nullptr) {
     cout << lastPerson->payload << " wins!" << endl;
   } else {
     cout << "error: null game" << endl;
   }
 
-  // Funny code causes memory leaks
-  /* delete lastPerson;
-  delete startPerson; */
+  cout << "Deleting people nodes" << endl;
+  // Prevent memory leaks
 
   return 0;
 }

@@ -12,10 +12,17 @@ int main() {
 
   cout << "Enter playlist's title:" << endl;
   getline(cin, playlistTitle);
+  if (cin.fail()) {
+    throw runtime_error("Not a string");
+  }
 
   Playlist Songs(playlistTitle);
 
   cin >> option;
+  // TODO  For all inputs
+  if (cin.fail()) {
+    throw runtime_error("option input failed");
+  }
 
   if (option == 'q') {
     DisplayMenu(playlistTitle);
@@ -30,6 +37,9 @@ int main() {
       string songID;
       cout << "REMOVE SONG" << endl << "Enter song's unique ID:" << endl;
       cin >> songID;
+      if (cin.fail()) {
+        throw runtime_error("Not a songID");
+      }
 
       Songs.RemoveSong(songID);
 
@@ -38,8 +48,16 @@ int main() {
       cout << "CHANGE POSITION OF SONG" << endl;
       cout << "Enter song's current position:" << endl;
       cin >> currPos;
+      if (cin.fail()) {
+        throw runtime_error("Bad current position input");
+      }
+
       cout << "Enter new position for song:" << endl;
       cin >> newPos;
+      if (cin.fail()) {
+        throw runtime_error("Bad new position input");
+      }
+
       Songs.ChangePosition(currPos, newPos);
 
     } else if (option == 's') { // Print Artist Song Names
@@ -48,6 +66,9 @@ int main() {
       cout << "OUTPUT SONGS BY SPECIFIC ARTIST" << endl;
       cout << "Enter artist's name:" << endl;
       getline(cin >> ws, artist); // >> ws fixed bug
+      if (cin.fail()) {
+        throw runtime_error("bad artist name input");
+      }
       cout << endl;
 
       Songs.PrintArtistSongs(artist);
@@ -57,7 +78,6 @@ int main() {
       cout << "OUTPUT TOTAL TIME OF PLAYLIST (IN SECONDS)" << endl
            << "Total time: ";
 
-      // TODO  Not sure if this works
       PlaylistNode *curr = Songs.GetHead();
       while (curr) {
         length += curr->GetLength();
@@ -68,11 +88,17 @@ int main() {
 
     } else if (option == 'o') { // Output full playlist
       Songs.PrintPlaylistNode();
+    } else {
+      cout << "Invalid option" << endl;
+      cout << "Try again: " << endl;
     }
 
     // Shows menu and prompts -> while()
     DisplayMenu(playlistTitle);
     cin >> option;
+    if (cin.fail()) {
+      throw runtime_error("Invalid option");
+    }
   }
 
   return 0;

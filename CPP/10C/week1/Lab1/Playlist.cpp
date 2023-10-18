@@ -14,6 +14,12 @@ Playlist::Playlist(string playlistTitle)
       playlistTitle(playlistTitle), nextNodePtr(nullptr), head(nullptr),
       tail(nullptr) {}
 
+// Write a copy constructor
+// TODO  Use delete in the code, somewhere
+Playlist::Playlist(const Playlist &title) {}
+
+Playlist::~Playlist() {}
+
 // Accessor Functions
 string Playlist::GetID() const { return uniqueID; }
 string Playlist::GetSongName() const { return songName; }

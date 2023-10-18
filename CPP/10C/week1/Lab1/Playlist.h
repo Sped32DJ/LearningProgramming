@@ -9,10 +9,14 @@ using namespace std;
 class PlaylistNode {
 public:
   // Parameterized const | provides default vals
+  // NOTE  This shouldn't be inline
   PlaylistNode(string uniqueID = "none", string songName = "none",
                string artistName = "none", int songLength = 0)
       : uniqueID(uniqueID), songName(songName), artistName(artistName),
         songLength(songLength) {}
+  ~PlaylistNode();                                // TODO
+  Playlist(const Playlist &title) = delete;       // TODO
+  Playlist &operator=(const Playlist &) = delete; // TODO
 
   string GetArtistName() const { return artistName; }
   int GetSongLength() const { return songLength; }
@@ -49,6 +53,29 @@ public:
 
   string GetID() const;
   void RemoveSong(string songID);
+  void Playlist::RemoveSong(string songID) {
+    PlaylistNode *curr = head;
+    PlaylistNode *prev = nullptr;
+    string removedSong;
+
+    while (curr) {
+      if (curr->GetID() == songID) {
+        if (prev) {
+          prev->SetNext(curr->GetNext());
+
+        } else {
+          head = curr->GetNext();
+        }
+        removedSong = curr->GetSongName();
+        delete curr;
+      }
+
+      prev = curr;
+      curr = curr->GetNext();
+    }
+    cout << '"' << removedSong << '"' << " removed." << endl;
+  }
+
   void ChangePosition(int currPos, int newPos);
   void InsertAfter(PlaylistNode *);
   string GetSongName() const;

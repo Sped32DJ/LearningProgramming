@@ -1,99 +1,99 @@
 #include "IntList.h"
 #include <iostream>
 #include <string>
-
 using namespace std;
 
-void menu(IntList *list) {
-  cout << " IntList MENU" << endl;
-  cout << "a - Add song(push_back)" << endl;       // done
-  cout << "r - Add song(push_front)" << endl;      // done
-  cout << "b - Remove song(pop_front)" << endl;    // done
-  cout << "c - Remove song(pop_back)" << endl;     // done
-  cout << "d - Output IntList in order" << endl;   // done
-  cout << "e - Check is it empty" << endl;         // done
-  cout << "o - Output IntList in reverse" << endl; // done
-  cout << "q - Quit - Destructor" << endl;         // done
+void DisplayMenu(IntList *list);
+
+int main() {
+  IntList *list = new IntList();
+  DisplayMenu(list);
+  return 0;
+}
+
+// This menu loops recursively (recursion practice!)
+void DisplayMenu(IntList *list) {
+  cout << "Menu" << endl
+       << "a - Add (push_back)" << endl
+       << "s - Add (push_front)" << endl
+       << "w - Remove (pop_front)" << endl
+       << "e - Remove (pop_back)" << endl
+       << "z - Output List in order" << endl
+       << "x - Output list in reverse" << endl
+       << "c - Check if empty" << endl;
   cout << endl;
-  cout << "Choose an option:";
+  cout << "Choose an Option: ";
   cout << endl;
 
-  string choice;
+  char choice;
+  cin >> choice;
+  if (cin.fail()) {
+    throw runtime_error("Bad input!");
+  }
+  choice = tolower(choice);
 
-  getline(cin, choice);
-
-  if (choice == "q") {
-    cout << "Calls destructor " << endl;
+  if (choice == 'q') {
+    cout << "Call deconstructor" << endl;
     delete list;
     return;
-  } else if (choice == "o") {
-    cout << "Printing list in reverse: ";
-    list->printReverse();
-    cout << endl;
-    menu(list);
-  } else if (choice == "a") {
-    cout << "ADD IntNode push_back" << endl;
+  } else if (choice == 'a') {
+    cout << "Pushing back node" << endl;
+    int data;
+    cin >> data;
+    if (cin.fail()) {
+      throw runtime_error("Bad data input");
+    }
+    list->push_back(data);
+
+    // Recursion!
+    DisplayMenu(list);
+  } else if (choice == 'a') {
+    cout << "IntNode push_back()" << endl;
     int data;
 
-    cout << "Enter node's data value:" << endl;
     cin >> data;
-    cin.ignore();
-    cout << endl;
+    if (cin.fail()) {
+      throw runtime_error("Bad input");
+    }
     list->push_back(data);
-    cout << "Normal: " << *list << endl;
-    cout << "Reverse: ";
-    list->printReverse();
-    cout << endl;
 
-    menu(list);
-  } else if (choice == "c") {
-    cout << "Remove (pop_back)" << endl;
-    list->pop_back();
-    cout << "Normal: " << *list << endl;
-    cout << "Reverse: ";
-    list->printReverse();
-    cout << endl;
+    DisplayMenu(list);
+  } else if (choice == 's') {
+    cout << "IntNode push_front()" << endl;
+    int data;
 
-    menu(list);
-  } else if (choice == "b") {
+    cin >> data;
+    if (cin.fail()) {
+      throw runtime_error("Bad input");
+    }
+    list->push_front(data);
+
+    DisplayMenu(list);
+  } else if (choice == 'w') {
     cout << "Remove (pop_front)" << endl;
     list->pop_front();
-    cout << "Normal: " << *list << endl;
-    cout << "Reverse: ";
-    list->printReverse();
-    cout << endl;
-    menu(list);
-  } else if (choice == "r") {
-    cout << "ADD IntNode push_front " << endl;
-    int data;
 
-    cout << "Enter node's data value:" << endl;
-    cin >> data;
-    cin.ignore();
-    cout << endl;
-    list->push_front(data);
-    cout << "Normal: " << *list << endl;
-    cout << "Reverse: ";
+    DisplayMenu(list);
+  } else if (choice == 'e') {
+    cout << "Remove (pop_back)" << endl;
+    list->pop_back();
+
+    DisplayMenu(list);
+  } else if (choice == 'z') {
+    cout << "Output list in order" << endl;
+    cout << *list << endl;
+
+    DisplayMenu(list);
+  } else if (choice == 'x') {
+    cout << "Output list in reverse order" << endl;
     list->printReverse();
-    cout << endl;
-    menu(list);
-  } else if (choice == "e") {
-    if (list->empty())
-      cout << "list is empty" << endl;
-    else
-      cout << "list is not empty" << endl;
-    menu(list);
-  } else if (choice == "d") {
-    cout << "Printing in order: " << *list << endl;
-    cout << endl;
-    menu(list);
+
+    DisplayMenu(list);
+  } else if (choice == 'c') {
+    cout << "Check if list if empty" << endl;
+    list->empty();
   } else {
-    menu(list);
+    // Will keep going until q, or runtime_error
+    DisplayMenu(list);
   }
-}
-int main() {
-
-  IntList *list = new IntList();
-  menu(list);
-  return -1;
 }

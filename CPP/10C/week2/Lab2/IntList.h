@@ -15,6 +15,7 @@ struct IntNode {
 class IntList {
 public:
   IntList();
+  IntList(const IntList &cpy);
   ~IntList();
   void pop_front();
   void pop_back();

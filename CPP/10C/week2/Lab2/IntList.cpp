@@ -1,7 +1,7 @@
 #include "IntList.h"
 #include <iostream>
 
-// Default Const
+// Default Constrct
 IntList::IntList()
     : dHead(nullptr), dTail(nullptr), head(nullptr), tail(nullptr) {
   dHead = new IntNode(0);
@@ -9,6 +9,23 @@ IntList::IntList()
 
   dHead->next = dTail;
   dTail->prev = dHead;
+}
+
+// Copy Constrct
+IntList::IntList(const IntList &cpy)
+    : dHead(nullptr), dTail(nullptr), head(nullptr), tail(nullptr) {
+  dHead = new IntNode(0);
+  dTail = new IntNode(0);
+
+  if (cpy.empty()) {
+    return; // job here is done, an empty list was made!
+  }
+
+  IntNode *curr = cpy.dHead->next;
+  while (curr) {
+    push_back(curr->value);
+    curr = curr->next;
+  }
 }
 
 // Destructor
@@ -53,7 +70,7 @@ void IntList::push_back(int value) {
 // Pop functions seem right
 void IntList::pop_front() {
   if (empty()) {
-    return;
+    throw runtime_error("List is empty, can't pop_front");
   }
 
   IntNode *prev1 = dHead;
@@ -68,7 +85,7 @@ void IntList::pop_front() {
 
 void IntList::pop_back() {
   if (empty()) {
-    return;
+    throw runtime_error("List is empty, can't pop_back");
   }
 
   IntNode *next1 = dTail;
@@ -87,6 +104,7 @@ bool IntList::empty() const {
 
 ostream &operator<<(ostream &out, const IntList &rhs) {
   if (rhs.empty()) {
+    out << "List is empty" << endl; // throwing out error
     return out;
   }
 
@@ -108,7 +126,7 @@ ostream &operator<<(ostream &out, const IntList &rhs) {
 
 void IntList::printReverse() const {
   if (empty()) {
-    return;
+    throw runtime_error("Can't print empty list!");
   }
 
   IntNode *curr = dTail->prev;

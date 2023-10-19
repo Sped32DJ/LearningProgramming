@@ -33,8 +33,6 @@ IntList::~IntList() {
   while (head) {
     pop_front();
   }
-  tail = nullptr;
-  head = nullptr;
   dTail = nullptr;
   dHead = nullptr;
 }
@@ -131,7 +129,7 @@ void IntList::printReverse() const {
 
   // Single node
   if (curr->prev == dHead) {
-    cout << curr->value;
+    cout << curr->value << endl;
     return;
   }
 

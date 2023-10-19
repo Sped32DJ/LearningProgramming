@@ -11,8 +11,8 @@ struct Node {
 
 Node *newNode(string payload) {
   Node *newPerson = new Node;
-  newPerson->payload = payload;
   newPerson->next = nullptr;
+  newPerson->payload = payload;
   return newPerson;
 }
 
@@ -45,54 +45,54 @@ Node *loadGame(int n, vector<string> names) {
 }
 
 void print(Node *start) { // prints list
+  if (start == nullptr) {
+    cout << "Empty List!" << endl;
+    return;
+  }
+
   Node *curr = start;
-  while (curr != nullptr) {
+  while (curr != start || curr != nullptr) {
+    cout << curr->payload << endl;
+    curr = curr->next;
+    if (curr == start) {
+      break;
+    }
+  }
+  /* while (curr != nullptr) {
     cout << curr->payload << endl;
     curr = curr->next;
 
     if (curr == start) {
       break; // exit circular list
     }
-  }
+  } */
 }
 
 // FIXME  Bug somewhere here
-// It just returns the first name entered
-// Segfault resolved
-// Questions to ask, who holds the last character
-// Are the iterations correct?
-// Are they skipping correctly?
 Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
   Node *curr = start;
-  /* Node *prev = curr; */
-  Node *prev = nullptr;
+  Node *prev = curr; // = curr; get inf loop
 
-  while (curr->next != curr) {        // exit condition, last person standing
-    for (int i = 0; i < k - 1; ++i) { // find kth node
-      prev = curr;                    // always trailing curr
-      curr = curr->next;              // circles k times
+  while (curr->next != curr) {    // exit condition, last person standing
+    for (int i = 0; i < k; ++i) { // find kth node
+      prev = curr;
+      curr = curr->next;
+
+      /* cout << "Iteration: " << curr->payload; */
     }
 
-    if (curr->next != curr) {
-      prev = nullptr;
-      curr = nullptr;
-      return start;
-    }
+    /* cout << "                        End of Round" << endl; */
 
-    Node *tmp = curr; // safer to use a tmp
-    curr = curr->next;
+    /* prev = prev->next->next; */
+    prev->next = curr->next;
+    delete curr;
+    curr = prev->next;
 
-    if (prev != nullptr) {
-      prev->next = curr;
-    } else {
-      start = curr; // update if first person removed
-    }
-
-    if (tmp == start) {
-      start = curr;
-    }
-    delete tmp;
+    /* cout << "Test2.5" << endl; */
+    cout << curr->payload << endl;
+    /* cout << "Test2.8" << endl; */
   }
+  /* cout << "Test3" << endl; */
 
   return curr; // last person standing (list links to it's self)
 }

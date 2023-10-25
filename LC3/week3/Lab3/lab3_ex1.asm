@@ -11,25 +11,28 @@
 
 .ORIG x3000
 
-ADD R0, R0, #0 ; Holds 1-10
-ADD R3, R3, #10 ; number of iterations
+LD R3, DATA_PTR
+LD R2, Count ;Iterator
 
-LEA R1, DATA_PTR ; Load Effective Addr
-;STR R2, R0, #0 ; # offset/addr arithmetic
-;STR R3, R0, #1
+ADD R0, R0, #0
 
 DO_WHILE_LOOP
-    STR R1, R0, #1 ; is this legal?
-    ADD R0, R0, x1 ; ++addr
+    STR R0, R3, #1 ; Writing R0 into R3 addr
+    ADD R3, R3, #1 ; Adding one
+    ADD R0, R0, #1 ; Input into Array
+    PUTS
 
-    ADD R3, R3, #-1 ; 10 iterations
+    ADD R2, R2, #-1
     BRp DO_WHILE_LOOP
 END_DO_WHILE_LOOP
 
+LD R4, DATA_PTR
+LDR R5, R4, #2
 
 HALT
 
 DATA_PTR .FILL x4000
+Count    .FILL #9
 
 .END
 

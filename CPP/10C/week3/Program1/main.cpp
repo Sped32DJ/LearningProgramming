@@ -16,7 +16,6 @@ Node *newNode(string payload) {
   return newPerson;
 }
 
-// Load/Print/Run are possibly problamatic
 Node *loadGame(int n, vector<string> names) {
   if (n == 0 || names.empty()) { // check for empty list
     return nullptr;
@@ -58,41 +57,24 @@ void print(Node *start) { // prints list
       break;
     }
   }
-  /* while (curr != nullptr) {
-    cout << curr->payload << endl;
-    curr = curr->next;
-
-    if (curr == start) {
-      break; // exit circular list
-    }
-  } */
 }
 
-// FIXME  Bug somewhere here
 Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
   Node *curr = start;
-  Node *prev = curr; // = curr; get inf loop
+  Node *prev = curr;
 
   while (curr->next != curr) {    // exit condition, last person standing
     for (int i = 0; i < k; ++i) { // find kth node
       prev = curr;
       curr = curr->next;
-
-      /* cout << "Iteration: " << curr->payload; */
     }
 
-    /* cout << "                        End of Round" << endl; */
-
-    /* prev = prev->next->next; */
     prev->next = curr->next;
     delete curr;
     curr = prev->next;
 
-    /* cout << "Test2.5" << endl; */
     cout << curr->payload << endl;
-    /* cout << "Test2.8" << endl; */
   }
-  /* cout << "Test3" << endl; */
 
   return curr; // last person standing (list links to it's self)
 }
@@ -127,10 +109,6 @@ int main() {
   } else {
     cout << "error: null game" << endl;
   }
-
-  // Funny code causes memory leaks
-  /* delete lastPerson;
-  delete startPerson; */
 
   return 0;
 }

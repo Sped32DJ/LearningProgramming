@@ -69,8 +69,9 @@ Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
       curr = curr->next;
     }
 
+    // Links prev to next and kills middle
     prev->next = curr->next;
-    delete curr;
+    delete curr; // The only time I ever kill
     curr = prev->next;
 
     cout << curr->payload << endl;
@@ -81,19 +82,19 @@ Node *runGame(Node *start, int k) { // josephus w circular list, k = num skips
 
 /* Driver program to test above functions */
 int main() {
-  int n = 1, k = 1, max; // n = num names; k = num skips (minus 1)
+  int n = 1, k = 1; // n = num names; k = num skips (minus 1)
   string name;
   vector<string> names;
 
   // get inputs
   cin >> n >> k;
-  if (cin.fail() || n <= 0 || k <= 0 || k > n) {
+  if (cin.fail() || n <= 0 || k <= 0 || k > n) { // Error checking
     throw runtime_error("Invalid input");
     return 1;
   }
 
   while (cin >> name && name != ".") {
-    if (cin.fail()) {
+    if (cin.fail()) { // More error checking
       throw runtime_error("Invalid input");
       return 1;
     }

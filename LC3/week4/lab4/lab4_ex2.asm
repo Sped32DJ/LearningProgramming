@@ -82,6 +82,7 @@ PRINT_WHILE
     LDR R0, R2, #0 ; Load R4 addr into R0
     ADD R0, R0, R5 ; Binary now now has ascii alphabet
     OUT ; output ascii
+    STR R0, R2, #0 ; Overwritting array to hold ascii
 
     ADD R2, R2, #1
     ADD R3, R3, #-1
@@ -90,7 +91,7 @@ PRINT_WHILE
 
 RET
 ARRAY_PTR_SUB_1 .FILL x4000
-ascii_offset    .FILL x61 ; 'a' = x61
+ascii_offset    .FILL x30
 
 .END ; }
 
@@ -99,4 +100,3 @@ ascii_offset    .FILL x61 ; 'a' = x61
 ARRAY_1         .BLKW   #10
 
 .END
-

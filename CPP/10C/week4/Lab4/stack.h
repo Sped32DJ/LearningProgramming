@@ -6,7 +6,6 @@ using namespace std;
 #ifndef __STACK_H__
 #define __STACK_H__
 
-// This template stack can hold string and ints
 // LIFO
 template <class T> class stack {
 private:
@@ -40,7 +39,7 @@ public:
     if (isFull()) {
       throw overflow_error("Called push on full stack.");
     }
-    data[(front + size) % MAX_SIZE] = val; // or, (front+size-1) % MAX_SIZE
+    data[(front + size) % MAX_SIZE] = val;
     ++size;
   }
 
@@ -53,33 +52,24 @@ public:
     }
     top();
     --size;
-    ++front;
   }
 
   void pop_two() {
-    for (size_t i = 0; i < 2; ++i) {
-      if (!empty()) {
-        --size;
-      }
-      if (empty()) {
-        /* throw out_of_range("Called pop_two on empty stack."); */
-        throw out_of_range("Called pop_two on a stack of size 1.");
-      }
-      if (size == MAX_SIZE) {
-        throw out_of_range("Called pop_two on a stack of size 1.");
-      }
+    // Checks range before it executes
+    if (size < 2) {
+      throw out_of_range("Called pop_two on a stack of size 1.");
     }
+    size -= 2;
   }
 
   T top() {
     if (empty()) {
       throw underflow_error("Called top on empty stack.");
     }
-    return data[size - 1];
+    return data[(front + size - 1) % MAX_SIZE]; // TODO  Is this correct?
   }
 
   bool empty() { return size == 0; }
-  // Better quality code to include this
   bool isFull() { return size == MAX_SIZE; }
 };
 

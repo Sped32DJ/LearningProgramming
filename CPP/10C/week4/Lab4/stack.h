@@ -11,28 +11,28 @@ using namespace std;
 template <class T> class stack {
 private:
   static const int MAX_SIZE = 20;
-  T data[MAX_SIZE];
+  T *data;
   int size;
   int front;
 
 public:
   // constructor
   // Make sure to get T template
-  stack() : size(0), front(0) {
-    /* int tail = (front + size - 1) % MAX_SIZE; */
-  }
+  stack() : size(0), front(0) { data = new T[MAX_SIZE]; }
+
   // Parameterized constructor
   stack(T val) : size(0), front(0) { push(val); }
 
   // copy constructor
   stack(const stack &cpy) {
-    if (cpy.empty())
-      return cpy;
+    size = cpy.size;
+    front = cpy.front;
+    std::copy(cpy.data, cpy.data + MAX_SIZE, data);
   }
 
   // Detructor
   ~stack() {
-    T delete[] data;
+    delete[] data;
     size = 0;
   }
 
@@ -46,7 +46,7 @@ public:
 
   void pop() {
     if (empty()) {
-      throw out_of_range("Can't pop empty stack");
+      throw out_of_range("Called pop on empty stack.");
     }
     if (size == MAX_SIZE) {
       throw out_of_range("Reached max size");
@@ -62,7 +62,8 @@ public:
         --size;
       }
       if (empty()) {
-        throw out_of_range("Called pop_two on empty stack.");
+        /* throw out_of_range("Called pop_two on empty stack."); */
+        throw out_of_range("Called pop_two on a stack of size 1.");
       }
       if (size == MAX_SIZE) {
         throw out_of_range("Called pop_two on a stack of size 1.");
@@ -72,9 +73,8 @@ public:
 
   T top() {
     if (empty()) {
-      throw underflow_error("Can't pop empty stack");
+      throw underflow_error("Called top on empty stack.");
     }
-    // Check if this works
     return data[size - 1];
   }
 

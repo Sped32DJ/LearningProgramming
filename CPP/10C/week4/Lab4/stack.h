@@ -11,7 +11,7 @@ template <class T> class stack {
 private:
   static const int MAX_SIZE = 20;
   T *data;
-  int size;
+  int size; // Represents accessible values
   int front;
 
 public:
@@ -39,6 +39,7 @@ public:
     if (isFull()) {
       throw overflow_error("Called push on full stack.");
     }
+    // Pushes to the front of the stack, then increments size
     data[(front + size) % MAX_SIZE] = val;
     ++size;
   }
@@ -47,11 +48,12 @@ public:
     if (empty()) {
       throw out_of_range("Called pop on empty stack.");
     }
-    if (size == MAX_SIZE) {
+    if (isFull()) {
       throw out_of_range("Reached max size");
     }
     top();
-    --size;
+    --size; // Value is still in memory, but is now trash
+            // Cheaper to "deallocate" then to overwrite
   }
 
   void pop_two() {
@@ -69,8 +71,8 @@ public:
     return data[(front + size - 1) % MAX_SIZE]; // TODO  Is this correct?
   }
 
-  bool empty() { return size == 0; }
-  bool isFull() { return size == MAX_SIZE; }
+  bool empty() const { return size == 0; }
+  bool isFull() const { return size == MAX_SIZE; }
 };
 
 #endif

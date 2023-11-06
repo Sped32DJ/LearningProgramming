@@ -10,11 +10,12 @@ using namespace std;
 template <class T> class stack {
 private:
   static const int MAX_SIZE = 20;
-  T *data;
+  T *data;  // Initialized as pointer
   int size; // Represents accessible values
 
 public:
   // constructor
+  // array allocated to the heap
   stack() : size(0) { data = new T[MAX_SIZE]; }
 
   // Parameterized constructor
@@ -26,7 +27,8 @@ public:
     std::copy(cpy.data, cpy.data + MAX_SIZE, data);
   }
 
-  // Detructor
+  // Destructor
+  // Destroys the array stored in the heap
   ~stack() {
     delete[] data;
     size = 0;
@@ -34,6 +36,7 @@ public:
 
   // Pushes to the top
   void push(T val) {
+    // Prevents overflow
     if (isFull()) {
       throw overflow_error("Called push on full stack.");
     }
@@ -42,6 +45,7 @@ public:
 
   // Pops from the top
   T pop() {
+    // Prevents underflow
     if (empty()) {
       throw out_of_range("Called pop on empty stack.");
     }
@@ -57,6 +61,7 @@ public:
   }
 
   T top() {
+    // prevents underflow
     if (empty()) {
       throw underflow_error("Called top on empty stack.");
     }

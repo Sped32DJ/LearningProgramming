@@ -12,6 +12,7 @@ Heap::~Heap() {
 }
 
 void Heap::enqueue(PrintJob *newJob) {
+  // TODO  Is valid?
   if (isFull()) {
     arr[numItems] = newJob; // inserting the newJob to array
     ++numItems;

@@ -24,7 +24,7 @@ halt
 
 ; your local data goes here
 
-top_stack_addr .fill xFE00 ; DO NOT MODIFY THIS LINE OF CODE
+top_stack_addr  .fill xFE00 ; DO NOT MODIFY THIS LINE OF CODE
 GET_STRING      .FILL x3200
 race_car        .stringz "racecar"
 routine_helper  .fill x32xx
@@ -42,11 +42,11 @@ endl            .fill x0A ; detect newline, so NOT this
 AND R5, R5, #0
 AND R2, R2, #0 ; R2 Hold NOT ENDL
 LD  R2, NULL_3200
-NOT R2, R2, #0 ; hopefully doesn't require two's complement
+ADD R2, R2, #1 ; NOT + 2's compl
 
 WHILE_3200
 ; R1 holds string, R5 is storing array
-;STR R5, R1, #0 ; Store R5 val into R1 addr
+; STR R5, R1, #0 ; Store R5 val into R1 addr
 STR R1, R5, #0 ; Store R1 val into R5 addr
 
 ADD R1, R1, #1 ; ++addr arr

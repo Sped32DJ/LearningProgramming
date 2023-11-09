@@ -14,9 +14,12 @@ ld r6, top_stack_addr ; DO NOT MODIFY, AND DON'T USE R6, OTHER THAN FOR BACKUP/R
 
 AND R5, R5, #0 ; Have this as an iterator for num of chars
 LEA R1, race_car ; R1 hold string
+; LD R1, ARRAY_ADDR
 
 LD R6, GET_STRING
 JSSR R6 ; R6 hold subroutine pointers
+
+LEA R0, SUB_IS_PALINDROME
 
 LEA R1, race_car ; reinitialize R1 addr
 
@@ -45,27 +48,42 @@ endl            .fill x0A ; detect newline, so NOT this
 ; ===================================
 
 .orig x3200
-AND R5, R5, #0
-AND R2, R2, #0 ; R2 Hold NOT ENDL
-LD  R2, NULL_3200
-NOT R2, R2, #0 ; hopefully doesn't require two's complement
+; Backup registers logic
+LDR R2, R6, #0
+ADD R6, R6, #1
+LDR R1, R6, #0
+ADD R6, R6, #1
 
-WHILE_3200
-; R1 holds string, R5 is storing array
-;STR R5, R1, #0 ; Store R5 val into R1 addr
-STR R1, R5, #0 ; Store R1 val into R5 addr
+LD R3, NEWLINE_3200
+LD R5, COUNTER
+NOT R3, R3
+ADD R3, R3, #1 ; Two's compl
 
-ADD R1, R1, #1 ; ++addr arr
-ADD R2, R2, #1 ; ++addr string
+USR_INP
+    GETC
+    OUT
 
-ADD R5, R5, #1 ; ++counter
+    ; Second message
+    ADD R2, R0, R3
+    BRz END_INPUT
+    STR R0, R1, #0
+    ADD R1, R1, #1 ; Go up addr
+    ADD R5, R5, #1 ; ++COUNTER
+    BR USR_INP
 
-ADD R0, R0, R2 ; if 0, then break
-BRnp WHILE_3200 ; while R0 is positive or negative
-; Breaks when curr char is an endl
+END_INPUT
+
+
+; Backup logic
+LDR R2, R6, #0
+ADD R6, R6, #1
+LDR R1, R6, #0
+ADD R6, R6, #1
 
 RET
 NULL_3200       .FILL x00
+NEWLINE_3200    .FILL x0A
+COUNTER         .FULL #0
 
 .end
 
@@ -79,18 +97,47 @@ NULL_3200       .FILL x00
 ; ===================================
 
 .orig x3400
+ADD R6, R6, #-1
+STR R1, R6, #0
+ADD R6, R6, #0
+ADD R6, R6, #-1
+STR R3, R6, #0
 
-; Check R1 addr with heap in reverse
-; make sure to do R5 #-1
-AND R4, R4, #0 ;Boolean return
+; R1,  top addr
+; R5, iterator
+; R2, end of addr
+
+ADD R2, R1, R5
+ADD R2, R2, #-1
+
+CHECK
+    LDR R3, R1, #0
+    LDR R4, R2, #0
+
+    NOT R3, R3, R4
+    BRnp EXIT_LOOP
+    ADD R1, R1, #1
+    ADD R2, R2, #-1
+    ADD R5, R5, #-2
+    ADD R0, R5, #-1
+    BRp CHECK
+
+AND R4, R4, #0
 ADD R4, R4, #1
-WHILE_3400
+BR FINISH
 
-BRp ; if positive
-BRnpz ;if == 0 (i think)
+EXIT_LOOP
+    AND R4, R4, #0
+
+FINISH ; Backup logic I stole
+    LDR R3, R6, #0
+    LDR R2, R6, #0
+    ADD R6, R6, #1
+    ADD R6, R6, #1
+    LDR R1, R6, #0
+    ADD R6, R6, #1
 
 RET
-
 .end
 ; .orig x3xx
 

@@ -3,22 +3,23 @@
 #include <string>
 using namespace std;
 
-#ifndef __TREE_H__
-#define __TREE_H__
-class Tree {
+#ifndef __BSTREE_H__
+#define __BSTREE_H__
+class BSTree {
 public:
-  Tree();
-  Tree(const Tree &cpy);
-  Tree(Node *insRoot);
-  ~Tree();
+  BSTree();
+  BSTree(const BSTree &cpy);
+  BSTree(Node *insRoot);
+  ~BSTree();
 
   // manipulators
   void insert(const string &);
   bool search(const string &) const;
   string largest() const;
-  string smaller() const;
+  string smallest() const;
   int height(const string &) const;
   void remove(const string &);
+  void clear();
 
   // Printing tree
   void preOrder() const;
@@ -33,9 +34,16 @@ private:
   void inOrder(Node *) const;
   void postOrder(Node *) const;
 
-  Node *min(Node *curr) const;         // helper to find min
-  Node *max(Node *curr) const;         // helper to find max
-  void remove(Node *, Node *, string); // recursive helper function
+  void clear(Node *); // clears the tree
+  Node *copyTree(Node *) const;
+  // These helpers were used for recursion
+  Node *insert(Node *, const string &);
+  void updateParentLink(Node *, Node *, Node *);  // Helper for remove()
+  int heightHelper(Node *, const string &) const; // Helper for Height()
+  Node *min(Node *curr) const;                    // helper to find min
+  Node *max(Node *curr) const;                    // helper to find max
+  void remove(Node *prev, Node *curr, string data);
+  int height(Node *, const string &) const;
   bool isEmpty() const;
 };
 

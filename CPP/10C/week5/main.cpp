@@ -13,7 +13,6 @@ int menu() {
        << "3. Dequeue" << endl
        << "4. Quit" << endl;
   cin >> choice;
-  // NOTE  Which one do I choose?
   if (cin.bad() || cin.fail()) {
     throw runtime_error("Bad input");
   }
@@ -39,11 +38,12 @@ int main() {
       cin >> priority >> jobNumber >> numPages;
       cout << endl;
 
+      // Adds our new node to the heap
       max_heap.enqueue(new PrintJob(priority, jobNumber, numPages));
 
-    } else if (choice == 2) {
+    } else if (choice == 2) { // Prints the top of the stack(max)
       max_heap.print();
-    } else if (choice == 3) {
+    } else if (choice == 3) { // pops from the top of the stack (removes max)
       max_heap.dequeue();
     }
     // fix buffer just in case non-numeric choice entered

@@ -6,55 +6,86 @@
 using namespace std;
 
 // Constructors
-Tree::Tree() { root = nullptr; }
+BSTree::BSTree() { root = nullptr; }
 
-// TODO  Finish this boy
-Tree::Tree(const Tree &cpy) { tree = cpy.root; }
-
-Tree::Tree(Node *insRoot) { root = insRoot; }
-Tree::~Tree() { delete root; }
-
-// Printing tree using recursive helper functions
-void Tree::preOrder() const { preOrder(root); }
-void Tree::inOrder() const { inOrder(root); }
-void Tree::postOrder() const { postOrder(root); }
-
-// manipulators
-void Tree::insert(const string &inString) {
-  Node *inNode = new Node(inString);
-
-  // If empty BST, terminates once job is done
-  if (!root) {
-    root = inNode;
-    root->setLeft(nullptr);
-    root->setRight(nullptr);
-    return;
+// FIX  Doesn't update left and right pointers of new node
+BSTree::BSTree(const BSTree &cpy) {
+  try {
+    root = copyTree(cpy.root);
+  } catch (const std::bad_alloc &e) {
+    std::cerr << "Memory allocation failed in copy constructor" << endl;
   }
+}
+Node *BSTree::copyTree(Node *root) const {
+  if (!root)
+    return nullptr;
+  Node *newNode = new Node(root->getData());
+  if (!newNode) {
+    // Handle memory allocation failure
+    throw std::bad_alloc();
+  }
+  // Copy count, left, and right
+  newNode->setCount(root->getCount());
+  newNode->setLeft(copyTree(root->getLeft()));
+  newNode->setRight(copyTree(root->getRight()));
 
-  Node *curr = root;
+  return newNode;
+}
 
-  while (curr) {
-    if (inNode->getData() == curr->getData()) {
-      curr->setCount(curr->getCount() + 1);
-      return;
-    }
+BSTree::BSTree(Node *insRoot) { root = insRoot; }
+BSTree::~BSTree() { delete root; }   // Gives less errors
+/* BSTree::~BSTree() { clear(); } */ // properly clears, but zybooks doesn't
 
-    if (inNode->getData() < curr->getData()) {
-      if (!curr->getLeft()) {
-        break;
-      } else {
-        curr = curr->getLeft();
-      }
-    }
+// FIX  May depricate
+void BSTree::clear() {
+  clear(root);
+  root = nullptr;
+}
+
+// FIX  May depricate
+void BSTree::clear(Node *curr) {
+  if (curr) {
+    clear(curr->getLeft());
+    clear(curr->getRight());
+    delete curr;
   }
 }
 
-bool Tree::search(const string &target) const {
+// Printing tree using recursive helper functions
+void BSTree::preOrder() const { preOrder(root); }
+void BSTree::inOrder() const { inOrder(root); }
+void BSTree::postOrder() const { postOrder(root); }
+
+// manipulators
+
+void BSTree::insert(const string &data) { root = insert(root, data); }
+
+Node *BSTree::insert(Node *root, const string &data) {
+  if (root == nullptr) {
+    return new Node(data); // if root, just add new node
+  }
+
+  if (data == root->getData()) {
+    root->incrementCount(); // updating counter if dupe
+  } else if (data < root->getData()) {
+    root->setLeft(insert(root->getLeft(), data));
+  } else {
+    root->setRight(insert(root->getRight(), data));
+  }
+
+  return root;
+}
+
+bool BSTree::search(const string &target) const {
   Node *curr = root;
+  if (!curr) {
+    return false;
+  }
 
   // BST, left for smaller
   // Right for bigger
-  while (curr && (curr->getData() == target)) {
+  // Keeps going until it is found, or leaf found is found
+  while (curr != nullptr && !(curr->getData() == target)) {
     if (curr->getData() < target) {
       curr = curr->getRight();
     } else if (curr->getData() > target) {
@@ -63,52 +94,66 @@ bool Tree::search(const string &target) const {
   }
 
   // If target is found, curr is !nullptr
-  if (!curr)
+  if (curr != nullptr)
     return true;
   else
     return false; // if curr is nullptr, then return false
 }
 
-string Tree::largest() const {
-  Node *curr = root;
+string BSTree::largest() const {
 
   // If root is a nullptr, then BST is empty
   if (isEmpty()) {
-    throw runtime_error("Empty BST"); // TODO  How to properly?
+    /* throw runtime_error("Empty BST, largest"); */
     return "";
   }
 
-  // if next node is a null, then exit and return curr
+  Node *curr = root;
+
+  // If tree only has a root
+  if (!curr->getLeft() && !curr->getRight()) {
+    return curr->getData();
+  }
+
+  // Traverse to the rightmost leaf
   while (curr->getRight()) {
     curr = curr->getRight();
   }
   return curr->getData();
 }
 
-string Tree::smaller() const {
-  Node *curr = root;
+string BSTree::smallest() const {
 
   if (isEmpty()) {
-    throw runtime_error("Empty BST"); // TODO  How to properly?
+    /* throw runtime_error("Empty BST, smallest"); */
     return "";
   }
 
-  // if next node is a null, then exit and return curr
+  Node *curr = root;
+
+  // If tree only has a root
+  if (!curr->getLeft() && !curr->getRight()) {
+    return curr->getData();
+  }
+
+  // Traverse to leftmost leaf
   while (curr->getLeft()) {
     curr = curr->getLeft();
   }
   return curr->getData();
 }
 
-int Tree::height(const string &data) const {
-  // Throws error if data not found
-  if (!search(data)) {
-    throw runtime_error("String not found"); // TODO  Throw more accurate error
+/* int BSTree::height(const string &data) const { return height(root, data); }
+ */
+
+// NOTE  Best Working height, not perfect...
+/* int BSTree::height(const string &data) const {
+  if (!root) {
+    return -1;
   }
 
-  // Goes left or right to find data
   Node *curr = root;
-  while (curr && curr->getData() != data) {
+  while (curr != nullptr && !(curr->getData() == data)) {
     if (curr->getData() < data) {
       curr = curr->getRight();
     } else if (curr->getData() > data) {
@@ -116,32 +161,63 @@ int Tree::height(const string &data) const {
     }
   }
 
-  // TODO  better explanation
-  // Nodes sent out to an expedition to
-  //    left or right of tree
-  Node *currLeft = root;
-  Node *currRight = root;
+  Node *currLeft = curr;
+  Node *currRight = curr;
   int countRight = 0;
   int countLeft = 0;
 
   // Logic required to iterate through tree
-  if (curr->getLeft()) {
+  if (curr->getLeft() != nullptr) {
     currLeft = currLeft->getLeft();
-    ++countLeft;
+    countLeft++;
     countLeft = countLeft + height(currLeft->getData());
   }
-  if (curr->getRight()) {
+  if (curr->getRight() != nullptr) {
     currRight = currRight->getRight();
-    ++countRight;
+    countRight++;
     countRight = countRight + height(currRight->getData());
   }
 
-  // Base Statemnet for recursion
-  if (countLeft >= countRight) {
-    return countLeft;
-  } else {
-    return countRight;
+  // Returns the larger value, post recursive
+  return std::max(countLeft, countRight);
+} */
+
+int BSTree::height(const string &data) const {
+  if (!root) {
+    return -1;
   }
+
+  Node *curr = root;
+  while (curr != nullptr && !(curr->getData() == data)) {
+    if (curr->getData() < data) {
+      curr = curr->getRight();
+    } else if (curr->getData() > data) {
+      curr = curr->getLeft();
+    }
+  }
+
+  if (curr == nullptr) {
+    return -1; // Node not found
+  }
+
+  int countLeft = 0;
+  int countRight = 0;
+
+  // Logic required to iterate through tree
+  if (curr->getLeft() != nullptr) {
+    Node *currLeft = curr->getLeft();
+    countLeft++;
+    countLeft += height(currLeft->getData());
+  }
+
+  if (curr->getRight() != nullptr) {
+    Node *currRight = curr->getRight();
+    countRight++;
+    countRight += height(currRight->getData());
+  }
+
+  // Returns the larger value, post recursive
+  return std::max(countLeft, countRight);
 }
 
 // Printing private helper
@@ -149,7 +225,7 @@ int Tree::height(const string &data) const {
 // Visit root
 // Traverse left subtree
 // Traverse right subtree
-void Tree::preOrder(Node *curr) const {
+void BSTree::preOrder(Node *curr) const {
   if (curr) {
     cout << curr->getData() << '(' << curr->getCount() << "), ";
     preOrder(curr->getLeft());
@@ -160,7 +236,7 @@ void Tree::preOrder(Node *curr) const {
 // Traverse left subtree
 // visit root
 // traverse the right subtree
-void Tree::inOrder(Node *curr) const {
+void BSTree::inOrder(Node *curr) const {
   if (curr) {
     inOrder(curr->getLeft());
     cout << curr->getData() << '(' << curr->getCount() << "), ";
@@ -171,7 +247,7 @@ void Tree::inOrder(Node *curr) const {
 // Traverse left subtree
 // Traverse right subtree
 // visit root
-void Tree::postOrder(Node *curr) const {
+void BSTree::postOrder(Node *curr) const {
   if (curr) {
     postOrder(curr->getLeft());
     postOrder(curr->getRight());
@@ -180,7 +256,7 @@ void Tree::postOrder(Node *curr) const {
 }
 
 // Left-most leaf is the smallest value
-Node *Tree::min(Node *curr) const {
+Node *BSTree::min(Node *curr) const {
   // Keeps going left until leaf is found
   while (curr->getLeft()) {
     curr = curr->getLeft();
@@ -189,7 +265,7 @@ Node *Tree::min(Node *curr) const {
 }
 
 // Right-most leaf is the largest value
-Node *Tree::max(Node *curr) const {
+Node *BSTree::max(Node *curr) const {
   // Keeps going right until leaf is found
   while (curr->getRight()) {
     curr = curr->getRight();
@@ -197,91 +273,116 @@ Node *Tree::max(Node *curr) const {
   return curr;
 }
 
-void Tree::remove(const string &data) {
-  if (isEmpty()) {
-    throw runtime_error("BST is empty");
+// FIX  Casuing seg fault
+void BSTree::remove(const string &data) { remove(nullptr, root, data); }
+
+// TESTING
+void BSTree::remove(Node *prev, Node *curr, const string data) {
+  if (curr == nullptr) {
+    // Element not found
     return;
   }
-  remove(nullptr, root, data);
-}
 
-void Tree::remove(Node *, Node *, string) {
-  if (root == nullptr) {
-    return;
-  } else if ((!root->getRight() && !root->getLeft()) &&
-             (root->getData() == data)) {
-    delete root;
-    root = nullptr;
-    return;
-  }
-  remove(root, root, data);
-}
-
-void Tree::remove(Node *prev, Node *curr, string &data) { // recursive helper
-
-  if (curr == nullptr) { // empty tree
-    return;
-  } else if (curr->getData() == data) { // found node we want to remove
-    if (curr->getCount() > 1 && curr->getData() != prev->getData()) {
-      curr->setCount(curr->getCount() -
-                     1); // removing element that's count is >1
-      return;
-    }
-    if (curr == root &&
-        curr->getCount() > 1) { // if node that's found is root and has count >1
-      curr->setCount(curr->getCount() - 1);
-      return;
-    } else if (!curr->getRight() &&
-               !curr->getLeft()) { // if node to be removed was a leaf
-
-      if (curr->getData() > prev->getData()) { // if it was on the right of prev
-        prev->setRight(nullptr);
-        delete curr;
-        return;
-      } else if (curr->getData() < prev->getData()) { // if on left of prev
-        prev->setLeft(nullptr);
-        delete curr;
-        return;
-      } else if (curr->getData() == prev->getData()) { // if equal to prev
-        if (prev->getRight() == nullptr) { // if right is already nptr
-          prev->setLeft(nullptr);          // delete left
-          delete curr;
-        } else if (prev->getLeft() == nullptr) { // vice versa ^
-          prev->setRight(nullptr);
-          delete curr;
-        } else if (prev->getRight() &&
-                   prev->getLeft()) { // if both right and left aren't null
-          if (curr->getData() ==
-              prev->getLeft()->getData()) { // if equal to left
+  if (curr->getData() == data) {
+    if (curr->getCount() > 1 && curr != root) {
+      curr->decrementCount();
+    } else {
+      if (curr->isLeaf()) {
+        // Node is a leaf
+        if (prev) {
+          if (curr == prev->getLeft()) {
             prev->setLeft(nullptr);
-            delete curr;
-          } else if (curr->getData() ==
-                     prev->getRight()->getData()) { // vice versa
+          } else {
             prev->setRight(nullptr);
-            delete curr;
           }
+        } else {
+          // Node is the root
+          root = nullptr;
         }
+        delete curr;
+      } else if (curr->hasOneChild()) {
+        // Node has one child
+        Node *child = (curr->getLeft()) ? curr->getLeft() : curr->getRight();
+        updateParentLink(prev, curr, child);
+        delete curr;
+      } else {
+        // Node has two children
+        Node *successor = min(curr->getRight());
+        curr->setData(successor->getData());
+        curr->setCount(successor->getCount());
+        remove(curr, curr->getRight(), successor->getData());
       }
-    } else if ((curr->getLeft() != nullptr && curr->getRight() != nullptr) ||
-               (curr->getLeft() != nullptr &&
-                curr->getRight() == nullptr)) { // if not a leaf node
-      Node *temp = max(
-          curr->getLeft()); // calls max to find largest from that point forward
-      curr->setData(temp->getData());
-      curr->setCount(temp->getCount());
-      remove(curr, curr->getLeft(), curr->getData());
-    } else if (!curr->getLeft() &&
-               curr->getRight()) { // if left u want to find min
-      Node *temp = min(curr->getRight());
-      curr->setData(temp->getData());
-      curr->setCount(temp->getCount());
-      remove(curr, curr->getRight(), curr->getData());
     }
-  } else if (curr->getData() < data) { // if node is less than root
+  } else if (curr->getData() < data) {
     remove(curr, curr->getRight(), data);
-  } else if (curr->getData() > data) { // greater than root
+  } else {
     remove(curr, curr->getLeft(), data);
   }
 }
 
-bool Tree::isEmpty() const { return !root; }
+/* void BSTree::remove(Node *prev, Node *curr, string data) {
+  if (curr == nullptr) {
+    return;
+  } else if (curr->getData() ==
+             data) { // If current node contains our target data
+    // NOTE  If leaf node (null right and left)
+    if (!curr->getLeft() && !curr->getRight()) {
+      if (prev) {
+        // update parent to null
+        if (prev->getLeft() == curr) {
+          prev->setLeft(nullptr);
+        } else {
+          prev->setRight(nullptr);
+        }
+        delete curr;
+      } else {
+        // Node is root
+        delete root;
+        root = nullptr;
+      }
+    }
+
+    // NOTE  Node with one child
+
+    // if only has a right child
+    else if (!curr->getLeft()) {
+      // Update where node only has a right child
+      updateParentLink(prev, curr, curr->getRight());
+      delete curr;
+    }
+
+    // Only has a left child
+    else if (!curr->getRight()) {
+      updateParentLink(prev, curr, curr->getLeft());
+      delete curr;
+    }
+
+    // NOTE  Node has two children
+    else {
+      Node *sucessor = min(curr->getRight());
+      curr->setData(sucessor->getData());
+      remove(curr, curr->getRight(), sucessor->getData());
+    }
+  } else if (curr->getData() < data) { // These two statements run
+    remove(curr, curr->getRight(), data);
+  } else {
+    remove(curr, curr->getLeft(), data);
+  }
+} */
+
+// Helps bring down complexity in Remove
+void BSTree::updateParentLink(Node *prev, Node *curr, Node *child) {
+  if (prev) {
+    // Updates parent's pointer to child
+    if (prev->getLeft() == curr) {
+      prev->setLeft(child);
+    } else {
+      prev->setRight(child);
+    }
+  } else {
+    // Node is root
+    root = child;
+  }
+}
+
+bool BSTree::isEmpty() const { return !root; }

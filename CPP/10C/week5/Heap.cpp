@@ -3,16 +3,19 @@
 
 Heap::Heap() : numItems(0) {}
 
-Heap::Heap(const Heap &cpy) {}
+Heap::Heap(const Heap &cpy) : numItems(cpy.numItems) {
+  for (int i = 0; i < numItems; ++i) {
+    arr[i] = new PrintJob(*cpy.arr[i]);
+  }
+}
 
 Heap::~Heap() {
   for (int i = 0; i < numItems; ++i) {
     delete arr[i]; // Deletes very PrintJob pointers
-  };
+  }
 }
 
 void Heap::enqueue(PrintJob *newJob) {
-  // TODO  Is valid?
   if (isFull()) {
     arr[numItems] = newJob; // inserting the newJob to array
     ++numItems;
@@ -27,7 +30,7 @@ void Heap::enqueue(PrintJob *newJob) {
   }
 }
 
-// Returns node with highest priority
+// Returns node with highest priority (top of the heap)
 PrintJob *Heap::highest() {
   if (numItems > 0) {
     return arr[0]; // highest priorty is stored at the root in max-heap
@@ -56,7 +59,6 @@ void Heap::print() {
   cout << "Number of Pages: " << arr[0]->getPages() << endl;
 }
 
-// TODO  rewrite to make better
 void Heap::trickleDown(int index) {
   int leftIndex = 2 * index + 1;
   int rightIndex = 2 * index + 2;
@@ -83,5 +85,6 @@ void Heap::trickleDown(int index) {
   }
 }
 
+// Useful to see if full or empty
 bool Heap::isFull() const { return numItems < MAX_HEAP_SIZE; }
 bool Heap::isEmpty() const { return numItems > 0; }

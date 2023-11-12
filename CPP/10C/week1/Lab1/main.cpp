@@ -19,7 +19,6 @@ int main() {
   Playlist Songs(playlistTitle);
 
   cin >> option;
-  // TODO  For all inputs
   if (cin.fail()) {
     throw runtime_error("option input failed");
   }

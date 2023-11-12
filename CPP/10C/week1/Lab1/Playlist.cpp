@@ -14,11 +14,44 @@ Playlist::Playlist(string playlistTitle)
       playlistTitle(playlistTitle), nextNodePtr(nullptr), head(nullptr),
       tail(nullptr) {}
 
-// Write a copy constructor
-// TODO  Use delete in the code, somewhere
-Playlist::Playlist(const Playlist &title) {}
+// copy constructor
+Playlist::Playlist(const Playlist &cpy) : head(nullptr), tail(nullptr) {
+  PlaylistNode *cpyNode = cpy.head;
 
-Playlist::~Playlist() {}
+  while (cpyNode) {
+    PlaylistNode *newNode = new PlaylistNode(*cpyNode);
+
+    if (!head) {
+      head = newNode;
+      tail = newNode;
+    } else {
+      tail->SetNext(newNode);
+      tail = newNode;
+    }
+
+    cpyNode = cpyNode->GetNext();
+  }
+}
+
+PlaylistNode::PlaylistNode(const PlaylistNode &cpy)
+    : uniqueID(cpy.GetID()), songName(cpy.GetSongName()),
+      artistName(cpy.GetArtistName()), songLength(cpy.GetSongLength()),
+      nextNodePtr(nullptr) {}
+
+PlaylistNode::~PlaylistNode() {}
+
+Playlist::~Playlist() {
+  PlaylistNode *curr = head;
+  PlaylistNode *nextNode;
+
+  while (curr) {
+    nextNode = curr->GetNext();
+    delete curr;
+    curr = nextNode;
+  }
+  head = nullptr;
+  tail = nullptr;
+}
 
 // Accessor Functions
 string Playlist::GetID() const { return uniqueID; }
@@ -37,7 +70,43 @@ void PlaylistNode::PrintPlaylistNode() const {
        << "Song Length (in seconds): " << GetSongLength() << endl;
 }
 
-void Playlist::PrintPlaylistNode() {
+PlaylistNode &PlaylistNode::operator=(const PlaylistNode &cpy) {
+  if (this != &cpy) {
+    // Clear the current linked list
+    PlaylistNode *curr = nextNodePtr;
+    PlaylistNode *nextNode;
+    while (curr) {
+      nextNode = curr->GetNext();
+      delete curr;
+      curr = nextNode;
+    }
+
+    // Copy the linked list from cpy
+    PlaylistNode *cpycurr = cpy.GetNext();
+    PlaylistNode *currHead = nullptr;
+    PlaylistNode *currTail = nullptr;
+
+    // While copy still has nodes
+    // it will keep copying
+    while (cpycurr) {
+      PlaylistNode *newNode = new PlaylistNode(*cpycurr);
+      if (!currHead) {
+        currHead = newNode;
+        currTail = newNode;
+      } else { // Once it reaches the tail, it sets a tail
+        currTail->SetNext(newNode);
+        currTail = newNode;
+      }
+      cpycurr = cpycurr->GetNext();
+    }
+
+    // Update the nextNodePtr for the current object
+    nextNodePtr = currHead;
+  }
+  return *this;
+}
+
+void Playlist::PrintPlaylistNode() const {
   cout << playlistTitle << " - OUTPUT FULL PLAYLIST" << endl;
 
   if (isEmpty()) {
@@ -77,7 +146,7 @@ void Playlist::PrintArtistSongs(string name) {
   // Reinitialize
   curr = head;
 
-  while (curr) {
+  while (curr) { // prings one song at a time
     if (curr->GetArtistName() == name) {
       cout << pos << '.' << endl;
       curr->PrintPlaylistNode();
@@ -91,7 +160,7 @@ void Playlist::PrintArtistSongs(string name) {
   }
 }
 
-bool Playlist::isEmpty() { return !head; }
+bool Playlist::isEmpty() const { return !head; }
 
 // Functions that modify linked list
 void PlaylistNode::InsertAfter(PlaylistNode *song) {
@@ -174,26 +243,29 @@ void Playlist::ChangePosition(int currPos, int newPos) {
   }
 }
 
-void Playlist::RemoveSong(string songID) {
+void Playlist::RemoveSong(string &targetID) {
   PlaylistNode *curr = head;
   PlaylistNode *prev = nullptr;
   string removedSong;
 
   while (curr) {
-    if (curr->GetID() == songID) {
+    if (curr->GetID() == targetID) { // Once targetID is found
       if (prev) {
-        prev->SetNext(curr->GetNext());
+        prev->SetNext(curr->GetNext()); // Links prev with curr->next
 
       } else {
-        head = curr->GetNext();
+        head = curr->GetNext(); // If curr was head
       }
       removedSong = curr->GetSongName();
-      delete curr;
+      delete curr; // deletes curr (turns into null, while ends)
     }
 
+    // Makes sure prev is follow curr
     prev = curr;
     curr = curr->GetNext();
   }
+
+  // Prints out song just removed
   cout << '"' << removedSong << '"' << " removed." << endl;
 }
 
@@ -201,19 +273,31 @@ void Playlist::SetNext() {
   string uniqueID, songName, artistName;
   int songLength;
 
-  cin.ignore();
+  cin.ignore(); // fixes cin error
 
   cout << "Enter song's unique ID:" << endl;
   getline(cin, uniqueID);
+  if (cin.bad()) {
+    throw runtime_error("Bad input");
+  }
 
   cout << "Enter song's name:" << endl;
   getline(cin, songName);
+  if (cin.bad()) {
+    throw runtime_error("Bad input");
+  }
 
   cout << "Enter artist's name:" << endl;
   getline(cin, artistName);
+  if (cin.bad()) {
+    throw runtime_error("Bad input");
+  }
 
   cout << "Enter song's length (in seconds):" << endl;
   cin >> songLength;
+  if (cin.bad()) {
+    throw runtime_error("Bad input");
+  }
 
   PlaylistNode *newSong =
       new PlaylistNode(uniqueID, songName, artistName, songLength);
@@ -234,27 +318,31 @@ void Playlist::InsertSong(int pos, PlaylistNode *song) {
   int songPos = 1;
   int songCap = 1;
 
+  // Keeps iterating until tail
   while (curr) {
     curr = curr->GetNext();
-    ++songCap;
+    ++songCap; // Checks how many songs are in the list
   }
   curr = head;
 
   if (pos == 1) {
     song->SetNext(head);
     head = song;
-    if (!tail) {
+    if (!tail) { // If there is no tail, newnode is tail
       tail = song;
     }
-  } else if (pos >= songCap) {
-    tail->SetNext(song);
+  } else if (pos >= songCap) { // If pos is greater than amount of songs
+    tail->SetNext(song);       // Just gets put into the tail
     tail = song;
   } else {
-    while (songPos < pos) {
+    while (songPos < pos) { // If pos is within the limits of playlist
+
+      // song getting inserted
       prev = curr;
       curr = curr->GetNext();
       ++songPos;
     }
+    // linking
     prev->SetNext(song);
     song->SetNext(curr);
   }

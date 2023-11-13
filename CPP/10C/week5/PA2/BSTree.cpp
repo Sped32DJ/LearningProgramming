@@ -8,14 +8,18 @@ using namespace std;
 // Constructors
 BSTree::BSTree() { root = nullptr; }
 
-// FIX  Doesn't update left and right pointers of new node
 BSTree::BSTree(const BSTree &cpy) {
   try {
     root = copyTree(cpy.root);
   } catch (const std::bad_alloc &e) {
     std::cerr << "Memory allocation failed in copy constructor" << endl;
+    throw; // Rethrow the exception to indicate the failure
   }
 }
+
+// FIX  I seriously give up with this, this error is messing with everything
+/* Exited with return code -6 (SIGABRT).
+terminate called after throwing an instance of 'std::bad_alloc' */
 Node *BSTree::copyTree(Node *root) const {
   if (!root)
     return nullptr;
@@ -33,16 +37,16 @@ Node *BSTree::copyTree(Node *root) const {
 }
 
 BSTree::BSTree(Node *insRoot) { root = insRoot; }
-BSTree::~BSTree() { delete root; }   // Gives less errors
-/* BSTree::~BSTree() { clear(); } */ // properly clears, but zybooks doesn't
+BSTree::~BSTree() { delete root; } // Gives less errors
+/* BSTree::~BSTree() { clear(); } // properly clears */
 
-// FIX  May depricate
+// FIX  May depricate (not being used)
 void BSTree::clear() {
   clear(root);
   root = nullptr;
 }
 
-// FIX  May depricate
+// FIX  May depricate (not being used)
 void BSTree::clear(Node *curr) {
   if (curr) {
     clear(curr->getLeft());
@@ -55,8 +59,6 @@ void BSTree::clear(Node *curr) {
 void BSTree::preOrder() const { preOrder(root); }
 void BSTree::inOrder() const { inOrder(root); }
 void BSTree::postOrder() const { postOrder(root); }
-
-// manipulators
 
 void BSTree::insert(const string &data) { root = insert(root, data); }
 
@@ -101,7 +103,6 @@ bool BSTree::search(const string &target) const {
 }
 
 string BSTree::largest() const {
-
   // If root is a nullptr, then BST is empty
   if (isEmpty()) {
     /* throw runtime_error("Empty BST, largest"); */
@@ -123,7 +124,6 @@ string BSTree::largest() const {
 }
 
 string BSTree::smallest() const {
-
   if (isEmpty()) {
     /* throw runtime_error("Empty BST, smallest"); */
     return "";
@@ -142,45 +142,6 @@ string BSTree::smallest() const {
   }
   return curr->getData();
 }
-
-/* int BSTree::height(const string &data) const { return height(root, data); }
- */
-
-// NOTE  Best Working height, not perfect...
-/* int BSTree::height(const string &data) const {
-  if (!root) {
-    return -1;
-  }
-
-  Node *curr = root;
-  while (curr != nullptr && !(curr->getData() == data)) {
-    if (curr->getData() < data) {
-      curr = curr->getRight();
-    } else if (curr->getData() > data) {
-      curr = curr->getLeft();
-    }
-  }
-
-  Node *currLeft = curr;
-  Node *currRight = curr;
-  int countRight = 0;
-  int countLeft = 0;
-
-  // Logic required to iterate through tree
-  if (curr->getLeft() != nullptr) {
-    currLeft = currLeft->getLeft();
-    countLeft++;
-    countLeft = countLeft + height(currLeft->getData());
-  }
-  if (curr->getRight() != nullptr) {
-    currRight = currRight->getRight();
-    countRight++;
-    countRight = countRight + height(currRight->getData());
-  }
-
-  // Returns the larger value, post recursive
-  return std::max(countLeft, countRight);
-} */
 
 int BSTree::height(const string &data) const {
   if (!root) {

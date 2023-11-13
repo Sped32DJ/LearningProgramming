@@ -49,7 +49,7 @@ FirstChar:
 ; is it = '+'? if so, ignore it, go get digits
     LD R1, plus_sign
     ADD R1, R1, R0
-    BRz CheckChar
+    BRz GOTOEND
 
 ; is it = '-'? if so, set neg flag, go get digits
     LD R1, minus_sign
@@ -67,18 +67,6 @@ CheckChar:
     OUT
 
 NextNums:
-; Check if not a char
-; is it = '+'? if so, ignore it, go get digits
-    LD R1, plus_sign
-    ADD R1, R1, R0
-    BRz CheckChar
-
-; is it = '-'? if so, set neg flag, go get digits
-    LD R1, minus_sign
-    ADD R1, R1, R0
-    Brz SetNegBool
-;================
-
 ; CHECK IF ENDL WAS ENTERED, THEN QUIT
     LD R1, CheckENDL
     ADD R1, R1, R0
@@ -115,12 +103,14 @@ NextNums:
     BRp CheckChar
 
 ; This is a limbo state that is never hit
+    ;TODO  IF negative, Make R4 Negative
+    ;OUTPUT NEWLINE
+    ; This should be like 2 lines
 IF_NEGATIVE: ; R6 stores neg, should be negative
     NOT R4, R4
     ADD R4, R4, #1
 
-    ADD R6, R6, #-1 ; prevent inf loop
-    BRp IF_NEGATIVE
+    AND R6, R6, x0 ; prevent inf loop
     BR  GOTOEND
 
 
@@ -136,7 +126,7 @@ GOTOEND:
     BRp IF_NEGATIVE ; If bool positive, then it sets R4 negative
 
     LD R0, ENDL
-    OUT
+    PUTS
 
 HALT
 

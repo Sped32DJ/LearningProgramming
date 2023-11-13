@@ -38,7 +38,7 @@ InitializeFlags:
     AND R6, R6, x0
 
 ; Get first character, test for '\n', '+', '-', digit/non-digit
-FirstChar:
+SignCheck:
     GETC
     OUT
 ; is very first character = '\n'? if so, just quit (no message)!
@@ -150,12 +150,12 @@ errorMessagePtr .FILL xB200
 COUNTER         .FILL #6
 ; Grabs two's complement by doing negative
 ; Because the only data type in LC-3 is signed 16 bit
-CheckENDL       .FILL #-10
+CheckENDL       .FILL x-0A
 ENDL            .FILL x0A
 plus_sign       .FILL x-2B
 minus_sign      .FILL x-2D
-zero            .FILL #-48 ;ascii
-nine            .FILL #-57 ;ascii
+zero            .FILL x-30 ;ascii
+nine            .FILL x-39 ;ascii
 ten             .FILL #10
 
 

@@ -75,5 +75,9 @@ private:
   /* Helper function for generating the dotty file. This is a recursive
    * function. */
   void visualizeTree(ofstream &, TreeNode *);
+
+  // buildTree helpers
+  bool isOperand(char);
+  bool isOperator(char);
 };
 #endif

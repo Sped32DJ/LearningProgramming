@@ -1,5 +1,8 @@
+#include "arithmeticExpression.h"
 #include <fstream>
 #include <iostream>
+#include <stack>
+#include <string>
 
 using namespace std;
 
@@ -17,6 +20,8 @@ int arithmeticExpression::priority(char op) {
 
 string arithmeticExpression::infix_to_postfix() {
   stack<char> s;
+  // arithmeticExpression.cpp:23:17: error: aggregate ‘std::ostringstream oss’
+  // has incomplete type and cannot be defined
   ostringstream oss;
   char c;
   for (unsigned i = 0; i < infixExpression.size(); ++i) {
@@ -135,15 +140,18 @@ bool arithmeticExpression::isOperator(char ch) {
 // Recursive expressions
 // inorder, preorder, postorder logic
 void arithmeticExpression::infix() {
-  infix(TreeNode * curr);
+  TreeNode *curr = root; // TODO  Should this be intialized to something?
+  infix(curr);
   cout << endl;
 }
 void arithmeticExpression::prefix() {
-  prefix(TreeNode * curr);
+  TreeNode *curr = root;
+  prefix(curr);
   cout << endl;
 }
 void arithmeticExpression::postfix() {
-  postfix(TreeNode * curr);
+  TreeNode *curr = root;
+  postfix(curr);
   cout << endl;
 }
 
@@ -174,7 +182,7 @@ void arithmeticExpression::visualizeTree(ofstream &file, TreeNode *cpy) {
 void arithmeticExpression::infix(TreeNode *curr) {
   if (curr) {
     infix(curr->left);
-    cout << curr->data() << " ";
+    cout << curr->data << " ";
     infix(curr->right);
   }
 }

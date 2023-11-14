@@ -76,6 +76,9 @@ private:
    * function. */
   void visualizeTree(ofstream &, TreeNode *);
 
+  // buildTree root helper
+  TreeNode *buildTreeFromPostFix(const string &);
+
   // buildTree helpers
   bool isOperand(char);
   bool isOperator(char);

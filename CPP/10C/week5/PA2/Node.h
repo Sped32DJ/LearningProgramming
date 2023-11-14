@@ -31,9 +31,13 @@ public:
   Node *getLeft() const;
   Node *getRight() const;
   int getCount() const;
+
   // helpers
   bool isLeaf() const;
   bool hasOneChild() const;
+  bool onlyLeft() const;
+  bool onlyRight() const;
+  bool isParent() const;
 };
 
 #endif

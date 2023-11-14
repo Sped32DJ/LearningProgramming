@@ -36,13 +36,15 @@ private:
 
   void clear(Node *); // clears the tree
   Node *copyTree(Node *) const;
+
   // These helpers were used for recursion
-  Node *insert(Node *, const string &);
+  Node *fix(Node *, const string &);              // Helper for remove
+  Node *insert(Node *, const string &);           // Helper for insert
   void updateParentLink(Node *, Node *, Node *);  // Helper for remove()
   int heightHelper(Node *, const string &) const; // Helper for Height()
   Node *min(Node *curr) const;                    // helper to find min
   Node *max(Node *curr) const;                    // helper to find max
-  void remove(Node *prev, Node *curr, string data);
+  /* void remove(Node *prev, Node *curr, string data); */
   int height(Node *, const string &) const;
   bool isEmpty() const;
 };

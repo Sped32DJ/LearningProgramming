@@ -235,10 +235,12 @@ Node *BSTree::max(Node *curr) const {
 }
 
 // FIX  Casuing seg fault
-void BSTree::remove(const string &data) { remove(nullptr, root, data); }
-
+/* void BSTree::remove(const string &data) { remove(nullptr, root, data); }
+ */
 // TESTING
-void BSTree::remove(Node *prev, Node *curr, const string data) {
+// This is not really doing anything
+// NOTE  Depricate
+/* void BSTree::remove(Node *prev, Node *curr, const string data) {
   if (curr == nullptr) {
     // Element not found
     return;
@@ -280,6 +282,51 @@ void BSTree::remove(Node *prev, Node *curr, const string data) {
     remove(curr, curr->getLeft(), data);
   }
 }
+
+// Code written in class lol
+// Friday
+void BSTree::remove(const string &key) { root = fix(root, key); }
+
+Node *BSTree::fix(Node *curr, const string &key) {
+  int tempCount;
+  // basecase
+  if (curr == nullptr) // same as (!curr) right?
+    return nullptr;
+  if (key < curr->getData()) {
+    curr->setLeft(fix(curr->getLeft(), key));
+  } else if (key > curr->getData()) {
+    // recursion does the verbose checking for you
+    curr->setRight(fix(curr->getRight(), key));
+    return curr;
+  }
+  tempCount = curr->getCount() - 1;
+  curr->setCount(tempCount);
+  if (curr->getCount() > 0)
+    return curr;
+  if (curr->isLeaf()) {
+    delete curr;
+    return nullptr;
+  } else if (curr->onlyLeft()) {
+    Node *left = curr->getLeft();
+    delete curr;
+    return left; // returns the backup
+  } else if (curr->onlyRight()) {
+    Node *right = curr->getRight();
+    delete curr;
+    return right; // returns the backup
+  } else if (curr->isParent()) {
+    Node *victim = curr->getLeft();
+    while (victim->getRight() != nullptr) // Not sure if needs {}
+      victim = victim->getRight();
+    curr->setData(victim->getData());
+    curr->setCount(victim->getCount());
+    tempCount = 1;
+    victim->setCount(tempCount);
+    curr->setLeft(fix(curr->getLeft(), victim->getData()));
+    return curr;
+  }
+  return nullptr; // NOTE Added here to compile
+} */
 
 /* void BSTree::remove(Node *prev, Node *curr, string data) {
   if (curr == nullptr) {
@@ -347,3 +394,33 @@ void BSTree::updateParentLink(Node *prev, Node *curr, Node *child) {
 }
 
 bool BSTree::isEmpty() const { return !root; }
+
+// Inclass again
+// Tuesday
+void remove(const string &key) { root = fix(root, key); }
+Node *fix(Node *curr, const string &key) {
+  if (curr == nullptr)
+    return nullptr;
+  if (key < curr->getData()) {
+    curr->setLeft(fix(curr->getLeft(), key));
+    return curr;
+  }
+  if (key > curr->getData()) {
+    curr->decrementCount();
+  } else if (key > curr->getData()) {
+    curr->decrementCount();
+    if (curr->getCount() > 0)
+      return curr;
+    if (curr->isLeaf()) {
+      delete curr;
+      return nullptr;
+    } else if (curr->onlyLeft()) {
+      victim = curr->getLeft();
+      while (victim->getRight() == nullptr)
+        victim = victim->getRight();
+      curr->setData(victim->getData());
+      curr->setCount(victim->getCount());
+      victim
+    }
+  }
+}

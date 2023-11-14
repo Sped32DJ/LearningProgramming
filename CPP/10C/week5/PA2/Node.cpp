@@ -25,3 +25,8 @@ Node *Node::getRight() const { return right; }
 int Node::getCount() const { return count; }
 bool Node::isLeaf() const { return !left && !right; }
 bool Node::hasOneChild() const { return (!left && right) || (left && !right); }
+
+// Declare these
+bool Node::onlyLeft() const { return left && !right; }
+bool Node::onlyRight() const { return !left && right; }
+bool Node::isParent() const { return left && right; }

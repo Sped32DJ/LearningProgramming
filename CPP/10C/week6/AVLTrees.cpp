@@ -25,7 +25,7 @@ Node *fix(curr, key) {
   if (curr == nullptr) // same as (!curr) right?
     return nullptr;
   if (key < curr->key) {
-    curr->left = fix(curr->left, key)
+    curr->left = fix(curr->left, key);
   } else if (key > curr->key) {
     // recursion does the verbose checking for you
     curr->right = fix(curr->right, key);
@@ -56,3 +56,14 @@ Node *fix(curr, key) {
     return curr;
   }
 }
+
+// What is a heap
+// BST
+// redblack tree
+// Implications, where is biggest node
+// smallest node
+// Properties
+// Max height
+// What is a red and what is a black node
+// Root node must be red
+// Red nodes are spacers

@@ -1,6 +1,7 @@
 #include "arithmeticExpression.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stack>
 #include <string>
 
@@ -20,21 +21,19 @@ int arithmeticExpression::priority(char op) {
 
 string arithmeticExpression::infix_to_postfix() {
   stack<char> s;
-  // arithmeticExpression.cpp:23:17: error: aggregate ‘std::ostringstream oss’
-  // has incomplete type and cannot be defined
   ostringstream oss;
   char c;
-  for (unsigned i = 0; i < infixExpression.size(); ++i) {
+  for (size_t i = 0; i < infixExpression.size(); ++i) {
     c = infixExpression.at(i);
     if (c == ' ') {
       continue;
     }
-    if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' ||
-        c == ')') { // c is an operator
-      if (c == '(') {
+
+    if (isOperator(c)) { // c is an operator
+      if (c == '(') {    // Pushes everything within parenthesis within a stack
         s.push(c);
       } else if (c == ')') {
-        while (s.top() != '(') {
+        while (s.top() != '(') { // Loaded into buffer as it gets poped
           oss << s.top();
           s.pop();
         }
@@ -93,36 +92,46 @@ void arithmeticExpression::deleteTree(TreeNode *node) {
 }
 
 // NOTE HERE
+// Converts infix expression to postfix tree
 void arithmeticExpression::buildTree() {
+  // Convert infix to postfix
   string postfixExpr = infix_to_postfix();
+
+  // Build tree from postfix
   root = buildTreeFromPostFix(postfixExpr);
 }
 
 TreeNode *
 arithmeticExpression::buildTreeFromPostFix(const string &postfixExpr) {
+  // A TreeNode stack
   stack<TreeNode *> nodeStack;
   int nodeKey = 0;
 
-  for (char ch : postfixExpr) {
-    if (isOperand(ch)) {
-      TreeNode *newNode = new TreeNode('a' + nodeKey, ch);
+  for (size_t i = 0; i < postfixExpr.size(); ++i) {
+    char ch = postfixExpr[i]; // Iterates through each char
+
+    if (isOperand(ch)) { // gets pushed into stack if operand
+      TreeNode *newNode = new TreeNode(ch, nodeKey);
       nodeStack.push(newNode);
-      nodeKey++;
-    } else if (isOperator(ch)) {
+      ++nodeKey;
+    } else if (isOperator(ch)) { // If operator, stores operand and pops it
       TreeNode *operand2 = nodeStack.top();
       nodeStack.pop();
       TreeNode *operand1 = nodeStack.top();
       nodeStack.pop();
 
-      TreeNode *newOperator = new TreeNode('a' + nodeKey, ch);
+      TreeNode *newOperator = new TreeNode(ch, nodeKey);
+      // Set expression's right and left to their node
       newOperator->left = operand1;
       newOperator->right = operand2;
 
+      // Pushes new operator into stack
       nodeStack.push(newOperator);
       ++nodeKey;
     }
   }
 
+  // Recursively loops top until it is empty
   if (!nodeStack.empty()) {
     return nodeStack.top();
   }
@@ -130,11 +139,6 @@ arithmeticExpression::buildTreeFromPostFix(const string &postfixExpr) {
   return nullptr;
 }
 
-bool arithmeticExpression::isOperand(char ch) { return isalpha(ch); }
-
-bool arithmeticExpression::isOperator(char ch) {
-  return ch == '+' || ch == '-' || ch == '*' || ch == '/';
-}
 // NOTE  TO HERE, wtf
 
 // Recursive expressions
@@ -142,17 +146,14 @@ bool arithmeticExpression::isOperator(char ch) {
 void arithmeticExpression::infix() {
   TreeNode *curr = root; // TODO  Should this be intialized to something?
   infix(curr);
-  cout << endl;
 }
 void arithmeticExpression::prefix() {
   TreeNode *curr = root;
   prefix(curr);
-  cout << endl;
 }
 void arithmeticExpression::postfix() {
   TreeNode *curr = root;
   postfix(curr);
-  cout << endl;
 }
 
 void arithmeticExpression::visualizeTree(ofstream &file, TreeNode *cpy) {
@@ -181,23 +182,42 @@ void arithmeticExpression::visualizeTree(ofstream &file, TreeNode *cpy) {
 // Inorer, preorder, postorder logic
 void arithmeticExpression::infix(TreeNode *curr) {
   if (curr) {
+    // infix is the only one that requires parenthesis
+    if (curr->left) {
+      cout << '(';
+    }
     infix(curr->left);
-    cout << curr->data << " ";
+    cout << curr->data;
     infix(curr->right);
+    // Makes sure everything inside the expression
+    // is closed in parenthesis
+    if (curr->right) {
+      cout << ')';
+    }
   }
 }
 
+// Preorder logic
 void arithmeticExpression::prefix(TreeNode *curr) {
   if (curr) {
-    cout << curr->data << " ";
+    cout << curr->data;
     prefix(curr->left);
     prefix(curr->right);
   }
 }
+
+// postorder logic
 void arithmeticExpression::postfix(TreeNode *curr) {
   if (curr) {
     postfix(curr->left);
     postfix(curr->right);
-    cout << curr->data << " ";
+    cout << curr->data;
   }
+}
+
+// Helps clean up the code / increase readability
+bool arithmeticExpression::isOperand(char ch) { return isalpha(ch); }
+bool arithmeticExpression::isOperator(char ch) {
+  return ch == '+' || ch == '-' || ch == '*' || ch == '/' || (ch == '(') ||
+         (ch == ')');
 }

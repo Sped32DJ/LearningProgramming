@@ -39,7 +39,10 @@ string arithmeticExpression::infix_to_postfix() {
         }
         s.pop();
       } else {
-        while (!s.empty() && priority(c) <= priority(s.top())) {
+        while (!s.empty() && priority(c) <= priority(s.top())) { // If the
+          //          priority of the operator is less than or equal to the
+          //          priority of the
+          //         operator on top of the stack
           if (s.top() == '(') {
             break;
           }
@@ -52,7 +55,7 @@ string arithmeticExpression::infix_to_postfix() {
       oss << c;
     }
   }
-  while (!s.empty()) {
+  while (!s.empty()) { // As long as the stack has
     oss << s.top();
     s.pop();
   }

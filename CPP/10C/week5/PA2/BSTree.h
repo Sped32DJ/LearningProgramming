@@ -8,23 +8,20 @@ using namespace std;
 class BSTree {
 public:
   BSTree();
-  BSTree(const BSTree &cpy);
-  BSTree(Node *insRoot);
   ~BSTree();
 
   // manipulators
-  void insert(const string &);
-  bool search(const string &) const;
-  string largest() const;
-  string smallest() const;
-  int height(const string &) const;
-  void remove(const string &);
-  void clear();
+  void insert(const string &);       // G
+  bool search(const string &) const; // G
+  string largest() const;            // G
+  string smallest() const;           // G
+  int height(const string &) const;  // G
+  void remove(const string &);       // G
 
   // Printing tree
-  void preOrder() const;
-  void inOrder() const;
-  void postOrder() const;
+  void preOrder() const;  // G
+  void inOrder() const;   // G
+  void postOrder() const; // G
 
 private:
   Node *root;
@@ -38,15 +35,13 @@ private:
   Node *copyTree(Node *) const;
 
   // These helpers were used for recursion
-  Node *fix(Node *, const string &);              // Helper for remove
-  Node *insert(Node *, const string &);           // Helper for insert
-  void updateParentLink(Node *, Node *, Node *);  // Helper for remove()
-  int heightHelper(Node *, const string &) const; // Helper for Height()
-  Node *min(Node *curr) const;                    // helper to find min
-  Node *max(Node *curr) const;                    // helper to find max
-  /* void remove(Node *prev, Node *curr, string data); */
-  int height(Node *, const string &) const;
+  Node *fix(Node *, const string &);    // Helper for remove
+  Node *insert(Node *, const string &); // Helper for insert
+  int findDeepest(const Node *) const;  // Helper Height
   bool isEmpty() const;
+
+  BSTree &operator=(const BSTree &) = delete;
+  BSTree(const BSTree &copy) = delete;
 };
 
 #endif

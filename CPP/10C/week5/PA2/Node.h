@@ -7,19 +7,17 @@
 using namespace std;
 
 class Node {
-private:
+public: // I will just make everything public at this point
   string data;
   Node *left;
   Node *right;
   int count;
 
-public:
   Node();
-  Node(string data);
-  ~Node();
+  Node(const string &data);
 
   // Modifiers
-  void setData(string);
+  void setData(const string &);
   void setLeft(Node *);
   void setRight(Node *);
   void setCount(int);
@@ -38,6 +36,10 @@ public:
   bool onlyLeft() const;
   bool onlyRight() const;
   bool isParent() const;
+  void cloneStats(const Node *other) {
+    data = other->data;
+    count = other->count;
+  }
 };
 
 #endif

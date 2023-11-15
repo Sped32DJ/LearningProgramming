@@ -1,26 +1,27 @@
 #include "BSTree.h"
 #include <iostream>
 #include <limits>
-#include <stdexcept>
+
 using namespace std;
 
-void print(BSTree *BST) {
+void printOrders(BSTree *tree) {
   cout << "Preorder = ";
-  BST->preOrder();
+  tree->preOrder();
   cout << endl;
 
   cout << "Inorder = ";
-  BST->inOrder();
+  tree->inOrder();
   cout << endl;
 
   cout << "Postorder = ";
-  BST->inOrder();
+  tree->postOrder();
   cout << endl;
 }
 
 int menu() {
   int choice = 0;
-  cout << endl << "Enter menu choice: " << endl;
+  cout << endl << "Enter menu choice: ";
+  cout << endl;
   cout << "1. Insert" << endl
        << "2. Remove" << endl
        << "3. Print" << endl
@@ -31,75 +32,63 @@ int menu() {
        << "8. Quit" << endl;
   cin >> choice;
 
-  // Fix input + error checking
-  if (cin.bad()) {
-    throw runtime_error("Bad input");
-  }
+  // fix buffer just in case non-numeric choice entered
+  // also gets rid of newline character
   cin.clear();
   cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
   return choice;
 }
 
 int main() {
-  BSTree BST;
+  BSTree tree;
 
-  int choice = menu(); // Runs the menu and returns a value to choice
+  int choice = menu();
 
   string entry;
-  // Any input after 7 is either invalid, or Quit
-  while (choice < 8) {
+
+  while (choice != 8) {
+
     if (choice == 1) {
       cout << "Enter string to insert: ";
-      getline(cin, entry);
-      if (cin.bad()) {
-        throw runtime_error("Bad input!");
-      }
       cout << endl;
-
-      BST.insert(entry);
+      getline(cin, entry);
+      tree.insert(entry);
     } else if (choice == 2) {
       cout << "Enter string to remove: ";
       getline(cin, entry);
-      if (cin.bad()) {
-        throw runtime_error("Bad input");
-      }
       cout << endl;
-
-      BST.remove(entry);
+      tree.remove(entry);
     } else if (choice == 3) {
-      print(&BST);
+      printOrders(&tree);
     } else if (choice == 4) {
       cout << "Enter string to search for: ";
       getline(cin, entry);
-      if (cin.bad()) {
-        throw runtime_error("Bad input");
-      }
       cout << endl;
-
-      if (BST.search(entry)) {
-        cout << "Found" << endl;
-      } else {
+      if (tree.search(entry) == false) {
         cout << "Not Found" << endl;
+      } else {
+        cout << "Found" << endl;
       }
     } else if (choice == 5) {
-      cout << "Smallest: " << BST.smallest() << endl;
+      cout << "Smallest: " << tree.smallest() << endl;
     } else if (choice == 6) {
-      cout << "Largest: " << BST.largest() << endl;
+      cout << "Largest: " << tree.largest() << endl;
     } else if (choice == 7) {
       cout << "Enter string: ";
       getline(cin, entry);
-      if (cin.bad()) {
-        throw runtime_error("Bad input!");
-      }
       cout << endl;
-
-      cout << "Height of subtree rooted at " << entry << ": "
-           << BST.height(entry) << endl;
+      if (tree.height(entry) == -1) {
+        cout << "Height of subtree rooted at " << entry << ": "
+             << tree.height(entry) << endl;
+      } else {
+        cout << "Height of subtree rooted at " << entry << ": "
+             << tree.height(entry) << endl;
+      }
+    } else {
+      break;
     }
-
-    choice = menu(); // Keeps updating choice with menu function
+    // fix buffer just in case non-numeric choice entered
+    choice = menu();
   }
-
   return 0;
 }

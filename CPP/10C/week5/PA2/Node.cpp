@@ -4,19 +4,16 @@
 using namespace std;
 
 Node::Node() : data(""), left(nullptr), right(nullptr), count(0) {}
-Node::Node(string data) : data(data), left(nullptr), right(nullptr), count(1) {}
-Node::~Node() {
-  delete left;
-  delete right;
-}
+Node::Node(const string &data)
+    : data(data), left(nullptr), right(nullptr), count(1) {}
 
 // Modifiers
-void Node::setData(string dataNew) { data = dataNew; }
+void Node::setData(const string &dataNew) { data = dataNew; }
 void Node::setLeft(Node *nodeNew) { left = nodeNew; }
 void Node::setRight(Node *nodeNew) { right = nodeNew; }
 void Node::setCount(int updatedCount) { count = updatedCount; }
-void Node::incrementCount() { count++; }
-void Node::decrementCount() { count--; }
+void Node::incrementCount() { ++count; }
+void Node::decrementCount() { --count; }
 
 // Accessers
 string Node::getData() const { return data; }

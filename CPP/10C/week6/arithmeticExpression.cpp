@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Using the priority helped understand how this works
 int arithmeticExpression::priority(char op) {
   int priority = 0;
   if (op == '(') {
@@ -82,7 +83,7 @@ void arithmeticExpression::visualizeTree(const string &outputFilename) {
 arithmeticExpression::arithmeticExpression(const string &expr)
     : infixExpression(expr), root(nullptr) {}
 
-// TODO
+// Recursively destroys the tree
 arithmeticExpression::~arithmeticExpression() { deleteTree(root); }
 
 // recursively deletes nodes
@@ -147,8 +148,8 @@ arithmeticExpression::buildTreeFromPostFix(const string &postfixExpr) {
 // Recursive expressions
 // inorder, preorder, postorder logic
 void arithmeticExpression::infix() {
-  TreeNode *curr = root; // TODO  Should this be intialized to something?
-  infix(curr);
+  TreeNode *curr = root; // begin at the root
+  infix(curr);           // calls recursive helper
 }
 void arithmeticExpression::prefix() {
   TreeNode *curr = root;

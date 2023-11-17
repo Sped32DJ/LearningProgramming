@@ -37,7 +37,8 @@ void BSTree::insert(const string &newStr) {
       }
       curr = curr->left;
     } else { // going right
-      if (curr->right == nullptr) {
+      if (curr->right ==
+          nullptr) { // Found node with no right child, adds Node there
         curr->right = new Node(newStr);
         return;
       }
@@ -154,7 +155,7 @@ Node *BSTree::fix(Node *curr, const string &key) {
       curr->decrementCount();
       return curr;
     }
-    if (curr->isLeaf()) {
+    if (curr->isLeaf()) { // if leaf
       delete curr;
       return nullptr;
     } else if (curr->onlyLeft()) { // Only left children
@@ -163,9 +164,9 @@ Node *BSTree::fix(Node *curr, const string &key) {
         victim = victim->right; // After this loop ->right is null
       }
 
-      curr->cloneStats(victim); // Copies data/count
-      victim->count = 1;        // Flagged with 1 to be killed
-      curr->left = fix(curr->left, victim->data);
+      curr->cloneStats(victim);                   // Copies data/count
+      victim->count = 1;                          // Flagged with 1 to be killed
+      curr->left = fix(curr->left, victim->data); // TODO  WTF IS THIS DOING
       return curr;
     } else if (curr->onlyRight()) { // Only right children
       Node *victim = curr->right;
@@ -178,7 +179,8 @@ Node *BSTree::fix(Node *curr, const string &key) {
       return curr;
     } else { // Parents, have both right and left
       Node *victim = curr->left;
-      while (victim->right) {
+      while (victim->right) { // Iterates in the rightmost node TODOO (Does it
+                              // actually?)
         victim = victim->right;
       }
       curr->cloneStats(victim);

@@ -35,9 +35,9 @@ private:
   Node *copyTree(Node *) const;
 
   // These helpers were used for recursion
-  Node *fix(Node *, const string &);    // Helper for remove
-  Node *insert(Node *, const string &); // Helper for insert
-  int findDeepest(const Node *) const;  // Helper Height
+  Node *fix(Node *, const string &);             // Helper for remove
+  Node *insertRecursive(Node *, const string &); // Helper for insert
+  int findDeepest(const Node *) const;           // Helper Height
   bool isEmpty() const;
 
   BSTree &operator=(const BSTree &) = delete;

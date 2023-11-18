@@ -6,6 +6,9 @@
 
 using namespace std;
 
+// Yes, I know I should be using a struct
+// But this is to show the reasoning why parts of my code have
+// set and get functions
 class Node {
 public: // I will just make everything public at this point
   string data;

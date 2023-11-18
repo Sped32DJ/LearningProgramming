@@ -8,8 +8,35 @@ using namespace std;
 // Constructors
 BSTree::BSTree() : root(nullptr) {}
 
-/* BSTree::BSTree(Node *insRoot) { root = insRoot; } */
+/* BSTree::BSTree(const BSTree &cpy) {
+  try {
+    root = copyTree(cpy.root);
+  } catch (const std::bad_alloc &e) {
+    std::cerr << "Memory allocation failed to copy constructor" << endl;
+  }
+}
+
+Node *BSTree::copyTree(Node *root) const {
+  if (!root) { // empty tree
+    return nullptr;
+  }
+
+  Node *newNode = new Node(root->getData());
+  if (!newNode) {
+    // Handle memory allocation failure
+    throw std::bad_alloc();
+  }
+
+  // Copies stats
+  newNode->setCount(root->getCount());
+  newNode->setLeft(copyTree(root->getLeft()));
+  newNode->setRight(copyTree(root->getRight()));
+
+  return newNode;
+} */
+
 BSTree::~BSTree() { clear(root); }
+
 void BSTree::clear(Node *curr) {
   if (curr) {
     clear(curr->getLeft());
@@ -17,34 +44,28 @@ void BSTree::clear(Node *curr) {
     delete curr;
   }
 }
-
-// More reliable than my recursive one
 void BSTree::insert(const string &newStr) {
-  if (!root) {
-    root = new Node(newStr);
-    return;
+  root = insertRecursive(root, newStr);
+}
+
+Node *BSTree::insertRecursive(Node *curr, const string &newStr) {
+  if (!curr) {
+    // If the current node is null, create a new node with the given string
+    return new Node(newStr);
   }
-  Node *curr = root;
-  while (1) {
-    if (curr->data == newStr) {
-      curr->incrementCount();
-      return;
-    }
-    if (newStr < curr->data) { // Going left
-      if (curr->left == nullptr) {
-        curr->left = new Node(newStr);
-        return;
-      }
-      curr = curr->left;
-    } else { // going right
-      if (curr->right ==
-          nullptr) { // Found node with no right child, adds Node there
-        curr->right = new Node(newStr);
-        return;
-      }
-      curr = curr->right;
-    }
+
+  if (newStr == curr->getData()) {
+    // If the string already exists, increment the count
+    curr->incrementCount();
+  } else if (newStr < curr->getData()) {
+    // If the new string is less than the current node's data, go left
+    curr->setLeft(insertRecursive(curr->getLeft(), newStr));
+  } else {
+    // If the new string is greater than the current node's data, go right
+    curr->setRight(insertRecursive(curr->getRight(), newStr));
   }
+
+  return curr;
 }
 
 // Printing tree using recursive helper functions
@@ -116,7 +137,7 @@ string BSTree::smallest() const {
 }
 
 int BSTree::height(const string &data) const {
-  if (!root) {
+  if (!root) { // empty tree, just go -1
     return -1;
   }
 
@@ -134,6 +155,8 @@ int BSTree::height(const string &data) const {
   return findDeepest(curr); // Once found, enteres recursive loop
 }
 
+// Function digs straight down and returns the value of the deepest it has
+// traversed
 int BSTree::findDeepest(const Node *curr) const {
   if (curr == nullptr) {
     return -1;
@@ -152,11 +175,13 @@ Node *BSTree::fix(Node *curr, const string &key) {
     return nullptr;
   else if (curr->data == key) {
     if (curr->count > 1) {
+      // If count is greater than 1, just decrement and return node
       curr->decrementCount();
       return curr;
     }
+
     if (curr->isLeaf()) { // if leaf
-      delete curr;
+      delete curr;        // Can be terminated, no issues, return null
       return nullptr;
     } else if (curr->onlyLeft()) { // Only left children
       Node *victim = curr->left;
@@ -164,9 +189,9 @@ Node *BSTree::fix(Node *curr, const string &key) {
         victim = victim->right; // After this loop ->right is null
       }
 
-      curr->cloneStats(victim);                   // Copies data/count
-      victim->count = 1;                          // Flagged with 1 to be killed
-      curr->left = fix(curr->left, victim->data); // TODO  WTF IS THIS DOING
+      curr->cloneStats(victim); // Copies data/count
+      victim->count = 1;        // Flagged with 1 to be killed
+      curr->left = fix(curr->left, victim->data);
       return curr;
     } else if (curr->onlyRight()) { // Only right children
       Node *victim = curr->right;
@@ -174,24 +199,27 @@ Node *BSTree::fix(Node *curr, const string &key) {
         victim = victim->left;
       }
       curr->cloneStats(victim);
-      victim->count = 1;
+      victim->count =
+          1; //  Flags it with a count of 1 to be deleted in the recursive loop
       curr->right = fix(curr->right, victim->getData());
       return curr;
     } else { // Parents, have both right and left
       Node *victim = curr->left;
-      while (victim->right) { // Iterates in the rightmost node TODOO (Does it
-                              // actually?)
+      while (victim->right) {
         victim = victim->right;
       }
       curr->cloneStats(victim);
-      victim->count = 1;
+      victim->count =
+          1; //  Flags it with a count of 1 to be deleted in the recursive loop
       curr->left = fix(curr->left, victim->getData());
       return curr;
     }
   } else if (key < curr->data) {
+    // Key is less than curr node's data, go left
     curr->left = fix(curr->left, key);
     return curr;
   } else {
+    // key is greater than curr's data, go right
     curr->right = fix(curr->right, key);
     return curr;
   }

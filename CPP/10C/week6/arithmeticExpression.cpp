@@ -95,7 +95,6 @@ void arithmeticExpression::deleteTree(TreeNode *node) {
   }
 }
 
-// NOTE HERE
 // Converts infix expression to postfix tree
 void arithmeticExpression::buildTree() {
   // Convert infix to postfix
@@ -109,41 +108,44 @@ TreeNode *
 arithmeticExpression::buildTreeFromPostFix(const string &postfixExpr) {
   // A TreeNode stack
   stack<TreeNode *> nodeStack;
-  int nodeKey = 0;
+  int nodeKey = 0; // This will be used to assign a key to each node
 
   for (size_t i = 0; i < postfixExpr.size(); ++i) {
-    char ch = postfixExpr[i]; // Iterates through each char
+    char ch = postfixExpr[i]; // Iterates through each char in postfix
 
-    if (isOperand(ch)) { // gets pushed into stack if operand
+    if (isOperand(ch)) { // If char is operand, create new TreeNode, and pushes
+                         // onto the stack
       TreeNode *newNode = new TreeNode(ch, nodeKey);
       nodeStack.push(newNode);
       ++nodeKey;
     } else if (isOperator(ch)) { // If operator, stores operand and pops it
-      TreeNode *operand2 = nodeStack.top();
+      TreeNode *operand2 = nodeStack.top(); // Pop top operand from stack
       nodeStack.pop();
-      TreeNode *operand1 = nodeStack.top();
+      TreeNode *operand1 = nodeStack.top(); // pop second operand from the stack
       nodeStack.pop();
 
-      TreeNode *newOperator = new TreeNode(ch, nodeKey);
-      // Set expression's right and left to their node
+      TreeNode *newOperator =
+          new TreeNode(ch, nodeKey); // New Treenode for the operator
+      // Set expression's right and left children of the operator node to be
+      // popped operands
       newOperator->left = operand1;
       newOperator->right = operand2;
 
       // Pushes new operator into stack
       nodeStack.push(newOperator);
-      ++nodeKey;
+      ++nodeKey; // Increment the key for the next operator
     }
   }
 
-  // Recursively loops top until it is empty
+  // Keeps looping until stack has a fully constructed expression tree
+  // Returns root of tree, which is the top of the stack
   if (!nodeStack.empty()) {
     return nodeStack.top();
   }
 
+  // If stack empty, return null (no expression)
   return nullptr;
 }
-
-// NOTE  TO HERE, wtf
 
 // Recursive expressions
 // inorder, preorder, postorder logic

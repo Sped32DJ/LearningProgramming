@@ -1,0 +1,137 @@
+#include "AVLTree.h"
+#include <iostream>
+#include <string>
+using namespace std;
+
+// TODO  What more should constructor have?
+AVLTree::AVLTree() : root(nullptr) {}
+
+// TODO Deep copy
+AVLTree::AVLTree(AVLTree &cpy) {}
+
+// TODO
+AVLTree::~AVLTree() {}
+
+// AVL Stuff
+void rotateLeft() {}
+
+void printBalanceFactors(Node *) {}
+
+// TODO  Copy the BST post quality version
+// Insesrt into binary tree, rotate if necessary
+void AVLTree::insert(const string &newStr) {
+  if (isEmpty()) {
+    root = new Node(newStr);
+    return;
+  }
+
+  Node *curr = root;
+  while (true) {
+    // How to control dupes? Is there counts?
+    if (curr->data == newStr) {
+    }
+    if (newStr < curr->data) { // going left
+    }
+  }
+}
+
+void AVLTree::visualizeTree(const string &outputFilename) {
+  ofstream outFS(outputFilename.c_str());
+  if (!outFS.is_open()) {
+    cout << "Error" << endl;
+    return;
+  }
+  outFS << "digraph G {" << endl;
+  visualizeTree(outFS, root);
+  outFS << "}";
+  outFS.close();
+  string jpgFilename =
+      outputFilename.substr(0, outputFilename.size() - 4) + ".jpg";
+  string command = "dot -Tjpg " + outputFilename + " -o " + jpgFilename;
+  system(command.c_str());
+}
+
+void AVLTree::visualizeTree(ofstream &outFS, Node *n) {
+  if (n) {
+    if (n->left) {
+      visualizeTree(outFS, n->left);
+      outFS << n->data << " -> " << n->left->data << ";" << endl;
+    }
+
+    if (n->right) {
+      visualizeTree(outFS, n->right);
+      outFS << n->data << " -> " << n->right->data << ";" << endl;
+    }
+  }
+}
+
+// Find Extremes functions
+string AVLTree::largest() const {
+  if (isEmpty()) {
+    return "";
+  }
+  Node *curr = root;
+
+  if (curr->isLeaf()) {
+    return curr->data;
+  }
+  while (curr->right) {
+    curr = curr->right;
+  }
+  return curr->data;
+}
+
+string AVLTree::smallest() const {
+  if (isEmpty()) {
+    return "";
+  }
+  Node *curr = root;
+
+  if (curr->isLeaf()) {
+    return curr->data;
+  }
+
+  while (curr->left) {
+    curr = curr->left;
+  }
+  return curr->data;
+}
+
+// Printing tree using recursive helper functions
+void BSTree::preOrder() const { preOrder(root); }
+void BSTree::inOrder() const { inOrder(root); }
+void BSTree::postOrder() const { postOrder(root); }
+// Visit root
+// Traverse left subtree
+// Traverse right subtree
+void BSTree::preOrder(Node *curr) const {
+  if (curr) {
+    cout << curr->getData() << '(' << curr->getCount() << "), ";
+    preOrder(curr->getLeft());
+    preOrder(curr->getRight());
+  }
+}
+
+// Traverse left subtree
+// visit root
+// traverse the right subtree
+void BSTree::inOrder(Node *curr) const {
+  if (curr) {
+    inOrder(curr->getLeft());
+    cout << curr->getData() << '(' << curr->getCount() << "), ";
+    inOrder(curr->getRight());
+  }
+}
+
+// Traverse left subtree
+// Traverse right subtree
+// visit root
+void BSTree::postOrder(Node *curr) const {
+  if (curr) {
+    postOrder(curr->getLeft());
+    postOrder(curr->getRight());
+    cout << curr->getData() << '(' << curr->getCount() << "), ";
+  }
+}
+
+bool BSTree::isEmpty() const { return !root; }

@@ -3,11 +3,11 @@
 
 using namespace std;
 
-Node::Node() : data(""), left(nullptr), right(nullptr), count(0) {}
+Node::Node()
+    : data(""), parent(nullptr), left(nullptr), right(nullptr), count(0) {}
 Node::Node(const string &data)
-    : data(data), left(nullptr), right(nullptr), count(1) {}
+    : data(data), parent(nullptr), left(nullptr), right(nullptr), count(1) {}
 
-// Is count important here? I don't think so, but I'm not sure.
 void Node::incrementCount() { ++count; }
 void Node::decrementCount() { --count; }
 

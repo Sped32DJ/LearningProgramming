@@ -13,9 +13,24 @@ AVLTree::AVLTree(AVLTree &cpy) {}
 AVLTree::~AVLTree() {}
 
 // AVL Stuff
-void rotateLeft() {}
 
-int balanceFactor(Node *) const {
+// Rotations
+void AVLTree::rotate(Node *curr) {
+  if (getBalance(curr) == 2) {
+    rotateLeft();
+  };
+}
+
+void AVLTree::rotateLeft(Node *curr) {}
+
+void AVLTree::rotateRight(Node *curr) {
+  Node *LRC = node->left->right; // Left Right Child, new root
+  if (node->parent != nullptr) {
+    node->parent->left = node->left;
+  }
+}
+
+int AVLTree::balanceFactor(Node *) const {
   if (!curr) {
     return 0;
   }
@@ -36,52 +51,45 @@ void AVLTree::printBalanceFactors(Node *curr) {
   return balanceFactor(curr);
 }
 
-// TODO  Copy the BST post quality version
-// Make sure the hoe is recursive
-// Insesrt into binary tree, rotate if necessary
-void AVLTree::insert(const string &newStr) {
-  if (isEmpty()) {
-    root = new Node(newStr);
-    return;
-  }
-
-  Node *curr = root;
-  while (true) {
-    // How to control dupes? Is there counts?
-    if (curr->data == newStr) {
-    }
-
-    if (newStr < curr->data) { // going left
-      if (curr->left == nullptr) {
-        curr->left = new Node(newStr);
-        return;
-      }
-      curr = curr->left;
-    } else { // going right
-      if (curr->right == nullptr) {
-        curr->right = new Node(newStr);
-        return;
-      }
-      curr = curr->right;
-    }
-  }
+// TODO Insesrt into binary tree, rotate if necessary (AVL stuff)
+void BSTree::insert(const string &newStr) {
+  root = insertRecursive(root, newStr);
 }
 
-// TODO  Get the QA version
-// ADD required rotations
-void AVLTree::remove(const string &key) { root = fix(root, key); }
+Node *BSTree::insertRecursive(Node *curr, const string &newStr) {
+  if (!curr) {
+    // If the current node is null, create a new node with the given string
+    return new Node(newStr);
+  }
 
-// Better than in-class example
-Node *AVLTree::fix(Node *curr, const string &key) {
+  if (newStr == curr->getData()) {
+    // If the string already exists, increment the count
+    curr->incrementCount();
+  } else if (newStr < curr->getData()) {
+    // If the new string is less than the current node's data, go left
+    curr->setLeft(insertRecursive(curr->getLeft(), newStr));
+  } else {
+    // If the new string is greater than the current node's data, go right
+    curr->setRight(insertRecursive(curr->getRight(), newStr));
+  }
+
+  return curr;
+}
+
+void BSTree::remove(const string &key) { root = fix(root, key); }
+
+Node *BSTree::fix(Node *curr, const string &key) {
   if (!curr)
     return nullptr;
   else if (curr->data == key) {
     if (curr->count > 1) {
+      // If count is greater than 1, just decrement and return node
       curr->decrementCount();
       return curr;
     }
+
     if (curr->isLeaf()) { // if leaf
-      delete curr;
+      delete curr;        // Can be terminated, no issues, return null
       return nullptr;
     } else if (curr->onlyLeft()) { // Only left children
       Node *victim = curr->left;
@@ -89,9 +97,9 @@ Node *AVLTree::fix(Node *curr, const string &key) {
         victim = victim->right; // After this loop ->right is null
       }
 
-      curr->cloneStats(victim);                   // Copies data/count
-      victim->count = 1;                          // Flagged with 1 to be killed
-      curr->left = fix(curr->left, victim->data); // TODO  WTF IS THIS DOING
+      curr->cloneStats(victim); // Copies data/count
+      victim->count = 1;        // Flagged with 1 to be killed
+      curr->left = fix(curr->left, victim->data);
       return curr;
     } else if (curr->onlyRight()) { // Only right children
       Node *victim = curr->right;
@@ -99,24 +107,27 @@ Node *AVLTree::fix(Node *curr, const string &key) {
         victim = victim->left;
       }
       curr->cloneStats(victim);
-      victim->count = 1;
+      victim->count =
+          1; //  Flags it with a count of 1 to be deleted in the recursive loop
       curr->right = fix(curr->right, victim->getData());
       return curr;
     } else { // Parents, have both right and left
       Node *victim = curr->left;
-      while (victim->right) { // Iterates in the rightmost node TODOO (Does it
-                              // actually?)
+      while (victim->right) {
         victim = victim->right;
       }
       curr->cloneStats(victim);
-      victim->count = 1;
+      victim->count =
+          1; //  Flags it with a count of 1 to be deleted in the recursive loop
       curr->left = fix(curr->left, victim->getData());
       return curr;
     }
   } else if (key < curr->data) {
+    // Key is less than curr node's data, go left
     curr->left = fix(curr->left, key);
     return curr;
   } else {
+    // key is greater than curr's data, go right
     curr->right = fix(curr->right, key);
     return curr;
   }

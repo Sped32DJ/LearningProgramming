@@ -1,42 +1,86 @@
 #include "AVLTree.h"
+#include <fstream>
 #include <iostream>
 #include <string>
 using namespace std;
 
-// TODO  What more should constructor have?
-AVLTree::AVLTree() : root(nullptr) {}
-
 // TODO Deep copy
-AVLTree::AVLTree(AVLTree &cpy) {}
+/* AVLTree::AVLTree(AVLTree &cpy) {} */
 
 // TODO
-AVLTree::~AVLTree() {}
+/* AVLTree::~AVLTree() {} */
 
 // AVL Stuff
 
 // Rotations
 void AVLTree::rotate(Node *curr) {
   if (getBalance(curr) == 2) {
-    rotateLeft();
-  };
+    if (getBalance(curr->left) == -1)
+      rotateLeft(curr->left);
+    rotateLeft(curr->left);
+  } else if (getBalance(curr) == -2) {
+    if (getBalance(curr->right) == 1)
+      rotateRight(curr->right);
+    rotateLeft(curr);
+  }
 }
 
-void AVLTree::rotateLeft(Node *curr) {}
+void AVLTree::rotateLeft(Node *curr) {
+  // Store the necessary nodes for rotation
+  Node *RLC = curr->right->left; // Right Left Child, new root
+  if (curr->parent != nullptr) {
+    // Parent, parentchild, desiredchild
+    replaceChild(curr->parent, curr, curr->right); // See how to std::swap this
+  } else {
+    root = curr->right;
+    root->parent = nullptr;
+  }
+
+  setChild(curr->left, 'R', curr);
+  setChild(curr, 'L', RLC);
+}
 
 void AVLTree::rotateRight(Node *curr) {
-  Node *LRC = node->left->right; // Left Right Child, new root
-  if (node->parent != nullptr) {
-    node->parent->left = node->left;
+  // Store the necessary nodes for rotation
+  Node *LRC = curr->left->right; // Left Right Child, new root
+
+  // Update the parent of the current node's left child
+  if (curr->parent != nullptr) {
+    replaceChild(curr->parent, curr, curr->left);
+  } else {
+    root = curr->left;
+    root->parent = nullptr;
   }
+
+  LRC = curr;
+  curr->left = LRC;
+  setChild(curr->left, 'R', curr);
+  setChild(curr, 'L', LRC);
 }
 
-int AVLTree::balanceFactor(Node *) const {
-  if (!curr) {
-    return 0;
+void AVLTree::setChild(Node *parent, const char &direction, Node *child) {
+  if (direction != 'L' && direction != 'R') {
+    throw runtime_error("Wrong direction");
   }
-  return heightAtNode(curr->left) - heightAtNode(curr->right);
+  if (direction == 'L') {
+    parent->left = child;
+  } else {
+    parent->right = child;
+  }
+  if (child != nullptr) { // prevents segfaults
+    child->parent = parent;
+  }
 }
-
+void AVLTree::replaceChild(Node *parent, Node *parentchild,
+                           Node *desiredChild) {
+  if (parent->left == parentchild) {
+    setChild(parent, 'L', desiredChild);
+  } else if (parent->right == parentchild) {
+    setChild(parent, 'R', desiredChild);
+  } else {
+    cout << "Nah";
+  }
+}
 // Follows findDeepest logic
 int AVLTree::heightAtNode(Node *curr) const {
   if (!root) {
@@ -45,40 +89,110 @@ int AVLTree::heightAtNode(Node *curr) const {
   return max(heightAtNode(curr->left), heightAtNode(curr->right)) + 1;
 }
 
+void AVLTree::printBalanceFactors() { printBalanceFactors(root); }
+
 void AVLTree::printBalanceFactors(Node *curr) {
-  if (!curr)
-    return 0;
-  return balanceFactor(curr);
-}
-
-// TODO Insesrt into binary tree, rotate if necessary (AVL stuff)
-void BSTree::insert(const string &newStr) {
-  root = insertRecursive(root, newStr);
-}
-
-Node *BSTree::insertRecursive(Node *curr, const string &newStr) {
-  if (!curr) {
-    // If the current node is null, create a new node with the given string
-    return new Node(newStr);
+  if (curr) { // prevents StackOverflow
+    // Recursively travels left then print
+    printBalanceFactors(curr->left);
+    cout << curr->data << '(' << getBalance(curr) << ')' << ", ";
+    // Recursively travels right
+    printBalanceFactors(curr->right);
   }
+}
 
-  if (newStr == curr->getData()) {
-    // If the string already exists, increment the count
-    curr->incrementCount();
-  } else if (newStr < curr->getData()) {
-    // If the new string is less than the current node's data, go left
-    curr->setLeft(insertRecursive(curr->getLeft(), newStr));
+void AVLTree::insert(const string &key) {
+  if (root == nullptr) { // base case
+    Node *newNode = new Node(key);
+    root = newNode;
   } else {
-    // If the new string is greater than the current node's data, go right
-    curr->setRight(insertRecursive(curr->getRight(), newStr));
+    insert(key, root); // Calls helper
+  }
+}
+void AVLTree::insert(const string &key, Node *curr) {
+  if (curr == nullptr) {
+    // Base case: Create a new node and set it as the root if the tree is empty
+    Node *newNode = new Node(key);
+    root = newNode;
+    return;
   }
 
-  return curr;
+  if (key > curr->data) {
+    if (curr->right == nullptr) {
+      // Insert the new node on the right and perform rotations
+      Node *newNode = new Node(key);
+      curr->right = newNode;
+      newNode->parent = curr;
+
+      // Perform rotations after inserting the node
+      while (curr) {
+        rotate(curr);
+        curr = curr->parent;
+      }
+    } else {
+      // Recursively insert on the right
+      insert(key, curr->right);
+    }
+  } else if (key < curr->data) {
+    if (curr->left == nullptr) {
+      // Insert the new node on the left and perform rotations
+      Node *newNode = new Node(key);
+      curr->left = newNode;
+      newNode->parent = curr;
+
+      // Perform rotations after inserting the node
+      while (curr) {
+        rotate(curr);
+        curr = curr->parent;
+      }
+    } else {
+      // Recursively insert on the left
+      insert(key, curr->left);
+    }
+  } else {
+    // Key is equal to current node's data, increment count
+    curr->incrementCount();
+  }
 }
 
-void BSTree::remove(const string &key) { root = fix(root, key); }
+/* void AVLTree::insert(const string &key, Node *curr) {
+  if (curr == nullptr) { // base case
+    Node *newNode = new Node(key);
+    root = newNode; // intializing for empty
+    return;
+  }
 
-Node *BSTree::fix(Node *curr, const string &key) {
+  // Right subtree
+  if (key > curr->data) {         // key is greater than curr
+    if (curr->right == nullptr) { // If null right child
+                                  // Place right
+      Node *newNode = new Node(key);
+      curr->right = newNode;
+      newNode->parent = curr;
+      rotate(curr); // checks and performs rotations
+    } else {
+      // Rercusively traverses right
+      insert(key, curr->right);
+    }
+    // Left subtree
+  } else if (key < curr->data) { // Key is lesser than curr
+    if (curr->left == nullptr) { // If left null
+      Node *newNode = new Node(key);
+      curr->left = newNode;
+      newNode->parent = curr;
+      rotate(curr); // Checks and performs rotations
+
+    } else {
+      insert(key, curr->left);
+    }
+  } else if (curr->data == key) {
+    curr->incrementCount();
+  }
+} */
+
+void AVLTree::remove(const string &key) { root = fix(root, key); }
+
+Node *AVLTree::fix(Node *curr, const string &key) {
   if (!curr)
     return nullptr;
   else if (curr->data == key) {
@@ -107,9 +221,9 @@ Node *BSTree::fix(Node *curr, const string &key) {
         victim = victim->left;
       }
       curr->cloneStats(victim);
-      victim->count =
-          1; //  Flags it with a count of 1 to be deleted in the recursive loop
-      curr->right = fix(curr->right, victim->getData());
+      victim->count = 1; //  Flags it with a count of 1 to be deleted in the
+                         //  recursive loop
+      curr->right = fix(curr->right, victim->data);
       return curr;
     } else { // Parents, have both right and left
       Node *victim = curr->left;
@@ -117,9 +231,9 @@ Node *BSTree::fix(Node *curr, const string &key) {
         victim = victim->right;
       }
       curr->cloneStats(victim);
-      victim->count =
-          1; //  Flags it with a count of 1 to be deleted in the recursive loop
-      curr->left = fix(curr->left, victim->getData());
+      victim->count = 1; //  Flags it with a count of 1 to be deleted in the
+                         //  recursive loop
+      curr->left = fix(curr->left, victim->data);
       return curr;
     }
   } else if (key < curr->data) {
@@ -198,40 +312,40 @@ string AVLTree::smallest() const {
 }
 
 // Printing tree using recursive helper functions
-void BSTree::preOrder() const { preOrder(root); }
-void BSTree::inOrder() const { inOrder(root); }
-void BSTree::postOrder() const { postOrder(root); }
+void AVLTree::preOrder() const { preOrder(root); }
+void AVLTree::inOrder() const { inOrder(root); }
+void AVLTree::postOrder() const { postOrder(root); }
 // Visit root
 // Traverse left subtree
 // Traverse right subtree
-void BSTree::preOrder(Node *curr) const {
+void AVLTree::preOrder(Node *curr) const {
   if (curr) {
-    cout << curr->getData() << '(' << curr->getCount() << "), ";
-    preOrder(curr->getLeft());
-    preOrder(curr->getRight());
+    cout << curr->data << '(' << curr->count << "), ";
+    preOrder(curr->left);
+    preOrder(curr->right);
   }
 }
 
 // Traverse left subtree
 // visit root
 // traverse the right subtree
-void BSTree::inOrder(Node *curr) const {
+void AVLTree::inOrder(Node *curr) const {
   if (curr) {
-    inOrder(curr->getLeft());
-    cout << curr->getData() << '(' << curr->getCount() << "), ";
-    inOrder(curr->getRight());
+    inOrder(curr->left);
+    cout << curr->data << '(' << curr->count << "), ";
+    inOrder(curr->right);
   }
 }
 
 // Traverse left subtree
 // Traverse right subtree
 // visit root
-void BSTree::postOrder(Node *curr) const {
+void AVLTree::postOrder(Node *curr) const {
   if (curr) {
-    postOrder(curr->getLeft());
-    postOrder(curr->getRight());
-    cout << curr->getData() << '(' << curr->getCount() << "), ";
+    postOrder(curr->left);
+    postOrder(curr->right);
+    cout << curr->data << '(' << curr->count << "), ";
   }
 }
 
-bool BSTree::isEmpty() const { return !root; }
+bool AVLTree::isEmpty() const { return !root; }

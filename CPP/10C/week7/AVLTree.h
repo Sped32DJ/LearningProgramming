@@ -1,3 +1,4 @@
+#include "Node.h"
 #include <iostream>
 #include <string>
 
@@ -5,25 +6,26 @@ using namespace std;
 
 class AVLTree {
 public:
-  AVLTree();
-  ~AVLTree();
+  AVLTree() : root(nullptr) {}
+  /* ~AVLTree(); */
   AVLTree(const AVLTree &cpy) = delete;
 
   // Insert binary tree, rotation if necessary
   void insert(const string &);
-  // Returns the balance factor of given node
-  int balanceFactor(Node *) const;
+
   // Traverse and print the tree inorder rotation.
   // Print the string followed by its balance factor in parenthesis
   // followed by a , and one space
   void printBalanceFactors();
+
   // Generate dotty file and visualize tree using dotty program.
   // Call function before and after rotation
   void visualizeTree(const string &);
 
-  void remove();
+  void remove(const string &);
 
-  void height() const;
+  /* void height(const string &) const; */
+  int heightAtNode(Node *curr) const;
 
   bool search(const string &) const;
   string largest() const;
@@ -40,16 +42,34 @@ private:
   void preOrder(Node *) const;
   void inOrder(Node *) const;
   void postOrder(Node *) const;
+  /* void setChild(Node *, Node *, bool); */
+  void setChild(Node *, Node *, Node *, Node *);
+  void setChild(Node *, const char &, Node *);
 
-  void findUnbalanceNode(); // Finds + return closest unbalanced node
-  void rotate(); // implement 4 possible imbalance cases and update hte parent
-                 // of the given node
-  void
-  rotateLeft(); // Rotate subtree to left at given node and return new subroot
+  // Insert helper
+  void insert(const string &newStr, Node *curr);
+  // remove helper
+  Node *fix(Node *curr, const string &key);
+
+  void replaceChild(Node *, Node *, Node *);
+
+  int getBalance(Node *curr) const {
+    return (heightAtNode(curr->left) - heightAtNode(curr->right));
+  }
+
+  int findUnbalanceNode(); // Finds + return closest unbalanced node
+
+  void rotate(Node *); // implement 4 possible imbalance cases
+                       // and update hte parent
+                       // of the given node
+                       // Rotate subtree to left at given node
+                       // and return new subroot
+  void rotateLeft(Node *);
+  void rotateRight(Node *);
   void printBalanceFactors(Node *); // Rotate the subtree to left at the given
                                     // node and return new subroot
 
   void visualizeTree(ofstream &, Node *);
-  AVLTree &operator=(const AVLTree &); // Overloaded assignment operator
+  AVLTree &operator=(const AVLTree &) = delete;
   bool isEmpty() const;
 };

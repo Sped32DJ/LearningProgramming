@@ -17,7 +17,7 @@ void AVLTree::rotate(Node *curr) {
   if (getBalance(curr) == 2) {
     if (getBalance(curr->left) == -1)
       rotateLeft(curr->left);
-    rotateLeft(curr->left);
+    rotateRight(curr->left);
   } else if (getBalance(curr) == -2) {
     if (getBalance(curr->right) == 1)
       rotateRight(curr->right);
@@ -36,8 +36,8 @@ void AVLTree::rotateLeft(Node *curr) {
     root->parent = nullptr;
   }
 
-  setChild(curr->left, 'R', curr);
-  setChild(curr, 'L', RLC);
+  setChild(curr->right, 'L', curr);
+  setChild(curr, 'R', RLC);
 }
 
 void AVLTree::rotateRight(Node *curr) {
@@ -52,8 +52,6 @@ void AVLTree::rotateRight(Node *curr) {
     root->parent = nullptr;
   }
 
-  LRC = curr;
-  curr->left = LRC;
   setChild(curr->left, 'R', curr);
   setChild(curr, 'L', LRC);
 }

@@ -54,6 +54,8 @@ private:
   void replaceChild(Node *, Node *, Node *);
 
   int getBalance(Node *curr) const {
+    if (!curr)
+      return 0;
     return (heightAtNode(curr->left) - heightAtNode(curr->right));
   }
 

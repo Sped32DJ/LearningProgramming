@@ -14,13 +14,15 @@ using namespace std;
 
 // Rotations
 void AVLTree::rotate(Node *curr) {
-  if (getBalance(curr) == 2) {
-    if (getBalance(curr->left) == -1)
+  if (getBalance(curr) == 2) {          // when tree is unbalanced left
+    if (getBalance(curr->left) == -1) { // double rotate case
       rotateLeft(curr->left);
-    rotateLeft(curr->left);
-  } else if (getBalance(curr) == -2) {
-    if (getBalance(curr->right) == 1)
+    }
+    rotateRight(curr);
+  } else if (getBalance(curr) == -2) {  // when tree is unbalanced right
+    if (getBalance(curr->right) == 1) { // double rotate case
       rotateRight(curr->right);
+    }
     rotateLeft(curr);
   }
 }
@@ -36,8 +38,8 @@ void AVLTree::rotateLeft(Node *curr) {
     root->parent = nullptr;
   }
 
-  setChild(curr->left, 'R', curr);
-  setChild(curr, 'L', RLC);
+  setChild(curr->right, 'L', curr);
+  setChild(curr, 'R', RLC);
 }
 
 void AVLTree::rotateRight(Node *curr) {
@@ -52,15 +54,14 @@ void AVLTree::rotateRight(Node *curr) {
     root->parent = nullptr;
   }
 
-  LRC = curr;
-  curr->left = LRC;
   setChild(curr->left, 'R', curr);
   setChild(curr, 'L', LRC);
 }
 
 void AVLTree::setChild(Node *parent, const char &direction, Node *child) {
   if (direction != 'L' && direction != 'R') {
-    throw runtime_error("Wrong direction");
+    cout << "invalid direction" << endl;
+    return;
   }
   if (direction == 'L') {
     parent->left = child;
@@ -106,51 +107,47 @@ void AVLTree::insert(const string &key) {
     Node *newNode = new Node(key);
     root = newNode;
   } else {
-    insert(key, root); // Calls helper
+    insert(key, root); // Recursive helper
   }
 }
 void AVLTree::insert(const string &key, Node *curr) {
-  if (curr == nullptr) {
-    // Base case: Create a new node and set it as the root if the tree is empty
-    Node *newNode = new Node(key);
-    root = newNode;
+  if (curr == nullptr) { // base case
     return;
   }
 
-  if (key > curr->data) {
-    if (curr->right == nullptr) {
-      // Insert the new node on the right and perform rotations
-      Node *newNode = new Node(key);
-      curr->right = newNode;
-      newNode->parent = curr;
-
-      // Perform rotations after inserting the node
-      while (curr) {
-        rotate(curr);
-        curr = curr->parent;
-      }
-    } else {
-      // Recursively insert on the right
-      insert(key, curr->right);
-    }
-  } else if (key < curr->data) {
+  if (key < curr->data) { // case 1: when the key is less
     if (curr->left == nullptr) {
-      // Insert the new node on the left and perform rotations
+      // if nothing in left child then just place it there
       Node *newNode = new Node(key);
       curr->left = newNode;
       newNode->parent = curr;
+      // starting from the inserted node, go up to its parent and rotate each
+      // node
+      while (curr) {
+        rotate(curr);
+        curr = curr->parent;
+      }
 
-      // Perform rotations after inserting the node
+    } else {
+      // else recursively traverse left
+      insert(key, curr->left);
+    }
+  } else if (key > curr->data) { // case 2: when the key is greater
+    if (curr->right == nullptr) {
+      // if nothing in right child then just place it there
+      Node *newNode = new Node(key);
+      curr->right = newNode;
+      newNode->parent = curr;
+      // starting from the inserted node, go up to its parent and rotate each
+      // node
       while (curr) {
         rotate(curr);
         curr = curr->parent;
       }
     } else {
-      // Recursively insert on the left
-      insert(key, curr->left);
+      insert(key, curr->right);
     }
   } else {
-    // Key is equal to current node's data, increment count
     curr->incrementCount();
   }
 }

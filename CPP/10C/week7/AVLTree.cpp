@@ -4,6 +4,11 @@
 #include <string>
 using namespace std;
 
+// FIX  Wrong balanceFactors are being printed
+//  What may be the cause?
+//  Bad insertions?
+//  I believe the Balance Factor calculations are perfect
+
 // TODO Deep copy
 /* AVLTree::AVLTree(AVLTree &cpy) {} */
 
@@ -15,12 +20,14 @@ using namespace std;
 // Rotations
 void AVLTree::rotate(Node *curr) {
   if (getBalance(curr) == 2) {
-    if (getBalance(curr->left) == -1)
+    if (getBalance(curr->left) == -1) {
       rotateLeft(curr->left);
+    }
     rotateRight(curr->left);
   } else if (getBalance(curr) == -2) {
-    if (getBalance(curr->right) == 1)
+    if (getBalance(curr->right) == 1) {
       rotateRight(curr->right);
+    }
     rotateLeft(curr);
   }
 }
@@ -28,6 +35,9 @@ void AVLTree::rotate(Node *curr) {
 void AVLTree::rotateLeft(Node *curr) {
   // Store the necessary nodes for rotation
   Node *RLC = curr->right->left; // Right Left Child, new root
+  if (curr == nullptr || curr->right == nullptr) {
+    return;
+  }
   if (curr->parent != nullptr) {
     // Parent, parentchild, desiredchild
     replaceChild(curr->parent, curr, curr->right); // See how to std::swap this
@@ -43,6 +53,10 @@ void AVLTree::rotateLeft(Node *curr) {
 void AVLTree::rotateRight(Node *curr) {
   // Store the necessary nodes for rotation
   Node *LRC = curr->left->right; // Left Right Child, new root
+
+  if (curr == nullptr || curr->left == nullptr) {
+    return;
+  }
 
   // Update the parent of the current node's left child
   if (curr->parent != nullptr) {
@@ -60,10 +74,12 @@ void AVLTree::setChild(Node *parent, const char &direction, Node *child) {
   if (direction != 'L' && direction != 'R') {
     throw runtime_error("Wrong direction");
   }
-  if (direction == 'L') {
-    parent->left = child;
-  } else {
-    parent->right = child;
+  if (parent != nullptr) {
+    if (direction == 'L') {
+      parent->left = child;
+    } else if (direction == 'R') {
+      parent->right = child;
+    }
   }
   if (child != nullptr) { // prevents segfaults
     child->parent = parent;
@@ -71,6 +87,9 @@ void AVLTree::setChild(Node *parent, const char &direction, Node *child) {
 }
 void AVLTree::replaceChild(Node *parent, Node *parentchild,
                            Node *desiredChild) {
+  if (parent == nullptr) {
+    return;
+  }
   if (parent->left == parentchild) {
     setChild(parent, 'L', desiredChild);
   } else if (parent->right == parentchild) {
@@ -100,11 +119,11 @@ void AVLTree::printBalanceFactors(Node *curr) {
 }
 
 void AVLTree::insert(const string &key) {
-  if (root == nullptr) { // base case
+  if (root == nullptr) { // Empty Tree
     Node *newNode = new Node(key);
     root = newNode;
   } else {
-    insert(key, root); // Calls helper
+    insert(key, root); // Recusrive helper
   }
 }
 void AVLTree::insert(const string &key, Node *curr) {

@@ -1,0 +1,10 @@
+digraph G {
+bravo -> charlie;
+hotel -> bravo;
+india1 -> india;
+india1 -> juliet;
+hotel -> india1;
+alpha -> hotel;
+papa -> alpha;
+papa -> quebec;
+}

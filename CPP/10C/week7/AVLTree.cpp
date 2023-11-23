@@ -19,13 +19,13 @@ using namespace std;
 
 // Rotations
 void AVLTree::rotate(Node *curr) {
-  if (getBalance(curr) == 2) {
-    if (getBalance(curr->left) == -1) {
+  if (getBalance(curr) == 2) {          // unbalanced left
+    if (getBalance(curr->left) == -1) { // Double rotate
       rotateLeft(curr->left);
     }
     rotateRight(curr->left);
-  } else if (getBalance(curr) == -2) {
-    if (getBalance(curr->right) == 1) {
+  } else if (getBalance(curr) == -2) {  // unbalanced right
+    if (getBalance(curr->right) == 1) { // Double rotate
       rotateRight(curr->right);
     }
     rotateLeft(curr);
@@ -85,17 +85,17 @@ void AVLTree::setChild(Node *parent, const char &direction, Node *child) {
     child->parent = parent;
   }
 }
-void AVLTree::replaceChild(Node *parent, Node *parentchild,
-                           Node *desiredChild) {
-  if (parent == nullptr) {
+// Cleaner syntax and no messing with pointers
+void AVLTree::replaceChild(Node *parent, Node *parentchild, Node *newChild) {
+  if (!parent) { // no parent ;(
     return;
   }
   if (parent->left == parentchild) {
-    setChild(parent, 'L', desiredChild);
+    setChild(parent, 'L', newChild);
   } else if (parent->right == parentchild) {
-    setChild(parent, 'R', desiredChild);
+    setChild(parent, 'R', newChild);
   } else {
-    cout << "Nah";
+    cout << "Invalid" << endl;
   }
 }
 // Follows findDeepest logic
@@ -128,9 +128,6 @@ void AVLTree::insert(const string &key) {
 }
 void AVLTree::insert(const string &key, Node *curr) {
   if (curr == nullptr) {
-    // Base case: Create a new node and set it as the root if the tree is empty
-    Node *newNode = new Node(key);
-    root = newNode;
     return;
   }
 
@@ -163,7 +160,7 @@ void AVLTree::insert(const string &key, Node *curr) {
         curr = curr->parent;
       }
     } else {
-      // Recursively insert on the left
+      // Recursively insert on the left until finds where key should be placed
       insert(key, curr->left);
     }
   } else {
@@ -226,5 +223,35 @@ Node *AVLTree::fix(Node *curr, const string &key) {
     // key is greater than curr's data, go right
     curr->right = fix(curr->right, key);
     return curr;
+  }
+}
+
+void AVLTree::visualizeTree(const string &outputFilename) {
+  ofstream outFS(outputFilename.c_str());
+  if (!outFS.is_open()) {
+    cout << "Error" << endl;
+    return;
+  }
+  outFS << "digraph G {" << endl;
+  visualizeTree(outFS, root);
+  outFS << "}";
+  outFS.close();
+  string jpgFilename =
+      outputFilename.substr(0, outputFilename.size() - 4) + ".jpg";
+  string command = "dot -Tjpg " + outputFilename + " -o " + jpgFilename;
+  system(command.c_str());
+}
+
+void AVLTree::visualizeTree(ofstream &outFS, Node *n) {
+  if (n) {
+    if (n->left) {
+      visualizeTree(outFS, n->left);
+      outFS << n->data << " -> " << n->left->data << ";" << endl;
+    }
+
+    if (n->right) {
+      visualizeTree(outFS, n->right);
+      outFS << n->data << " -> " << n->right->data << ";" << endl;
+    }
   }
 }

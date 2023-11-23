@@ -23,7 +23,7 @@ void AVLTree::rotate(Node *curr) {
     if (getBalance(curr->left) == -1) { // Double rotate
       rotateLeft(curr->left);
     }
-    rotateRight(curr->left);
+    rotateRight(curr);
   } else if (getBalance(curr) == -2) {  // unbalanced right
     if (getBalance(curr->right) == 1) { // Double rotate
       rotateRight(curr->right);

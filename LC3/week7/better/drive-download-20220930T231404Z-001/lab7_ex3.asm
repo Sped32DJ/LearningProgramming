@@ -58,22 +58,26 @@ STR R5, R6, #0
 
 ADD R6, R6, #-1
 STR R7, R6, #0
-; Backup done
 
 ; Subroutine Logic
 
+;  NOTE
+; ADD R2, R1, R2 ; Added
 ADD R1, R1, #-1
 BRz BASE_3200 ; Recursive Base Case: if r1 == 0 jump to base case
-
 ; Recursive call
-JSR FACT_SUB_START ; Keeps calling itself until it brancez to base case
+
+LD R6, MUL_SUB_ADDR_3200
+JSRR R6
+
+JSR FACT_SUB_START
 
 ; Setup multiplication parameters
-ADD R2, R0, #0 ; Move result of factorial call to R2
+ADD R2, R1, #0 ; Move result of factorial call to R2
 ADD R1, R1, #1 ; Use original value of R1
 
 ; Perform multiplication
-LD R6, MUL_SUB_ADDR_3200 ; Goes to 3200 to Multiply
+LD R6, MUL_SUB_ADDR_3200
 JSRR R6
 BR RESTORE_3200 ; Skip the base case
 
@@ -102,14 +106,15 @@ ADD R6, R6, #1
 LDR R1, R6, #0
 ADD R6, R6, #1
 
+
 RET
 
 ;========================
 ; Subroutine Data
 ;========================
 MUL_SUB_ADDR_3200   .FILL x3400
+BACKUP_3200         .FILL xFE00
 
-BACKUP_3200     .BLKW #7
 .END
 
 ;=======================================================================
@@ -123,10 +128,13 @@ BACKUP_3200     .BLKW #7
 ;========================
 ; Subroutine Instructions
 ;========================
+; Backup registers
+; ST R1, BACKUP_R1_3400
+; ST R2, BACKUP_R2_3400
 LD R6, BACKUP_3400
 ; Backup Registers R1-7
 ADD R6, R6, #-1
-STR R1, R6, #0
+STR R1, R6, #0 ; Access Violation
 
 ADD R6, R6, #-1
 STR R2, R6, #0
@@ -142,16 +150,22 @@ STR R5, R6, #0
 
 ADD R6, R6, #-1
 STR R7, R6, #0
+
 ; Backup done
 
 ; Subroutine logic
 AND R0, R0, #0
+;NOTE  ADDED
+; ADD R2, R1, #-1
 
 MULT_LOOP_3400
     ADD R0, R0, R1
     ADD R2, R2, #-1
-    BRp MULT_LOOP_3400 ; NOTE  Changed to Brz from BRp
+    BRp MULT_LOOP_3400
 
+; Restore registers
+; LD R1, BACKUP_R1_3400
+; LD R2, BACKUP_R2_3400
 ; Restore Registers
 LDR R7, R6, #0
 ADD R6, R6, #1
@@ -172,8 +186,11 @@ LDR R1, R6, #0
 ADD R6, R6, #1
 
 RET
+
 ;========================
 ; Subroutine Data
 ;========================
-BACKUP_3400     .BLKW #7
+; BACKUP_R1_3400  .BLKW #1
+; BACKUP_R2_3400  .BLKW #1
+BACKUP_3400     .FILL xFE00
 .END

@@ -1,0 +1,23 @@
+To left shift, we get the MSB
+To right shift, we can just place the MSB
+    Into a stack, then as we pull out the stack
+    We place that into binary
+        As we take it out the stack, we just do this
+
+; We do i+1 < stack.size() because the stack has every bit
+; and we want to eliminate the last
+
+binary msb; // Assume binary object has all of these functions
+stack stack; // declaring the stack using #include <stack>
+int i = 0;
+for(i = 0;i<num.size();++i)
+    stack.push(num.msb());
+    ; We assume the MSB algorithm does left shifting
+    ; and returns the msb
+
+AND num, num, #0
+
+for(i = 0; i +1 < stack.size();++i){
+    num += stack.top() * i*2;
+    stack.pop();
+}

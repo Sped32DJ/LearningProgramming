@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int main() {
+/* int main() {
   // declare a few needed variables for inputing the data
   string line;
   int score;
@@ -84,4 +84,4 @@ int main() {
   }
 
   return 0;
-}
+} */

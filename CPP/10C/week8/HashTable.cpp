@@ -1,5 +1,8 @@
 #include "HashTable.h"
 #include "WordEntry.h"
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
 
 /* HashTable constructor
  *  input s is the size of the array
@@ -7,9 +10,14 @@
  *  initialize array of lists of WordEntry
  */
 
-VHashTable::HashTable(int s) {
+HashTable::HashTable(int s) {
   size = s;
-  hashTable = new list<WordEntry>[size];
+  hashTable = new list<WordEntry>[size]; // Array of linked lists
+}
+
+HashTable::~HashTable() {
+  delete[] hashTable;
+  hashTable = nullptr;
 }
 
 /* computeHash
@@ -19,7 +27,11 @@ VHashTable::HashTable(int s) {
  *  ensure array index doesn't go out of bounds
  */
 int HashTable::computeHash(const string &s) {
-  return (s.at(i) + s.at(s.size() - 1)) % size;
+  int val = 0;
+  for (size_t i = 0; i < s.size(); ++i) {
+    val += s.at(i); // EZ hash
+  }
+  return val % size; // module hashtable size
 }
 
 /* put
@@ -29,7 +41,21 @@ int HashTable::computeHash(const string &s) {
  *   if not, create a new Entry and push it on the list at the
  *   appropriate array index
  */
-void HashTable::put(const string &s, int score) {}
+void HashTable::put(const string &s, int score) {
+  int hashVal = computeHash(s);
+  if (hashVal < size) {
+    auto &bucket = hashTable[hashVal];
+
+    for (auto i = bucket.begin(); i != bucket.end(); ++i) {
+      if (i->getWord() == s) {
+        i->addNewAppearance(score);
+        return;
+      }
+    }
+    WordEntry newWord = WordEntry(s, score);
+    bucket.push_front(newWord);
+  }
+}
 
 /* getAverage
  *  input: string word
@@ -40,11 +66,130 @@ void HashTable::put(const string &s, int score) {}
  *  If not found, return the value 2.0 (neutral result)
  */
 
-double HashTable::getAverage(const string &s) {}
+double HashTable::getAverage(const string &s) {
+  int hashVal = computeHash(s);
+  if (hashVal < size) {
+    /* throw runtime_error("Out of bounds"); */
+  }
+  auto &bucket = hashTable[hashVal];
+  for (auto i = bucket.begin(); i != bucket.end(); ++i) {
+    if (i->getWord() == s) {
+      return i->getAverage();
+    }
+  }
+  return 2.0;
+}
 
 /* contains
  * input: string word
  * output: true if word is in the hash table
  *         false if word is not in the hash table
  */
-bool HashTable::contains(const string &s) {}
+bool HashTable::contains(const string &s) {
+  int hashVal = computeHash(s);
+  if (hashVal < size) {
+    /* throw runtime_error("Out of bounds"); */
+  }
+
+  auto &bucket = hashTable[hashVal];
+
+  for (auto i = bucket.begin(); i != bucket.end(); ++i) {
+    if (i->getWord() == s) {
+      return true;
+    }
+  }
+  return false; // iterated through whole list, couldn't find
+}
+
+// Original (bad) version
+/* bool HashTable::contains(const string &s) {
+  auto &bucket = hashtable[computeHash(s)];
+  size_t i = 0;
+  while (bucket[i + 1]) {
+    if (bucket[i]->getWord() == s) {
+      return true;
+    }
+    ++i;
+  }
+} */
+
+int main() {
+  // declare a few needed variables for inputing the data
+  string line;
+  int score;
+  string message = " ";
+
+  // open input file
+  ifstream myfile("movieReviews.txt");
+  if (myfile.fail()) {
+    cout << "could not open file" << endl;
+    exit(1);
+  }
+
+  // create hash table
+  HashTable table(20071);
+
+  while (!myfile.eof()) {
+    myfile >> score; // get score
+    myfile.get();    // get blank space
+    getline(myfile, line);
+    int len = line.size();
+    while (len > 0) { // identify all individual strings
+      string sub;
+      len = line.find(" ");
+      if (len > 0) {
+        sub = line.substr(0, len);
+        line = line.substr(len + 1, line.size());
+      } else {
+        sub = line.substr(0, line.size() - 1);
+      }
+      table.put(sub, score); // insert string with the score
+    }
+  }
+
+  // after data is entered in hash function
+  // prompt user for a new movie review
+  while (message.length() > 0) {
+    cout << "enter a review -- Press return to exit: " << endl;
+    getline(cin, message);
+
+    // used for calculating the average
+    double sum = 0;
+    int count = 0;
+
+    double sentiment = 0.0;
+
+    size_t len = message.size();
+    // get each individual word from the input
+    while (len != string::npos) {
+      string sub;
+      len = message.find(" ");
+      if (len != string::npos) {
+        sub = message.substr(0, len);
+        message = message.substr(len + 1, message.size());
+      } else {
+        sub = message;
+      }
+      // calculate the score of each word
+      sum += table.getAverage(sub);
+      ++count;
+    }
+
+    if (message.size() > 0) {
+      sentiment = sum / count;
+      cout << "The review has an average value of " << sentiment << endl;
+      if (sentiment >= 3.0) {
+        cout << "Positive Sentiment" << endl;
+      } else if (sentiment >= 2.0) {
+        cout << "Somewhat Positive Sentiment" << endl;
+      } else if (sentiment >= 1.0) {
+        cout << "Somewhat Negative Sentiment" << endl;
+      } else {
+        cout << "Negative Sentiment" << endl;
+      }
+      cout << endl;
+    }
+  }
+
+  return 0;
+}

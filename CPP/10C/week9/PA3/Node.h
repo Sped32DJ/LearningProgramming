@@ -9,6 +9,11 @@ class Node {
 
   friend class Tree;
 
+public:
+  Node(const string &small)
+      : small(small), large(""), countData(1), left(nullptr), right(nullptr),
+        parent(nullptr) {}
+
 private:
   string small;
   string large;
@@ -20,7 +25,6 @@ private:
 
   // Add additional functions/variables here. Remember, you may not add any
   // Node * or string variables.
-
 };
 
 #endif

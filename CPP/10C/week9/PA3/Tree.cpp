@@ -34,9 +34,27 @@ void Tree::preOrder(Node *curr) const {
 // Traverse left subtree
 // Traverse right subtree
 // visit root
-void Tree::postOrder(Node *curr) const {}
+void Tree::postOrder(Node *curr) const {
+  if (curr) {
+    if (curr->countData == 1) {
+      postOrder(curr->left);
+      cout << curr->small << ", ";
+      postOrder(curr->right);
+    } else if (curr->countData == 2) {
+    }
+  }
+}
 
 // Traverse left subtree
 // visit root
 // traverse right subtree
-void Tree::inOrder(Node *curr) const {}
+void Tree::inOrder(Node *curr) const {
+  if (curr) {
+    if (curr->countData == 1) {
+      inOrder(curr->left);
+      inOrder(curr->right);
+      cout << curr->small << ", ";
+    } else if (curr->countData == 2) {
+    }
+  }
+}

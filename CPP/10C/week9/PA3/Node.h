@@ -17,6 +17,7 @@ public:
 private:
   string small;
   string large;
+  int countData;
 
   Node *left;
   Node *middle;

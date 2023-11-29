@@ -27,6 +27,10 @@ void Tree::preOrder(Node *curr) const {
       preOrder(curr->right);
     } else if (curr->countData == 2) { // two keys in a node
       cout << curr->small << ", ";
+      preOrder(curr->left);
+      cout << curr->large << ", ";
+      preOrder(curr->middle);
+      preOrder(curr->right);
     }
   }
 }
@@ -36,11 +40,16 @@ void Tree::preOrder(Node *curr) const {
 // visit root
 void Tree::postOrder(Node *curr) const {
   if (curr) {
-    if (curr->countData == 1) {
+    if (curr->countData == 1) { // One key
       postOrder(curr->left);
+      postOrder(curr->right);
+      cout << curr->small << ", ";
+    } else if (curr->countData == 2) { // two keys
+      postOrder(curr->left);
+      postOrder(curr->middle);
       cout << curr->small << ", ";
       postOrder(curr->right);
-    } else if (curr->countData == 2) {
+      cout << curr->large << ", ";
     }
   }
 }
@@ -50,11 +59,40 @@ void Tree::postOrder(Node *curr) const {
 // traverse right subtree
 void Tree::inOrder(Node *curr) const {
   if (curr) {
-    if (curr->countData == 1) {
+    if (curr->countData == 1) { // one key
       inOrder(curr->left);
-      inOrder(curr->right);
       cout << curr->small << ", ";
-    } else if (curr->countData == 2) {
+      inOrder(curr->right);
+    } else if (curr->countData == 2) { // two keys
+      inOrder(curr->left);
+      cout << curr->small << ", ";
+      inOrder(curr->middle);
+      cout << curr->large << ", ";
+      inOrder(curr->right);
     }
   }
 }
+
+bool Tree::search(Node *curr, const string &key) const {
+  if (curr) {
+    if (curr->small == key || curr->large == key) { // base case
+      return true;
+    } else {
+      // Order of the if statements
+      // Traverse left tree
+      // Traverse middle tree
+      // Traverse Right Tree
+      if (key < curr->small)
+        return search(curr->left, key);
+      else if (curr->countData == 2 &&
+               key < curr->large) // Check if middle && check key in middle node
+        return search(curr->middle, key);
+      else
+        return search(curr->right, key);
+    }
+  }
+  return false; // If never found
+}
+
+void Tree::insert(const string &key) { return; }
+void Tree::remove(const string &key) { return; }

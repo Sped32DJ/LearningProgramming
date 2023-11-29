@@ -94,5 +94,33 @@ bool Tree::search(Node *curr, const string &key) const {
   return false; // If never found
 }
 
-void Tree::insert(const string &key) { return; }
+void Tree::insert(const string &key) {
+  if (root) {
+    insert(root, key);
+  } else {
+    Node *newNode = new Node(key);
+    root = newNode;
+  }
+}
+
+void Tree::insert(const string &key, Node *curr) {
+  if (!curr) { // base case, curr == null
+    return;
+  }
+  if (key < curr->small) {
+    if (curr->countData == 1) {
+      if (curr->left == nullptr) {
+        curr->large = curr->small;
+        curr->small = key;
+        ++curr->countData;
+      }
+      insert(key, curr->left);
+    } else if (curr->countData == 2) {
+      insert(key, curr->left);
+    }
+
+  } else if (key > curr->small) {
+  }
+}
+
 void Tree::remove(const string &key) { return; }

@@ -10,7 +10,6 @@ private:
 public:
   Tree() : root(nullptr) {}
   ~Tree();
-  void destructor(Node *);
   Tree(const Tree &cpy) : root(cpy.root) {}
   void preOrder() const { preOrder(root); }
   void inOrder() const { inOrder(root); }
@@ -18,13 +17,17 @@ public:
   void insert(const string &);
   void remove(const string &);
   bool search(const string &key) const { return search(root, key); }
-  bool search(Node *, const string &) const;
 
 private:
+  void destructor(Node *);
+
   void preOrder(Node *) const;
   void postOrder(Node *) const;
   void inOrder(Node *) const;
+
   // Add additional functions/variables here
+  bool search(Node *, const string &) const;
+  void insert(const string &, Node *);
 };
 
 #endif

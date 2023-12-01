@@ -107,7 +107,8 @@ void Tree::insert(const string &key, Node *curr) {
   if (!curr) { // base case, curr == null
     return;
   }
-  if (key < curr->small) {
+  if (key < curr->small) { // Key smaller than both keys
+
     if (curr->countData == 1) {
       if (curr->left == nullptr) {
         curr->large = curr->small;
@@ -119,7 +120,7 @@ void Tree::insert(const string &key, Node *curr) {
       insert(key, curr->left);
     }
 
-  } else if (key > curr->small) {
+  } else if (key > curr->small) { // Key between or bigger than curr
   }
 }
 

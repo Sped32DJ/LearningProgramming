@@ -1,10 +1,9 @@
 digraph G {
-bravo -> charlie;
-hotel -> bravo;
-india1 -> india;
-india1 -> juliet;
-hotel -> india1;
-alpha -> hotel;
-papa -> alpha;
-papa -> quebec;
+1234 -> 123;
+15 -> 1234;
+155 -> 23;
+15 -> 155;
+2345 -> 15;
+4243 -> 32456;
+2345 -> 4243;
 }

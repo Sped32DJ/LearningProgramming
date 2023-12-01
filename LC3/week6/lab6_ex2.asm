@@ -2,126 +2,161 @@
 ; Name: Danny Topete
 ; Email: dtope004@ucr.edu
 ;
-; Lab: lab 6, ex 1
-; Lab section:021
+; Lab: lab 6, ex 3
+; Lab section: 021
 ; TA: Karan / Nicholas
 ;
 ;=================================================
 
+; test harness
 .ORIG x3000
+LD R1, SUB_STACK_PUSH
+LD R2, SUB_STACK_POP
+LD R3, SUB_RPN_ADD
 
-; NOTE  Backup all registers modified in the sub routine
-; Always Backup R7, never backup return values
+LD R4, Base ; Start Bottom of stack
+LD R5, MAX ; MAX stack size
+LD R6, TOS ; Dynamically holds TOS
 
-; Load register-backup stack
-LD R6, REG_STACK ;Holds all the backups
 
-;Load value stack
-LD R3, STACK_BASE
-LD R4, STACK_MAX
-LD R5, STACK_BASE  ;Dynamically holds TOS
+JSRR R1
+JSRR R1
+JSRR R1
 
-LD R5, SUB_STACK_PUSH
-JSRR, R5
-; R5 now has an updated TOS
-
+JSRR R2
+JSRR R2
+JSRR R2
+JSRR R2
 
 HALT
+;-----------------------------------------------------------------------------------------------
+; test harness local data:
+Base        .FILL xA000     ;A pointer to the bottom of the stack
+Max         .FILL xA005     ;The "highest" available address in the stack
+TOS         .FILL xA000     ;A pointer to the current Top Of the Stack
+First_in     .stringz "\nPlease enter the first digit: \n"
+Second_in    .stringz "\nPlease enter the second digit: \n"
+Symbol_in    .stringz "\nPlease enter the operation symbol: \n"
 
-; Local data
-REG_STACK       .FILL xFE00
-STACK_BASE      .FILL xA000
-STACK_MAX       .FILL xA005
-SUB_STACK_PUSH  .FILL x3200
-
-
+SUB_STACK_PUSH      .FILL x3200
+SUB_STACK_POP       .FILL x3400
+SUB_RPN_ADD         .FILL x3600
+;===============================================================================================
 .END
-
-;---------------------------------------------------------------------
+;------------------------------------------------------------------------------------------
 ; Subroutine: SUB_STACK_PUSH
-; Parameter (R1): The value to push onto the stack
-; Parameter (R3): BASE: A pointer to the base (one less than the lowest available                      ;                       address) of the stack
-; Parameter (R4): MAX: The "highest" available address in the stack
-; Parameter (R5): TOS (Top of Stack): A pointer to the current top of the stack
-; Postcondition: The subroutine has pushed (R1) onto the stack (i.e to address TOS+1).
+; Parameter (R0): The value to push onto the stack
+; Parameter (R4): BASE: A pointer to the base (one less than the lowest available
+;                       address) of the stack
+; Parameter (R5): MAX: The "highest" available address in the stack
+; Parameter (R6): TOS (Top of Stack): A pointer to the current top of the stack
+; Postcondition: The subroutine has pushed (R0) onto the stack (i.e to address TOS+1).
 ;		    If the stack was already full (TOS = MAX), the subroutine has printed an
 ;		    overflow error message and terminated.
-; Return Value: R5 ← updated TOS
-;---------------------------------------------------------------------
-
+; Return Value: R6 ← updated TOS
+;------------------------------------------------------------------------------------------
 .ORIG x3200
-;--------------
-; Backup R1, R3, R4
-ADD R6, R6, #-1
-STR R0, R6, #0
-ADD R6, R6, #-1
-STR R1, R6, #0
-ADD R6, R6, #-1
-STR R2, R6, #0
-ADD R6, R6, #-1
-STR R3, R6, #0
-ADD R6, R6, #-1
-STR R4, R6, #0
-;--------------
+; Backup R1,2,3,7
+ST R1, backup_r1_3200
+ST R2, backup_r2_3200
+ST R3, backup_r3_3200
+ST R7, backup_r7_3200
 
-; TODO  Overflow logic
+; (2) Verify that TOS is less than MAX (if not, print Overflow message & quit)
+LD R1, ascii_3200
+NOT R1, R1
+ADD R1, R1, #1          ; ascii offset
 
-; Two's complement of MAX
-NOT R4, R4
-ADD R4, R4, #1
+NOT R2, R6
+ADD R2, R2, #1              ;r2 hold the negative number of tos. if r2 + r5 is positive(not include 0) means not overflow
 
-IF_OVERFLOW
-    ADD R4, R4, R5
-BRzp PREVENT_OVERFLOW ; -MAX + TOS >= 0, don't add to stack
-BR NO_OVERFLOW
-
-PREVENT_OVERFLOW
-    LEA R0, OVERFLOW_DETECTED
+ADD R2, R2, R5
+BRp #7
+    LEA R0, Overflow_Error  ;output the error msg, and reset the data
     PUTS
-    BR OVERFLOW_TO_RESTORE
+    LD R1, backup_r1_3200
+    LD R2, backup_r2_3200
+    LD R3, backup_r3_3200
+    LD R7, backup_r7_3200
+    ret
 
-NO_OVERFLOW
-; push R1 into stack
-STR R1, R5, #0
+ADD R6, R6, #1              ;store the input, move the TOS to the next, increase first!
+GETC
+OUT
+ADD R0, R1, R0              ;change r0 from number character to actual number
+STR R0, R6, #0              ;write next
 
-ADD R5, R5, #1 ; ++TOS
-
-OVERFLOW_TO_RESTORE
-;--------------
-; Restoring Registers
-LDR R4, R6, #0
-ADD R6, R6, #1
-LDR R3, R6, #0
-ADD R6, R6, #1
-LDR R2, R6, #0
-ADD R6, R6, #1
-LDR R1, R6, #0
-ADD R6, R6, #1
-LDR R0, R6, #0
-ADD R6, R6, #1
-;--------------
-
-
+; (3) restore backed up registers
+LD R1, backup_r1_3200
+LD R2, backup_r2_3200
+LD R3, backup_r3_3200
+LD R7, backup_r7_3200
 
 RET
-OVERFLOW_DETECTED       .stringz "Overflow was detected"
+;-----------------------------------------------------------------------------------------------
+; SUB_STACK_PUSH local data
+backup_r1_3200      .blkw #1
+backup_r2_3200      .blkw #1
+backup_r3_3200      .blkw #1
+backup_r7_3200      .blkw #1
+Overflow_Error      .stringz    "\n Stack Overflow! \n"
 
+ascii_3200            .FILL x30  ; #48
+;===============================================================================================
 .END
 
-;---------------------------------------------------------------------
+;------------------------------------------------------------------------------------------
 ; Subroutine: SUB_STACK_POP
-; Parameter (R3): BASE: A pointer to the base (one less than the lowest available address) of the stack
-; Parameter (R4): MAX: The "highest" available address in the stack
-; Parameter (R5): TOS (Top of Stack): A pointer to the current top of the stack
-; Postcondition: The subroutine has popped MEM[TOS] off of the stack and copied it to R0.
-; If the stack was already empty (TOS = BASE), the subroutine has printed
-; an underflow error message and terminated.
-; Return Values: R0 ← value popped off the stack
-;                R5 ← updated TOS
-;---------------------------------------------------------------------
-.ORIG x3200
+; Parameter (R4): BASE: A pointer to the base (one less than the lowest available
+;                       address) of the stack
+; Parameter (R5): MAX: The "highest" available address in the stack
+; Parameter (R6): TOS (Top of Stack): A pointer to the current top of the stack
+; Postcondition: The subroutine has popped MEM[TOS] off of the stack.
+;		    If the stack was already empty (TOS = BASE), the subroutine has printed
+;                an underflow error message and terminated.
+; Return Value: R0 ← value popped off the stack
+;		   R6 ← updated TOS
+;------------------------------------------------------------------------------------------
+.orig x3400
 
-; TODO  Detect underflow
+; (1) back up R1, R2, R7
+ST R1, backup_r1_3400
+ST R2, backup_r2_3400
+ST R3, backup_r3_3400
+ST R7, backup_r7_3400
+
+; (2) Verify that TOS is higher than BASE (if not, print Underflow message & quit)
+NOT R2, R4
+ADD R2, R2, #1              ;r2 hold the negative number of base. if r2 + r6 is positive(not include 0) means not underflow
+
+ADD R2, R2, R6
+BRp #7
+LEA R0, Underflow_Error ;output the error msg, and reset the data
+PUTS
+LD R1, backup_r1_3400
+LD R2, backup_r2_3400
+LD R3, backup_r3_3400
+LD R7, backup_r7_3400
 RET
 
+LDR R0, R6, #0              ;read first!
+ADD R6, R6, #-1
+
+; (3) restore backed up registers
+LD R1, backup_r1_3400
+LD R2, backup_r2_3400
+LD R3, backup_r3_3400
+LD R7, backup_r7_3400
+
+RET
+;-----------------------------------------------------------------------------------------------
+; SUB_STACK_POP local data
+backup_r1_3400      .blkw #1
+backup_r2_3400      .blkw #1
+backup_r3_3400      .blkw #1
+backup_r7_3400      .blkw #1
+Underflow_Error      .stringz    "\n Underflow Overflow! \n"
+
+;===============================================================================================
 .END
+

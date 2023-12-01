@@ -16,11 +16,11 @@ public:
   // Traverse and print the tree inorder rotation.
   // Print the string followed by its balance factor in parenthesis
   // followed by a , and one space
-  void printBalanceFactors();
+  void printBalanceFactors() ;
 
   // Generate dotty file and visualize tree using dotty program.
   // Call function before and after rotation
-  void visualizeTree(const string &);
+  void visualizeTree(const string &) ;
 
   void remove(const string &);
 

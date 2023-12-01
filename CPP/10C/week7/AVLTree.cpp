@@ -8,7 +8,7 @@ using namespace std;
 
 AVLTree::~AVLTree() { deleteTree(root); }
 void AVLTree::deleteTree(Node *node) {
-  if (node == NULL) {
+  if (node == nullptr) {
     deleteTree(node->left);
     deleteTree(node->right);
     delete node;
@@ -143,41 +143,42 @@ void AVLTree::insert(const string &key) {
     insert(key, root); // Recusrive helper
   }
 }
+
 void AVLTree::insert(const string &key, Node *curr) {
-  if (curr == nullptr) {
+  if (curr == nullptr) { // base case
     return;
   }
 
-  if (key > curr->data) {
+  if (key > curr->data) { // key greater than curr (traverse right)
     if (curr->right == nullptr) {
       // Insert the new node on the right and perform rotations
       Node *newNode = new Node(key);
-      curr->right = newNode;
-      newNode->parent = curr;
+      setChild(curr, 'R', newNode); // sets child and ->parent
 
       // Perform rotations after inserting the node
       while (curr) {
-        rotate(curr);
-        curr = curr->parent;
+        rotate(curr);        // Rotate function does all the heavy work
+        curr = curr->parent; // Trickles rotations
       }
     } else {
-      // Recursively insert on the right
+      // Recursively traverses right (still searching)
       insert(key, curr->right);
     }
-  } else if (key < curr->data) {
+
+  } else if (key < curr->data) { // key lesser than curr (traverse left)
     if (curr->left == nullptr) {
       // Insert the new node on the left and perform rotations
       Node *newNode = new Node(key);
-      curr->left = newNode;
-      newNode->parent = curr;
+      setChild(curr, 'L', newNode);
 
       // Perform rotations after inserting the node
       while (curr) {
         rotate(curr);
         curr = curr->parent;
       }
+
     } else {
-      // Recursively insert on the left until finds where key should be placed
+      // Keeps traversing (desired location not found)
       insert(key, curr->left);
     }
   } else {
@@ -186,6 +187,7 @@ void AVLTree::insert(const string &key, Node *curr) {
   }
 }
 
+// Remove function from a BST (doesn't do any rotations, just removes!)
 void AVLTree::remove(const string &key) { root = fix(root, key); }
 
 Node *AVLTree::fix(Node *curr, const string &key) {
@@ -243,6 +245,7 @@ Node *AVLTree::fix(Node *curr, const string &key) {
   }
 }
 
+// Very useful for debugging
 void AVLTree::visualizeTree(const string &outputFilename) {
   ofstream outFS(outputFilename.c_str());
   if (!outFS.is_open()) {

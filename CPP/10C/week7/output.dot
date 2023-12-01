@@ -1,9 +1,17 @@
 digraph G {
-1234 -> 123;
-15 -> 1234;
-155 -> 23;
-15 -> 155;
-2345 -> 15;
-4243 -> 32456;
-2345 -> 4243;
+asd -> alpha;
+asdq -> ertew;
+asd -> asdq;
+erw -> asd;
+gdfds -> hrtu;
+erw -> gdfds;
+inferno -> erw;
+retw -> qwer;
+retw -> saw;
+sfsd -> retw;
+tre -> sfw;
+wetrtw -> tyer;
+tre -> wetrtw;
+sfsd -> tre;
+inferno -> sfsd;
 }

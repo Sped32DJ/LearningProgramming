@@ -33,8 +33,7 @@ int main() {
       cout << endl;
 
       tree.insert(entry);
-      // tree.visualizeTree("output.dot"); // updates the .dot file live for
-      // debugging
+      // tree.visualizeTree("output.dot"); // updates the .dot file live
 
     } else if (choice == 2) {
       tree.printBalanceFactors();

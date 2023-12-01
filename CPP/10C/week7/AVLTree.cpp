@@ -4,28 +4,29 @@
 #include <string>
 using namespace std;
 
-// FIX  Wrong balanceFactors are being printed
-//  What may be the cause?
-//  Bad insertions?
-//  I believe the Balance Factor calculations are perfect
+// Constructor in AVLTree.h
 
-// TODO Deep copy
-/* AVLTree::AVLTree(AVLTree &cpy) {} */
-
-// TODO
-/* AVLTree::~AVLTree() {} */
+AVLTree::~AVLTree() { deleteTree(root); }
+void AVLTree::deleteTree(Node *node) {
+  if (node == NULL) {
+    deleteTree(node->left);
+    deleteTree(node->right);
+    delete node;
+  }
+}
 
 // AVL Stuff
 
 // Rotations
 void AVLTree::rotate(Node *curr) {
   if (getBalance(curr) == 2) {          // unbalanced left
-    if (getBalance(curr->left) == -1) { // Double rotate
+    if (getBalance(curr->left) == -1) { // Double rotate edge case
       rotateLeft(curr->left);
     }
     rotateRight(curr);
+
   } else if (getBalance(curr) == -2) {  // unbalanced right
-    if (getBalance(curr->right) == 1) { // Double rotate
+    if (getBalance(curr->right) == 1) { // Double rotate edge case
       rotateRight(curr->right);
     }
     rotateLeft(curr);
@@ -38,14 +39,16 @@ void AVLTree::rotateLeft(Node *curr) {
   if (curr == nullptr || curr->right == nullptr) {
     return;
   }
+
   if (curr->parent != nullptr) {
-    // Parent, parentchild, desiredchild
-    replaceChild(curr->parent, curr, curr->right); // See how to std::swap this
+    // Format: Parent, parentchild, desiredchild
+    replaceChild(curr->parent, curr, curr->right);
   } else {
     root = curr->right;
     root->parent = nullptr;
   }
 
+  // Helper sets children && update parent
   setChild(curr->right, 'L', curr);
   setChild(curr, 'R', RLC);
 }
@@ -60,20 +63,25 @@ void AVLTree::rotateRight(Node *curr) {
 
   // Update the parent of the current node's left child
   if (curr->parent != nullptr) {
+    // Format: Parent, parentchild, desiredchild
     replaceChild(curr->parent, curr, curr->left);
   } else {
     root = curr->left;
     root->parent = nullptr;
   }
 
-  setChild(curr->left, 'R', curr);
-  setChild(curr, 'L', LRC);
+  setChild(curr->left, 'R', curr); // curr->left->right = curr
+  setChild(curr, 'L', LRC);        // curr->left = LRC
 }
 
+// Sets children and updates parent
 void AVLTree::setChild(Node *parent, const char &direction, Node *child) {
-  if (direction != 'L' && direction != 'R') {
-    throw runtime_error("Wrong direction");
+  if (direction != 'L' &&
+      direction != 'R') { // shouldn't run since it is private
+    throw runtime_error("Invalid direction");
   }
+
+  // Check every node before using it
   if (parent != nullptr) {
     if (direction == 'L') {
       parent->left = child;
@@ -81,33 +89,42 @@ void AVLTree::setChild(Node *parent, const char &direction, Node *child) {
       parent->right = child;
     }
   }
-  if (child != nullptr) { // prevents segfaults
+
+  // Updates the parent
+  if (child != nullptr) {
     child->parent = parent;
   }
 }
+
 // Cleaner syntax and no messing with pointers
+// Helps with rotations
 void AVLTree::replaceChild(Node *parent, Node *parentchild, Node *newChild) {
   if (!parent) { // no parent ;(
     return;
   }
-  if (parent->left == parentchild) {
+
+  if (parent->left == parentchild) { // For left rotation
     setChild(parent, 'L', newChild);
-  } else if (parent->right == parentchild) {
+  } else if (parent->right == parentchild) { // For Right rotation
     setChild(parent, 'R', newChild);
   } else {
     cout << "Invalid" << endl;
   }
 }
+
 // Follows findDeepest logic
 int AVLTree::heightAtNode(Node *curr) const {
   if (!curr) {
     return -1;
   }
+  // Recursively digs down
+  // getBalance() uses this function and is defined in AVLTree.h
   return max(heightAtNode(curr->left), heightAtNode(curr->right)) + 1;
 }
 
 void AVLTree::printBalanceFactors() { printBalanceFactors(root); }
 
+// Private Helper
 void AVLTree::printBalanceFactors(Node *curr) {
   if (curr) { // prevents StackOverflow
     // Recursively travels left then print

@@ -26,3 +26,28 @@ class GraphTesting(Scene):
         self.play(Create(parabola), run_time= 2, rate_func=smooth)
         self.play(Create(area), rate_func = smooth, run_time = 1)
         self.wait()
+
+        self.play(plane.animate.set_opacity(0.2))
+        self.play(Create(func_integral), run_time = 2,rate_func = smooth)
+
+        self.play(Create(framebox))
+        self.play(framebox.animate.set_fill(color = YELLOW, opacity = 0.5))
+        self.play(framebox.animate.set_fill(opacity = 0))
+        self.play(framebox.animate.shift(RIGHT * 2))
+        self.play(framebox.animate.set_fill(color = YELLOW, opacity = 0.5))
+        self.play(framebox.animate.set_fill(opacity = 0))
+
+        self.play(ReplacementTransform(func_integral, func_integral2))
+
+        self.play(FadeOut(VGroup(labels, parabola, func_label, area, framebox, plane, sub_plane)))
+        self.play(func_integral2.animate.move_to(ORIGIN), rate_func = smooth)
+        self.play(ReplacementTransform(func_integral2, integral3))
+        self.wait()
+        self.play(ReplacementTransform(integral3, solving))
+        self.wait()
+        self.play(ReplacementTransform(solving, solving_2))
+        self.wait()
+        self.play(ReplacementTransform(solving_2, solved))
+        self.play(solved.animate.set_fill(color = GREEN))
+        self.wait()
+        self.play(FadeOut(solved))

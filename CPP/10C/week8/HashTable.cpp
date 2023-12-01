@@ -15,6 +15,15 @@ HashTable::HashTable(int s) {
   hashTable = new list<WordEntry>[size]; // Array of linked lists
 }
 
+HashTable::HashTable(const HashTable &cpy) {
+  size = cpy.size;
+  hashTable = new list<WordEntry>[size];
+
+  for (int i = 0; i < size; ++i) {
+    hashTable[i] = cpy.hashTable[i];
+  }
+}
+
 HashTable::~HashTable() {
   delete[] hashTable;
   hashTable = nullptr;
@@ -44,16 +53,18 @@ int HashTable::computeHash(const string &s) {
 void HashTable::put(const string &s, int score) {
   int hashVal = computeHash(s);
   if (hashVal < size) {
-    auto &bucket = hashTable[hashVal];
+    auto &bucket = hashTable[hashVal]; // Jumps into the bucket
 
+    // Loops until bucket ends
     for (auto i = bucket.begin(); i != bucket.end(); ++i) {
       if (i->getWord() == s) {
-        i->addNewAppearance(score);
+        i->addNewAppearance(score); // Adds ++dupes & += score
         return;
       }
     }
-    WordEntry newWord = WordEntry(s, score);
-    bucket.push_front(newWord);
+
+    WordEntry newWord = WordEntry(s, score); // Declaring new Word Object
+    bucket.push_front(newWord); // Inserts newWord object into bucket
   }
 }
 
@@ -71,13 +82,15 @@ double HashTable::getAverage(const string &s) {
   if (hashVal < size) {
     /* throw runtime_error("Out of bounds"); */
   }
+
   auto &bucket = hashTable[hashVal];
   for (auto i = bucket.begin(); i != bucket.end(); ++i) {
     if (i->getWord() == s) {
-      return i->getAverage();
+      return i->getAverage(); // Calls the object's getAverage()
     }
   }
-  return 2.0;
+
+  return 2.0; // Couldn't find word, neutral result
 }
 
 /* contains
@@ -95,23 +108,31 @@ bool HashTable::contains(const string &s) {
 
   for (auto i = bucket.begin(); i != bucket.end(); ++i) {
     if (i->getWord() == s) {
-      return true;
+      return true; // True if word is found
     }
   }
+
   return false; // iterated through whole list, couldn't find
 }
+void HashTable::resize(int newSize) {
+  // Creates array with new size
+  list<WordEntry> *newTable = new list<WordEntry>[newSize];
 
-// Original (bad) version
-/* bool HashTable::contains(const string &s) {
-  auto &bucket = hashtable[computeHash(s)];
-  size_t i = 0;
-  while (bucket[i + 1]) {
-    if (bucket[i]->getWord() == s) {
-      return true;
+  // Rehash all existing vals
+  for (int i = 0; i < size; ++i) {
+    for (auto j = hashTable[i].begin(); j != hashTable[i].end(); ++j) {
+      int hashVal = computeHash(j->getWord());
+      newTable[hashVal].push_front(*j);
     }
-    ++i;
   }
-} */
+
+  // Delete old array
+  delete[] hashTable;
+
+  // Update size and table pointer to new
+  hashTable = newTable;
+  size = newSize;
+}
 
 int main() {
   // declare a few needed variables for inputing the data

@@ -16,7 +16,9 @@ private:
 
 public:
   HashTable(int);
+  HashTable(const HashTable &);
   ~HashTable();
+  void resize(int);
   bool contains(const string &);
   double getAverage(const string &);
   void put(const string &, int);

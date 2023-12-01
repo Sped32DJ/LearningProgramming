@@ -134,6 +134,21 @@ void HashTable::resize(int newSize) {
   size = newSize;
 }
 
+HashTable &HashTable::operator=(const HashTable &cpy) {
+  if (this != cpy) { // Check if not identical
+
+    delete[] hashTable;
+    size = cpy.size;
+
+    hashTable = new list<WordEntry>[size]; // new array with cpy.size
+
+    for (int i = 0; i < size; ++i) {
+      hashTable[i] = cpy.hashTable[i];
+    }
+  }
+  return *this;
+}
+
 int main() {
   // declare a few needed variables for inputing the data
   string line;

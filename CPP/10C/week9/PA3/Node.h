@@ -23,9 +23,6 @@ private:
   Node *middle;
   Node *right;
   Node *parent;
-
-  // Add additional functions/variables here. Remember, you may not add any
-  // Node * or string variables.
 };
 
 #endif

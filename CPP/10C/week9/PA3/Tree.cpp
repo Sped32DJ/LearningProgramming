@@ -95,6 +95,22 @@ bool Tree::search(Node *curr, const string &key) const {
   return false; // If never found
 }
 
+// Same logic as search()
+Node *Tree::returnNode(const string &key, Node *curr) {
+  if (!curr)
+    return nullptr;
+  if (curr->small == key || curr->large == key)
+    return curr;
+  else {
+    if (key < curr->small) {
+      return returnNode(key, curr->left);
+    } else if (curr->countData == 2 && key < curr->large) {
+      return returnNode(key, curr->middle);
+    } else
+      return returnNode(key, curr->right);
+  }
+}
+
 void Tree::splitTree(Node *curr, const string &key) {
   // left child, right child, middle child
   Node *lc = nullptr;
@@ -126,27 +142,18 @@ void Tree::splitTree(Node *curr, const string &key) {
   --curr->countData; // since tree got split
 
   if (curr->parent != nullptr) {
-    curr->parent->large = mc;
+    curr->parent->large = mc; // mc becomes parent large
     ++curr->parent->countData;
 
-    /* curr->parent->middle = lc;
-    lc->parent = curr->parent; */
+    // lc & rc became mc and rc
     setChild(curr->parent, 'M', lc);
-
     setChild(curr->parent, 'R', rc);
-    /* curr->parent->right = rc;
-    rc->parent = curr->parent; */
   } else {
+    // Middlechild parent of lc & rc
     curr->small = mc;
 
     setChild(curr, 'L', lc);
     setChild(curr, 'R', rc);
-    /* curr->left = lc;
-    curr->right = rc;
-
-    // Parents
-    lc->parent = curr;
-    rc->parent = curr; */
   }
 }
 
@@ -155,6 +162,7 @@ void Tree::setChild(Node *parent, const char &direction, Node *child) {
     throw runtime_error("Invalid direction");
   }
 
+  // Cases are fast!
   if (parent && child) {
     switch (direction) {
     case 'L':
@@ -214,7 +222,8 @@ void Tree::insert(Node *curr, const string &key) {
       } else {
         insert(curr->right, key);
       }
-    } else if (curr->countData == 2 && key < curr->large) { // another spliiting case
+    } else if (curr->countData == 2 &&
+               key < curr->large) { // another spliiting case
       if (curr->middle != nullptr) {
         insert(curr->middle, key); // goes to insert middle
       } else
@@ -249,32 +258,28 @@ void Tree::remove(Node *curr, const string &key) {
           }
         }
       } else { // node has children
-        curr->small = curr->left->small;
-        curr->large = curr->right->small;
-        ++curr->countData;
-        delete curr->right;
-        delete curr->left;
-        curr->right = nullptr;
-        curr->left = nullptr;
+
+        curr->small = curr->left->small;  // new curr small
+        curr->large = curr->right->small; // new curr large
+        ++curr->countData;                // Adding another key
+
+        isolateNode(curr); // destructs right and left
       }
     } else {                      // node is not root
       if (curr->countData == 1) { // node has one key
-        Node *par = curr->parent;
-        if (par->right == curr) { // node is right child of parent
-          par->large = par->small;
-          par->small = par->left->small;
-        } else if (par->left == curr) { // node is left child
-          par->large = par->right->small;
+        Node *father = curr->parent;
+        if (father->right == curr) { // node is right child of parent
+          father->large = father->small;
+          father->small = father->left->small;
+        } else if (father->left == curr) { // node is left child
+          father->large = father->right->small;
         }
-        ++par->countData;
+        ++father->countData;
 
-        // delete, then set null
-        delete par->left;
-        delete par->right;
-        par->left = nullptr;
-        par->right = nullptr;
+        isolateNode(father); // destructs right & left
+
       } else {                    // more than one key
-        if (curr->small == key) { // in case the small field
+        if (curr->small == key) { // key in small
           curr->small = curr->large;
         }
         --curr->countData;
@@ -284,18 +289,10 @@ void Tree::remove(Node *curr, const string &key) {
   }
 }
 
-// Same logic as search()
-Node *Tree::returnNode(const string &key, Node *curr) {
-  if (!curr)
-    return nullptr;
-  if (curr->small == key || curr->large == key)
-    return curr;
-  else {
-    if (key < curr->small) {
-      return returnNode(key, curr->left);
-    } else if (curr->countData == 2 && key < curr->large) {
-      return returnNode(key, curr->middle);
-    } else
-      return returnNode(key, curr->right);
-  }
+// Destructs left and right
+void Tree::isolateNode(Node *curr) {
+  delete curr->right;
+  delete curr->left;
+  curr->right = nullptr;
+  curr->left = nullptr;
 }

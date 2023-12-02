@@ -23,6 +23,7 @@ public:
 
 private:
   void destructor(Node *);
+  Node *returnNode(const string &, Node *);
 
   void preOrder(Node *) const;
   void postOrder(Node *) const;
@@ -32,6 +33,7 @@ private:
   bool search(Node *, const string &) const;
   /* void insert(const string &, Node *); */
   void insert(Node *, const string &);
+  void remove(Node *, const string &);
 };
 
 #endif

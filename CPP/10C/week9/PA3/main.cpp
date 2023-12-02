@@ -6,10 +6,11 @@ using namespace std;
 void printOrders(Tree *tree) {
   cout << "Preorder = ";
   tree->preOrder();
-  cout << "Inorder = ";
+  cout << "\nInorder = ";
   tree->inOrder();
-  cout << "Postorder = ";
+  cout << "\nPostorder = ";
   tree->postOrder();
+  cout << endl;
 }
 
 int menu() {

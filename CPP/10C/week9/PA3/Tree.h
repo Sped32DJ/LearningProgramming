@@ -17,6 +17,9 @@ public:
   void insert(const string &);
   void remove(const string &);
   bool search(const string &key) const { return search(root, key); }
+  /* void splitTree(const string &key, Tree &left, Tree &right); */
+  void splitTree(Node *curr, const string &key);
+  void setChild(Node *, const char &, Node *);
 
 private:
   void destructor(Node *);
@@ -27,7 +30,8 @@ private:
 
   // Add additional functions/variables here
   bool search(Node *, const string &) const;
-  void insert(const string &, Node *);
+  /* void insert(const string &, Node *); */
+  void insert(Node *, const string &);
 };
 
 #endif

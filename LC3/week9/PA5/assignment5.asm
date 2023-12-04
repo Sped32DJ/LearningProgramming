@@ -37,13 +37,25 @@ LEA R1, user_string ; Holds string, pointer to first char, BEG INDEX
 LEA R2, user_prompt
 
 LD R5, get_user_string_addr
-JSRR R5
+    JSRR R5
+
+; Get size of input_string
+LEA R1, user_string ; Parameter
+LD R5, strlen_addr
+    JSRR R5 ; returns R3 with str.size
 
 ; call palindrome method
 ; * put your code here
 LEA R1, user_string
+ADD R2, R1, R0 ; R2 holds the last char (The null char)
+
+ADD R3, R3, #0 ; if str.size = 0, you can skip the R2 -= 2
+BRz IS_EMPTY
+    ADD R2, R2, #-1 ; R2 holds the last char
+IS_EMPTY
+
 LD R5, palindrome_addr
-JSRR R5
+JSRR R5 ; If bool R0 = 1(true), it is a palindrome!
 
 ; determine of string is a palindrome
 ; * put your code here
@@ -65,8 +77,9 @@ LEA R0, not_string ; Prints "not"
 ; print the result to the screen
 ; * put your code here
 PRINT_FINAL_RESULT:
-    LEA R0, final_string
-        PUTS
+
+LEA R0, final_string
+    PUTS
 
 
 
@@ -105,6 +118,7 @@ user_string          .BLKW	  100
 ; Subroutine: get_user_string
 ; Parameter: R1 (Beg Str addr)
 ; Parameter: R2 - user_prompt str addr
+;               Holds ENDL_MASK after used
 ; Postcondition: R1 - addr of string
 ; Return Value: String_location(R1)
 ;=================================================
@@ -113,8 +127,8 @@ user_string          .BLKW	  100
 get_user_string
 ; ---------------
 ; Backing up registers
-; ADD R6, R6, #-1
-; STR R0, R6, #0
+ADD R6, R6, #-1
+STR R0, R6, #0
 
 ADD R6, R6, #-1
 STR R1, R6, #0
@@ -138,32 +152,26 @@ STR R7, R6, #0
 
 ; your code goes here
 ; LEA R1 user_string
-LD R2, ENDL_MASK
-; NOTE Empty string should be a palindrome
-; NOTE  Don't backup return values
+; LEA R2 user_prompt
+ADD R0, R2, x0 ; R0 holds user_prompt to print
+    PUTS
+
+LD R2, ENDL_MASK ; R2 replaced to hold ENDL_MASK (NOT -> ADD #1)
 
 WHILE_INPUT
     GETC
     OUT
 
-    ADD R3, R0, R2
-    BRz WHILE_INPUT_END
-    STR R0, R1, #0
-    BR WHILE_INPUT
-WHILE_INPUT_END
+    ADD R3, R0, R2 ; Input + ENDL_MASK
+    BRz WHILE_INPUT_END ; if ENDL_MASK + ENDL = 0, stop grabbing input!
+        STR R0, R1, #0 ; R0 into the string
+        ADD R1, R1, #1 ; R1 ++addr for next char
+    BR WHILE_INPUT ; Goes back to grab next char
 
-    ADD R1, R1, #1
-    ADD R5, R5, #1
+WHILE_INPUT_END ; Stops grabbing input
+    STR R3, R2, #0 ; (R3 is holding 0 for WHILE_INPUT_END to run)
+    ; Adds the null to the end of the string
 
-    ADD R1, R1, #1 ; Iterating ADDR
-    STR R1, R0, #0 ;Add value to R1
-
-    ADD R0, R0, R2 ; If R0 is null
-
-; Adding a null at the end of the string
-ADD R1, R1, #1
-ADD R0, R0, x0
-STR R1, R0, #0
 
 ; ---------------
 ; Restoring Registers
@@ -216,8 +224,8 @@ STR R1, R6, #0
 ADD R6, R6, #-1
 STR R2, R6, #0
 
-ADD R6, R6, #-1
-STR R3, R6, #0
+; ADD R6, R6, #-1
+; STR R3, R6, #0
 
 ADD R6, R6, #-1
 STR R4, R6, #0
@@ -229,17 +237,15 @@ ADD R6, R6, #-1
 STR R7, R6, #0
 ; Code below
 
-ADD R3, R3, x0
+ADD R3, R3, x0 ; Initialize R3 (counter)
 
 WHILE_COUNT
-    STR R1, R1, #0
-    ADD R3, R3, #1
-
-    ADD R4, R0, x0 ; Keeps counting until null
-    BRnp WHILE_COUNT
-
-ADD R3, R3, #-1
-
+    LDR R2, R1, #0 ; R2 holds R1's curr char
+    BRz STOP_COUNT ; Stops counting after null
+    ADD R3, R3, #1 ; ++counter
+    ADD R1, R1, #1 ; ++ addr
+    BR WHILE_COUNT ; Checks next char
+STOP_COUNT
 
 
 ; ---------------
@@ -254,8 +260,8 @@ ADD R6, R6, #1
 LDR R4, R6, #0
 ADD R6, R6, #1
 
-LDR R3, R6, #0
-ADD R6, R6, #1
+; LDR R3, R6, #0
+; ADD R6, R6, #1
 
 LDR R2, R6, #0
 ADD R6, R6, #1
@@ -283,12 +289,52 @@ RET
 .ORIG x3400
 palindrome ; Hint, do not change this label and use for recursive alls
 ; Backup all used registers, R7 first, using proper stack discipline
+ADD R6, R6, #-1
+STR R0, R6, #0
+
+ADD R6, R6, #-1
+STR R1, R6, #0
+
+ADD R6, R6, #-1
+STR R2, R6, #0
+
+; ADD R6, R6, #-1
+; STR R3, R6, #0
+
+ADD R6, R6, #-1
+STR R4, R6, #0
+
+ADD R6, R6, #-1
+STR R5, R6, #0
+
+ADD R6, R6, #-1
+STR R7, R6, #0
+; Code below
 
 ; Resture all used registers, R7 last, using proper stack discipline
 JSR palindrome
 
 DONE_CHECK
+; ---------------
 ; Restoring Registers
+; ---------------
+LDR R7, R6, #0
+ADD R6, R6, #1
+
+LDR R5, R6, #0
+ADD R6, R6, #1
+
+LDR R4, R6, #0
+ADD R6, R6, #1
+
+; LDR R3, R6, #0
+; ADD R6, R6, #1
+
+LDR R2, R6, #0
+ADD R6, R6, #1
+
+LDR R1, R6, #0
+ADD R6, R6, #1
 
 
 RET

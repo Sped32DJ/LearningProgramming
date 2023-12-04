@@ -34,9 +34,9 @@ main
 ; * put your code here
 
 LEA R1, user_string ; Holds string, pointer to first char, BEG INDEX
-LEA R2, user_prompt
+LEA R2, user_prompt ; Holds prompt (temporarily)
 
-LD R5, get_user_string_addr
+LD R5, get_user_string_addr ; string from user input
     JSRR R5 ; R1 now holds filled input_string
 
 ; Get size of input_string
@@ -47,14 +47,14 @@ LD R5, strlen_addr
 ; call palindrome method
 ; * put your code here
 LEA R1, user_string
-ADD R2, R1, R3 ; R2 holds the last char (The null char)
+ADD R2, R1, R3 ; R2 now holds the last char
 
 ADD R3, R3, #0 ; if str.size = 0, you can skip the R2 -= 2
-BRz IS_EMPTY
+BRz IS_EMPTY ; If R2 is null char, skips --R2 (empty string case)
     ADD R2, R2, #-1 ; R2 holds the last char
 IS_EMPTY
 
-AND R0, R0, x0 ; intialize 0
+AND R0, R0, x0 ; intialize 0 (R0 bool parameter)
 LD R5, palindrome_addr
 JSRR R5 ; If bool R0 = 1(true), it is a palindrome!
 
@@ -67,7 +67,7 @@ LEA R0, result_string
     PUTS
 
 ADD R1, R1, #0
-BRnp PRINT_FINAL_RESULT ; Skips "not" if it is valid
+BRnp PRINT_FINAL_RESULT ; Skips "not" if it is valid palindrome
 
 
 ; decide whether or not to print "not"
@@ -107,7 +107,7 @@ not_string           .STRINGZ "not "
 final_string         .STRINGZ "a palindrome\n"
 
 ; Reserve memory for user input string
-string_size          .FILL #100   ; Will be overwritten
+;string_size          .FILL #100   ; Will be overwritten
 user_string          .BLKW	  100
 
 .END
@@ -161,7 +161,7 @@ WHILE_INPUT
     OUT
 
     ADD R3, R0, R2 ; Input + ENDL_MASK
-    BRnp NOT_AN_ENDL ;
+    BRnp NOT_AN_ENDL
         STR R3, R1, #0 ; Stores R3 (holding 0) into R1 (last char is null)
         BR WHILE_INPUT_END
     NOT_AN_ENDL
@@ -237,7 +237,7 @@ ADD R3, R3, x0 ; Initialize R3 (counter)
 
 WHILE_COUNT
     LDR R2, R1, #0 ; R2 holds R1's curr char
-    BRz STOP_COUNT ; Stops counting after null
+    BRz STOP_COUNT ; Stops counting after null (Doesn't iterate if there is a null)
     ADD R3, R3, #1 ; ++counter
     ADD R1, R1, #1 ; ++ addr
     BR WHILE_COUNT ; Checks next char
@@ -310,11 +310,10 @@ NOT R1, R1
 ADD R1, R1, #1 ; R1 is now a mask
 
 ADD R3, R1, R2 ; first addr (negative) and last addr -> if positive, keep checking
-BRp CHECK_RANGE_PASSED ; Checks if R1 < R2
+BRp CHECK_RANGE_PASSED ; Checks if R1 < R2, then keeps going
     AND R0, R0, x0
-    ADD R0, R0, #1 ; R0 = true
+    ADD R0, R0, #1 ; R0 = true because R1 is ahead of R2 (Implying successful checks happened)
     BR DONE_CHECK ; Ends because this implies first char and last char addr are equal
-                  ; Good base case
 CHECK_RANGE_PASSED
 
 ; R1 back original val
@@ -332,7 +331,7 @@ NOT R4, R4
 ADD R4, R4, #1
 
 ADD R3, R4, R5 ; R3 holds sum of -R4 and R5 (should = 0)
-    BRz CHARS_ARE_EQUAL
+    BRz CHARS_ARE_EQUAL ; If not equal, bool is false
         AND R0, R0, #0 ; R0 = false
         BR DONE_CHECK
 

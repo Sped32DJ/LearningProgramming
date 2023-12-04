@@ -37,7 +37,7 @@ LEA R1, user_string ; Holds string, pointer to first char, BEG INDEX
 LEA R2, user_prompt
 
 LD R5, get_user_string_addr
-    JSRR R5
+    JSRR R5 ; R1 now holds filled input_string
 
 ; Get size of input_string
 LEA R1, user_string ; Parameter
@@ -47,13 +47,14 @@ LD R5, strlen_addr
 ; call palindrome method
 ; * put your code here
 LEA R1, user_string
-ADD R2, R1, R0 ; R2 holds the last char (The null char)
+ADD R2, R1, R3 ; R2 holds the last char (The null char)
 
 ADD R3, R3, #0 ; if str.size = 0, you can skip the R2 -= 2
 BRz IS_EMPTY
     ADD R2, R2, #-1 ; R2 holds the last char
 IS_EMPTY
 
+AND R0, R0, x0 ; intialize 0
 LD R5, palindrome_addr
 JSRR R5 ; If bool R0 = 1(true), it is a palindrome!
 
@@ -128,9 +129,6 @@ get_user_string
 ; ---------------
 ; Backing up registers
 ADD R6, R6, #-1
-STR R0, R6, #0
-
-ADD R6, R6, #-1
 STR R1, R6, #0
 
 ADD R6, R6, #-1
@@ -163,14 +161,15 @@ WHILE_INPUT
     OUT
 
     ADD R3, R0, R2 ; Input + ENDL_MASK
-    BRz WHILE_INPUT_END ; if ENDL_MASK + ENDL = 0, stop grabbing input!
-        STR R0, R1, #0 ; R0 into the string
-        ADD R1, R1, #1 ; R1 ++addr for next char
+    BRnp NOT_AN_ENDL ;
+        STR R3, R1, #0 ; Stores R3 (holding 0) into R1 (last char is null)
+        BR WHILE_INPUT_END
+    NOT_AN_ENDL
+    STR R0, R1, #0 ; Stores input into curr addr
+    ADD R1, R1, #1 ; ++addr, ready for next char
     BR WHILE_INPUT ; Goes back to grab next char
 
 WHILE_INPUT_END ; Stops grabbing input
-    STR R3, R2, #0 ; (R3 is holding 0 for WHILE_INPUT_END to run)
-    ; Adds the null to the end of the string
 
 
 ; ---------------
@@ -215,9 +214,6 @@ ENDL_MASK            .FILL      x-0A ; Two's complement of \n, NOT -> ADD #1
 strlen
 
 ; Backup all used registers, R7 first, using proper stack discipline
-ADD R6, R6, #-1
-STR R0, R6, #0
-
 ADD R6, R6, #-1
 STR R1, R6, #0
 
@@ -279,27 +275,25 @@ RET
 ;---------------------------------------------------------------------------------
 ;=================================================
 ; Subroutine: palindrome
-; Parameter: R1(string)
-; Parameter: R2 begginning index
-; Parameter: R3 ending index
-; Postcondition:
-; Return Value: R0 (holds palindrome bool)
+; Parameter: R1 - first char of string
+;       R2 - Last char of string
+;       R6 - Holds stack
+;       R3 - Used to hold result of tests
+;               (Checks if the palindrome identity tests are passed)
+; Return Value: R0 (bool holding true or false)
 ;=================================================
 
 .ORIG x3400
 palindrome ; Hint, do not change this label and use for recursive alls
 ; Backup all used registers, R7 first, using proper stack discipline
 ADD R6, R6, #-1
-STR R0, R6, #0
-
-ADD R6, R6, #-1
 STR R1, R6, #0
 
 ADD R6, R6, #-1
 STR R2, R6, #0
 
-; ADD R6, R6, #-1
-; STR R3, R6, #0
+ADD R6, R6, #-1
+STR R3, R6, #0
 
 ADD R6, R6, #-1
 STR R4, R6, #0
@@ -311,10 +305,45 @@ ADD R6, R6, #-1
 STR R7, R6, #0
 ; Code below
 
-; Resture all used registers, R7 last, using proper stack discipline
-JSR palindrome
+; Test 1: Range check
+NOT R1, R1
+ADD R1, R1, #1 ; R1 is now a mask
 
-DONE_CHECK
+ADD R3, R1, R2 ; first addr (negative) and last addr -> if positive, keep checking
+BRp CHECK_RANGE_PASSED ; Checks if R1 < R2
+    AND R0, R0, x0
+    ADD R0, R0, #1 ; R0 = true
+    BR DONE_CHECK ; Ends because this implies first char and last char addr are equal
+                  ; Good base case
+CHECK_RANGE_PASSED
+
+; R1 back original val
+ADD R1, R1, #-1
+NOT R1, R1
+
+; Range test passed!!
+
+; Test 2: Check First and last char similarity check
+LDR R4, R1, #0  ; R4 Holds first char
+LDR R5, R2, #0  ; R5 holds last char
+
+; R4 now holds mask
+NOT R4, R4
+ADD R4, R4, #1
+
+ADD R3, R4, R5 ; R3 holds sum of -R4 and R5 (should = 0)
+    BRz CHARS_ARE_EQUAL
+        AND R0, R0, #0 ; R0 = false
+        BR DONE_CHECK
+
+CHARS_ARE_EQUAL
+
+; Iterating the parameters for next recursive call
+ADD R1, R1, #1
+ADD R2, R2, #-1
+JSR palindrome ; Recursively calling the top of the subroutine
+
+DONE_CHECK ; Must be after the JSR!!
 ; ---------------
 ; Restoring Registers
 ; ---------------
@@ -327,8 +356,8 @@ ADD R6, R6, #1
 LDR R4, R6, #0
 ADD R6, R6, #1
 
-; LDR R3, R6, #0
-; ADD R6, R6, #1
+LDR R3, R6, #0
+ADD R6, R6, #1
 
 LDR R2, R6, #0
 ADD R6, R6, #1
@@ -342,7 +371,7 @@ RET
 ; ---------------
 .END
 
-; Pseudo
+; Pseudo code
 ; bool is_palindrome(char *beg, char *end){
 ; if (beg >= end) return true
 ;BR True_ending
@@ -360,59 +389,3 @@ RET
 ;False check
 ; if arr[begINDEx] - ARR[ENDINDEX]
 ; if BRnp return false
-
-; .ORIG x
-
-; ---------------
-
-; Backing up registers
-
-; ADD R6, R6, #-1
-; STR R0, R6, #0
-
-; ADD R6, R6, #-1
-; STR R1, R6, #0
-
-; ADD R6, R6, #-1
-; STR R2, R6, #0
-
-; ADD R6, R6, #-1
-; STR R3, R6, #0
-
-; ADD R6, R6, #-1
-; STR R4, R6, #0
-
-; ADD R6, R6, #-1
-; STR R5, R6, #0
-
-; ADD R6, R6, #-1
-; STR R7, R6, #0
-
-; ; ---------------
-
-; ; your code goes here
-; ; ---------------
-
-; ; Restoring Registers
-
-; LDR R7, R6, #0
-; ADD R6, R6, #1
-
-; LDR R5, R6, #0
-; ADD R6, R6, #1
-
-; LDR R4, R6, #0
-; ADD R6, R6, #1
-
-; LDR R3, R6, #0
-; ADD R6, R6, #1
-
-; LDR R2, R6, #0
-; ADD R6, R6, #1
-
-; LDR R1, R6, #0
-; ADD R6, R6, #1
-
-; LDR R0, R6, #0
-; ADD R6, R6, #1
-; ; ---------------

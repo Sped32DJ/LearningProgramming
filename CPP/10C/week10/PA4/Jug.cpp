@@ -104,13 +104,21 @@ for (int i = 0; i <= Ca; ++i) {
 } // Everyting from here and up is lecture code */
 int Jug::findInGraph(int A, int B, vector<int> &unfinishedV) {
   for (size_t i = 0; i < graph.size(); ++i) {
-    if ()
+    if ((graph[i].A == A) && (graph[i].B == B)) {
+      return i;
+    }
   }
-  // FIX  Ended here
+
+  // New combination
+  // Then add to the graph
+  int id = graph.size();
+  unfinishedV.push_back(id);
+  graph.push_back(Vertex(A, B, id));
+  return id;
 }
 
 // Standardized code of the well known dijkstra's method
-void Jug::dijkstraPath(Vertex &start) {
+void Jug::dijkstraMethod(Vertex &start) {
 
   queue<Vertex *> unfinishedQ; // Q of vertex objects
 
@@ -152,7 +160,26 @@ void Jug::dijkstraPath(Vertex &start) {
   }
 }
 
+// TODO
 Jug::~Jug() {}
+
+void Jug::printGraph() const {
+  cout << "ID\t(A,B)\tfillA\tfillB\temptyA\temptyB\tpourAB\tpourBA\n";
+  for (const auto &ver : graph) { // TODO  simplicity
+    cout << ver.id << "\t(" << ver.A << ',' << ver.B << ')';
+    for (int i = 0; i < 6; ++i) {
+      printState(ver.newState[i]);
+    }
+    cout << endl;
+  }
+}
+
+void Jug::printState(int i) const {
+  cout << '\t' << i;
+  if (i != -1) {
+    cout << '(' << graph[i].A << ',' << graph[i].B << ')';
+  }
+}
 
 // solve is used to check input and find the solution if one exists
 // returns -1 if invalid inputs. solution set to empty string.

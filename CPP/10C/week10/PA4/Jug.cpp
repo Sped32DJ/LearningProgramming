@@ -1,12 +1,17 @@
 #include "Jug.h"
 #include <climits>
 #include <iostream>
+#include <list>
 #include <queue>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 using namespace std;
+
+Vertex::Vertex() : a(0), b(0), distance(INT_MAX), decision(""), prev(0) {}
+Vertex::~Vertex() { neighbors.clear(); }
 
 Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
          int cpBA)
@@ -16,11 +21,22 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
   // Takes care of all valid logic
   // Returns true if invalid
   if (isInvalid(Ca, Cb, N, cfA, cfB, ceA, ceB, cpAB, cpBA)) {
-    valid = false;
-    return; // Can't return -1 because constructor
+    throw runtime_error("Invalid, could not be constructed");
+    return; // I think useless
   }
 
-  vector<int> unfinishedNs; // Holds the weights of the nodes
+  paths.push_back("fill A");
+  paths.push_back("fill B");
+  paths.push_back("empty A");
+  paths.push_back("empty B");
+  paths.push_back("pour A B");
+  paths.push_back("pour B A ");
+
+  Vertex *origin = new Vertex();
+  verticies.push_back(origin);
+  makeGraph(origin);
+
+  /* vector<int> unfinishedNs; // Holds the weights of the nodes
   findInGraph(0, 0, unfinishedNs);
 
   while (unfinishedNs.size() > 0) {
@@ -63,6 +79,89 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
     graph[id].newState[3] = emptyB;
     graph[id].newState[4] = pourAtoB;
     graph[id].newState[5] = pourBtoA;
+  } */
+}
+void Jug::makeGraph(Vertex *vert) {
+  FillAJug(vert);
+  FillBJug(vert);
+  EmptyAJug(vert);
+  EmptyBJug(vert);
+  pourAB(vert);
+  pourBA(vert);
+
+  for (auto neighbor : vert->neighbors) {
+    makeGraph(vertices.at(neighbor.first));
+  }
+}
+
+void Jug::FillAJug(Vertex *vert) {
+  if (vert->a < Ca) {
+    AddVertex(vert, Ca, vert->b, cfA);
+  }
+}
+
+void Jug::FillBJug(Vertex *vert) {
+  if (vert->b < Cb) {
+    AddVertex(vert, vert->a, Cb, cfB);
+  }
+}
+
+void Jug::EmptyAJug(Vertex *vert) {
+  if (vert->a > 0) {
+    AddVertex(vert, 0, vert->jugB, ceA);
+  }
+}
+
+void Jug::EmptyBJug(Vertex *vert) {
+  if (vert->b > 0) {
+    AddVertex(vert, vert->a, 0, ceB);
+  }
+}
+
+void Jug::pourAB(Vertex *vert) {
+  if (vert->b < Cb && vert->a > 0) {
+    Vertex *newVert = AddVertex(vert, vert->jugA, vert->jugB, 0);
+    pourJugIntoJug(newVert, &Vertex::jugA, &Vertex::jugB, Cb, cpAB);
+  }
+}
+
+void Jug::pourBA(Vertex *vert) {
+  if (vert->jugA < Ca && vert->jugB > 0) {
+    Vertex *newVert = AddVertex(vert, vert->jugA, vert->jugB, 0);
+    pourJugIntoJug(newVert, &Vertex::jugB, &Vertex::jugA, Ca, cpBA);
+  }
+}
+
+Vertex *Jug::AddVertex(Vertex *vert, int A, int B, int cost) {
+  Vertex *newVert = new Vertex();
+  newVert->jugA = jugA;
+  newVert->jugB = jugB;
+  newVert->decision = paths.at(i);
+  addUniqueVertex(newVert);
+  vert->neighbors.push_back(make_pair(vertices.size() - 1, cost));
+  return newVert;
+}
+
+void Jug::pourJugIntoJug(Vertex *vert, int Vertex::*from, int Vertex::*to,
+                         int toCapacity, int cost) {
+  while ((vert->*to) < toCapacity && (vert->*from) > 0) {
+    (vert->*to) += 1;
+    (vert->*from) -= 1;
+  }
+}
+
+void Jug::addUniqueVertex(Vertex *newVert) {
+  bool duplicate = false;
+  for (unsigned j = 0; j < vertices.size(); j++) {
+    if (vertices.at(j)->jugA == newVert->jugA &&
+        vertices.at(j)->jugB == newVert->jugB) {
+      duplicate = true;
+    }
+  }
+  if (!duplicate) {
+    vertices.push_back(newVert);
+  } else {
+    delete newVert;
   }
 }
 
@@ -119,43 +218,29 @@ int Jug::findInGraph(int A, int B, vector<int> &unfinishedV) {
 }
 
 // Standardized code of the well known dijkstra's method
-void Jug::dijkstraMethod(Vertex &start) {
-
+void Jug::dijkstraMethod(vector<Vertex> &graph, vector<Vertex *> &visited) {
   queue<Vertex *> unfinishedQ; // Q of vertex objects
 
   for (size_t i = 0; i < graph.size(); ++i) {
     graph.at(i).distance = INT_MAX; // Set all distances to infinity
-    graph.at(i).predV = nullptr;
+    graph.at(i).prev = nullptr;
   }
 
-  start.distance = 0;
-  unfinishedQ.push(&start); // The stack holds the path
-  int otherPath;
+  graph.at(0)->distance = 0;
 
-  Vertex *otherVertices;
-  Vertex *curr;
+  for (size_t i = 0; i < graph.size(); ++i) {
+    q.push(graph.at(i));
+  }
 
-  int edgeWeight;
-  int newState;
-
-  while (!unfinishedQ.empty()) { // if empty start at curr and pop the queue
-    curr = unfinishedQ.front();
-    unfinishedQ.pop();
-
-    for (size_t i = 0; i < curr->newState.size();
-         ++i) { // Loops over all possibilities
-      newState = curr->newState[i];
-      if (newState != -1) { // edge weight
-        otherVertices = &graph.at(newState);
-        edgeWeight = getWeight(i);
-        otherPath = curr->distance + edgeWeight;
-
-        if (otherPath <
-            otherVertices->distance) { // change verticies if shorter path
-          otherVertices->distance = otherPath;
-          otherVertices->predV = curr;
-          unfinishedQ.push(otherVertices);
-        }
+  while (!q.empty()) {
+    Vertex *curr = q.front();
+    visited.push_backu(curr);
+    q.pop();
+    for (auto &neighbor : curr->neighbors) {
+      if (graph.at(neighbor.first)->distance >
+          curr->distance + neighbor.second) {
+        graph.at(neighbor.first)->distance = curr->distance + neighbor.second;
+        graph.at(neighbor.first)->prev = curr;
       }
     }
   }
@@ -188,9 +273,29 @@ void Jug::printState(int i) const {
 // to empty string. returns 1 if solution is found and stores solution steps
 // in solution string.
 int Jug::solve(string &solution) {
-  if (solution == "" || input.bad())
+  // invalid game
+  if (isInvalid()) {
+    solution.clear();
     return -1;
-  solution = "";
+  }
+
+  if (!isPossible(verticies)) {
+    solution.clear();
+    return 0;
+  }
+  vector<Vertex *> visited;           // will get modifed by dijkstraMethod
+  dijkstraMethod(verticies, visited); // verticies now holds shortest path
+
+  auto * // TODO
+}
+
+bool Jug::isPossible(const vector<Vertex> &verticies) const {
+  for (size_t i = 0; i < verticies.size(); ++i) {
+    if (verticies.at(i)->a == 0 && verticies.at(i)->b == N) {
+      return true;
+    }
+  }
+  return false; // whole loop ran, deemed not possible!
 }
 
 int Jug::getWeight(int index) const {

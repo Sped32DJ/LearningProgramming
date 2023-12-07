@@ -1,18 +1,21 @@
 #pragma once
 #include <iostream>
+#include <list>
 #include <string>
 #include <vector>
 using namespace std;
 
 struct Vertex {
+  list<pair<int, int>> neighbors;
+
   int a;
   int b;
-  int id;
   int distance;
-  Vertex *predV;
-  vector<int> newState; // holds adjacent nodes
+  string decision;
+  Vertex *prev;
 
-  Vertex(int a, int b, int id) : a(a), b(b), id(id), newState(6, -1) {}
+  Vertex();
+  ~Vertex();
 };
 
 class Jug {
@@ -26,19 +29,34 @@ public:
   // to empty string. returns 1 if solution is found and stores solution steps
   // in solution string.
   int solve(string &);
-  void dijkstraMethod(Vertex &);
-  int getWeight(int) const;
 
 private:
+  void dijkstraMethod(vector<Vertex *> &, vector<Vertex *> &);
+  int getWeight(int) const;
+
+  void makeGraph(Vertex *);
+
   int findInGraph(int, int, vector<int> &);
   void showState(int) const;
+
+  bool isInvalid(const vector<Vertex> &) const;
+  bool isPossible(int, int, int, int, int, int, int, int, int) const;
+
   void printGraph() const;
   void printState(int i) const;
-  bool isInvalid(int, int, int, int, int, int, int, int, int) const;
 
-  string solution;
-  bool valid = true;
-  vector<Vertex> graph;
+  // All used to make a graph
+  void makeGraph(Vertex *vert);
+  void FillAJug(Vertex *vert);
+  void FillBJug(Vertex *vert);
+  void EmptyAJug(Vertex *vert);
+  void EmptyBJug(Vertex *vert);
+  void pourAB(Vertex *vert);
+  void pourBA(Vertex *vert);
+  Vertex *AddVertex(Vertex *vert, int A, int B, int cost);
+
+  vector<string> paths;       // THE path
+  vector<Vertex *> verticies; // The possibilities
 
   int Ca;   // capacity of jug a
   int Cb;   // capacity of jug b

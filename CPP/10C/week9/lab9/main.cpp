@@ -1,39 +1,10 @@
 #include <iostream>
 using namespace std;
 
-void Quicksort_midpoint(
-    int numbers[], int i,
-    int k) // this function sorts the given array in the range from i to k
-           // using quicksort method. In this function, pivot is the midpoint
-           // element (numbers[(i+k)/2]). (implementation of this function is
-           // given in section 21.5)
-{
-  if (i < k) {
-    pi = partition(numbers[], low, high);
-
-    Quicksort_midpoint(numbers[], i, k - 1); // before partition
-    Quicksort_midpoint(numbers[], i + 1, k); // after partition
-  }
-}
-
-void partition(int arr[], int start, int end) {
-  int pivot = arr[start];
-  ;
-}
-
-void Quicksort_medianOfThree(
-    int numbers[], int i,
-    int k); // this function utilizes different pivot selection technique in
-            // quicksort algorithm. The pivot is the median of the following
-            // three values: leftmost (numbers[i]), midpoint
-            // (numbers[(i+k)/2]) and rightmost (numbers[k]). You should
-            // modify the partition function given in section 21.5 to select
-            // the pivot using median-of-three technique.
-void InsertionSort(
-    int numbers[],
-    int numbersSize); // this function sorts the given array using InsertionSort
-                      // method. (implementation of this method is provided in
-                      // section 21.3).
+void Quicksort_midpoint(int numbers[], int i, int k);
+void partition(int arr[], int start, int end);
+void Quicksort_medianOfThree(int numbers[], int i, int k);
+void InsertionSort(int numbers[], int numbersSize);
 
 static const int NUMBERS_SIZE = 50000;
 
@@ -52,6 +23,55 @@ int main() {
   return 0;
 }
 
-void Quicksort_midpoint(int numbers[], int i, int k);
-void Quicksort_medianOfThree(int numbers[], int i, int k);
-void InsertionSort(int numbers[], int numbersSize);
+void Quicksort_midpoint(
+    int numbers[], int i,
+    int k) // this function sorts the given array in the range from i to k
+           // using quicksort method. In this function, pivot is the midpoint
+           // element (numbers[(i+k)/2]). (implementation of this function is
+           // given in section 21.5)
+{
+  if (i < k) {
+    int pivot = numbers[(i + k) / 2];
+    int left = i;
+    int right = k;
+    bool check = false;
+
+    while (!check) {
+      while (numbers[left] < pivot) {
+        ++left;
+      }
+      while (numbers[right] > pivot) {
+        --right;
+      }
+      if (left >= right) {
+        check = true;
+        break;
+      }
+    }
+
+    // right holds the high index
+    Quicksort_midpoint(numbers[], i, right);     // before partition
+    Quicksort_midpoint(numbers[], right + 1, k); // after partition
+  }
+}
+
+void partition(int arr[], int start, int end) {
+  int pivot = arr[start];
+  ;
+}
+
+void Quicksort_medianOfThree(
+    int numbers[], int i,
+    int k) // this function utilizes different pivot selection technique in
+           // quicksort algorithm. The pivot is the median of the following
+           // three values: leftmost (numbers[i]), midpoint
+           // (numbers[(i+k)/2]) and rightmost (numbers[k]). You should
+           // modify the partition function given in section 21.5 to select
+           // the pivot using median-of-three technique.
+{}
+
+void InsertionSort(int numbers[],
+                   int numbersSize) // this function sorts the given array using
+                                    // InsertionSort method. (implementation of
+                                    // this method is provided in section 21.3).
+{}

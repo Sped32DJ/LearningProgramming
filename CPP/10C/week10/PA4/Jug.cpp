@@ -1,4 +1,5 @@
 #include "Jug.h"
+#include <climits>
 #include <iostream>
 #include <queue>
 #include <sstream>
@@ -20,7 +21,7 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
   }
 
   vector<int> unfinishedNs; // Holds the weights of the nodes
-  findIngraph(0, 0, unfinishedNs);
+  findInGraph(0, 0, unfinishedNs);
 
   while (unfinishedNs.size() > 0) {
 
@@ -33,7 +34,7 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
     int B = graph[id].b;
 
     // State: filling A
-    int fillA = findIngraph(Cb, B, unfinishedNs);
+    int fillA = findInGraph(Cb, B, unfinishedNs);
 
     // State: Filling B
     int fillB = findInGraph(A, Cb, unfinishedNs);
@@ -104,7 +105,7 @@ for (int i = 0; i <= Ca; ++i) {
 } // Everyting from here and up is lecture code */
 int Jug::findInGraph(int A, int B, vector<int> &unfinishedV) {
   for (size_t i = 0; i < graph.size(); ++i) {
-    if ((graph[i].A == A) && (graph[i].B == B)) {
+    if ((graph[i].a == A) && (graph[i].b == B)) {
       return i;
     }
   }
@@ -145,14 +146,14 @@ void Jug::dijkstraMethod(Vertex &start) {
          ++i) { // Loops over all possibilities
       newState = curr->newState[i];
       if (newState != -1) { // edge weight
-        otherPathVertices = &graph.at(newState);
+        otherVertices = &graph.at(newState);
         edgeWeight = getWeight(i);
         otherPath = curr->distance + edgeWeight;
 
         if (otherPath <
             otherVertices->distance) { // change verticies if shorter path
           otherVertices->distance = otherPath;
-          otherVertices0->predV = curr;
+          otherVertices->predV = curr;
           unfinishedQ.push(otherVertices);
         }
       }
@@ -166,7 +167,7 @@ Jug::~Jug() {}
 void Jug::printGraph() const {
   cout << "ID\t(A,B)\tfillA\tfillB\temptyA\temptyB\tpourAB\tpourBA\n";
   for (const auto &ver : graph) { // TODO  simplicity
-    cout << ver.id << "\t(" << ver.A << ',' << ver.B << ')';
+    cout << ver.id << "\t(" << ver.a << ',' << ver.b << ')';
     for (int i = 0; i < 6; ++i) {
       printState(ver.newState[i]);
     }
@@ -177,7 +178,7 @@ void Jug::printGraph() const {
 void Jug::printState(int i) const {
   cout << '\t' << i;
   if (i != -1) {
-    cout << '(' << graph[i].A << ',' << graph[i].B << ')';
+    cout << '(' << graph[i].a << ',' << graph[i].b << ')';
   }
 }
 
@@ -186,6 +187,12 @@ void Jug::printState(int i) const {
 // returns 0 if inputs are valid but a solution does not exist. solution set
 // to empty string. returns 1 if solution is found and stores solution steps
 // in solution string.
+int Jug::solve(string &solution) {
+  if (solution == "" || input.bad())
+    return -1;
+  solution = "";
+}
+
 int Jug::getWeight(int index) const {
   switch (index) {
   case 0:
@@ -201,12 +208,6 @@ int Jug::getWeight(int index) const {
   default:
     return cpBA;
   }
-}
-
-int Jug::solve(string &solution) {
-  if (solution == "")
-    return -1;
-  return 0;
 }
 
 // outputs true if invalid

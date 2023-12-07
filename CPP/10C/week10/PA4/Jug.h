@@ -25,19 +25,20 @@ public:
   // returns 0 if inputs are valid but a solution does not exist. solution set
   // to empty string. returns 1 if solution is found and stores solution steps
   // in solution string.
-  int solve(string &solution);
-  void dijkstraMethod(Vectex &);
+  int solve(string &);
+  void dijkstraMethod(Vertex &);
   int getWeight(int) const;
 
 private:
   int findInGraph(int, int, vector<int> &);
   void showState(int) const;
   void printGraph() const;
+  void printState(int i) const;
   bool isInvalid(int, int, int, int, int, int, int, int, int) const;
 
   string solution;
   bool valid = true;
-  vector<Vectex> graph;
+  vector<Vertex> graph;
 
   int Ca;   // capacity of jug a
   int Cb;   // capacity of jug b

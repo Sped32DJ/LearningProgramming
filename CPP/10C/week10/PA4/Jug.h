@@ -33,17 +33,12 @@ public:
 private:
   void dijkstraMethod(vector<Vertex *> &, vector<Vertex *> &);
   int getWeight(int) const;
+  string getPath(vector<Vertex *> &);
 
-  void makeGraph(Vertex *);
-
-  int findInGraph(int, int, vector<int> &);
   void showState(int) const;
 
-  bool isInvalid(const vector<Vertex> &) const;
-  bool isPossible(int, int, int, int, int, int, int, int, int) const;
-
-  void printGraph() const;
-  void printState(int i) const;
+  bool isPossible(vector<Vertex *> &) const;
+  bool isInvalid(int, int, int, int, int, int, int, int, int) const;
 
   // All used to make a graph
   void makeGraph(Vertex *vert);
@@ -54,6 +49,8 @@ private:
   void pourAB(Vertex *vert);
   void pourBA(Vertex *vert);
   Vertex *AddVertex(Vertex *vert, int A, int B, int cost);
+  void addUniqueVertex(Vertex *newVert);
+  void pourIntoJug(Vertex *, int Vertex::*, int Vertex::*, int, int);
 
   vector<string> paths;       // THE path
   vector<Vertex *> verticies; // The possibilities

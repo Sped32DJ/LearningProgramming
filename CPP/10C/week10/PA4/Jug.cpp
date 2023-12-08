@@ -4,6 +4,7 @@
 #include <list>
 #include <queue>
 #include <sstream>
+#include <stack>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -90,7 +91,7 @@ void Jug::makeGraph(Vertex *vert) {
   pourBA(vert);
 
   for (auto neighbor : vert->neighbors) {
-    makeGraph(vertices.at(neighbor.first));
+    makeGraph(verticies.at(neighbor.first));
   }
 }
 
@@ -108,7 +109,7 @@ void Jug::FillBJug(Vertex *vert) {
 
 void Jug::EmptyAJug(Vertex *vert) {
   if (vert->a > 0) {
-    AddVertex(vert, 0, vert->jugB, ceA);
+    AddVertex(vert, 0, vert->b, ceA);
   }
 }
 
@@ -120,30 +121,30 @@ void Jug::EmptyBJug(Vertex *vert) {
 
 void Jug::pourAB(Vertex *vert) {
   if (vert->b < Cb && vert->a > 0) {
-    Vertex *newVert = AddVertex(vert, vert->jugA, vert->jugB, 0);
-    pourJugIntoJug(newVert, &Vertex::jugA, &Vertex::jugB, Cb, cpAB);
+    Vertex *newVert = AddVertex(vert, vert->a, vert->b, 0);
+    pourIntoJug(newVert, &Vertex::a, &Vertex::b, Cb, cpAB);
   }
 }
 
 void Jug::pourBA(Vertex *vert) {
-  if (vert->jugA < Ca && vert->jugB > 0) {
-    Vertex *newVert = AddVertex(vert, vert->jugA, vert->jugB, 0);
-    pourJugIntoJug(newVert, &Vertex::jugB, &Vertex::jugA, Ca, cpBA);
+  if (vert->a < Ca && vert->b > 0) {
+    Vertex *newVert = AddVertex(vert, vert->a, vert->b, 0);
+    pourIntoJug(newVert, &Vertex::b, &Vertex::a, Ca, cpBA);
   }
 }
 
 Vertex *Jug::AddVertex(Vertex *vert, int A, int B, int cost) {
   Vertex *newVert = new Vertex();
-  newVert->jugA = jugA;
-  newVert->jugB = jugB;
+  newVert->a = A;
+  newVert->b = B;
   newVert->decision = paths.at(i);
   addUniqueVertex(newVert);
-  vert->neighbors.push_back(make_pair(vertices.size() - 1, cost));
+  vert->neighbors.push_back(make_pair(verticies.size() - 1, cost));
   return newVert;
 }
 
-void Jug::pourJugIntoJug(Vertex *vert, int Vertex::*from, int Vertex::*to,
-                         int toCapacity, int cost) {
+void Jug::pourIntoJug(Vertex *vert, int Vertex::*from, int Vertex::*to,
+                      int toCapacity, int cost) {
   while ((vert->*to) < toCapacity && (vert->*from) > 0) {
     (vert->*to) += 1;
     (vert->*from) -= 1;
@@ -152,14 +153,13 @@ void Jug::pourJugIntoJug(Vertex *vert, int Vertex::*from, int Vertex::*to,
 
 void Jug::addUniqueVertex(Vertex *newVert) {
   bool duplicate = false;
-  for (unsigned j = 0; j < vertices.size(); j++) {
-    if (vertices.at(j)->jugA == newVert->jugA &&
-        vertices.at(j)->jugB == newVert->jugB) {
+  for (unsigned j = 0; j < verticies.size(); j++) {
+    if (verticies.at(j)->a == newVert->a && verticies.at(j)->b == newVert->b) {
       duplicate = true;
     }
   }
   if (!duplicate) {
-    vertices.push_back(newVert);
+    verticies.push_back(newVert);
   } else {
     delete newVert;
   }
@@ -202,40 +202,40 @@ for (int i = 0; i <= Ca; ++i) {
     //  )
   }
 } // Everyting from here and up is lecture code */
-int Jug::findInGraph(int A, int B, vector<int> &unfinishedV) {
+/* int Jug::findInGraph(int A, int B, vector<int> &unfinishedV) {
   for (size_t i = 0; i < graph.size(); ++i) {
     if ((graph[i].a == A) && (graph[i].b == B)) {
       return i;
     }
-  }
+  } */
 
-  // New combination
-  // Then add to the graph
-  int id = graph.size();
-  unfinishedV.push_back(id);
-  graph.push_back(Vertex(A, B, id));
-  return id;
-}
+// New combination
+// Then add to the graph
+/* int id = graph.size();
+unfinishedV.push_back(id);
+graph.push_back(Vertex(A, B, id));
+return id;
+} */
 
 // Standardized code of the well known dijkstra's method
-void Jug::dijkstraMethod(vector<Vertex> &graph, vector<Vertex *> &visited) {
+void Jug::dijkstraMethod(vector<Vertex *> &graph, vector<Vertex *> &visited) {
   queue<Vertex *> unfinishedQ; // Q of vertex objects
 
   for (size_t i = 0; i < graph.size(); ++i) {
-    graph.at(i).distance = INT_MAX; // Set all distances to infinity
-    graph.at(i).prev = nullptr;
+    graph.at(i)->distance = INT_MAX; // Set all distances to infinity
+    graph.at(i)->prev = nullptr;
   }
 
   graph.at(0)->distance = 0;
 
   for (size_t i = 0; i < graph.size(); ++i) {
-    q.push(graph.at(i));
+    unfinishedQ.push(graph.at(i));
   }
 
-  while (!q.empty()) {
-    Vertex *curr = q.front();
-    visited.push_backu(curr);
-    q.pop();
+  while (!unfinishedQ.empty()) {
+    Vertex *curr = unfinishedQ.front();
+    visited.push_back(curr);
+    unfinishedQ.pop();
     for (auto &neighbor : curr->neighbors) {
       if (graph.at(neighbor.first)->distance >
           curr->distance + neighbor.second) {
@@ -249,7 +249,7 @@ void Jug::dijkstraMethod(vector<Vertex> &graph, vector<Vertex *> &visited) {
 // TODO
 Jug::~Jug() {}
 
-void Jug::printGraph() const {
+/* void Jug::printGraph() const {
   cout << "ID\t(A,B)\tfillA\tfillB\temptyA\temptyB\tpourAB\tpourBA\n";
   for (const auto &ver : graph) { // TODO  simplicity
     cout << ver.id << "\t(" << ver.a << ',' << ver.b << ')';
@@ -265,7 +265,7 @@ void Jug::printState(int i) const {
   if (i != -1) {
     cout << '(' << graph[i].a << ',' << graph[i].b << ')';
   }
-}
+} */
 
 // solve is used to check input and find the solution if one exists
 // returns -1 if invalid inputs. solution set to empty string.
@@ -274,7 +274,7 @@ void Jug::printState(int i) const {
 // in solution string.
 int Jug::solve(string &solution) {
   // invalid game
-  if (isInvalid()) {
+  if (isInvalid(Ca, Cb, N, cfA, cfB, ceA, ceB, cpAB, cpBA)) {
     solution.clear();
     return -1;
   }
@@ -286,10 +286,52 @@ int Jug::solve(string &solution) {
   vector<Vertex *> visited;           // will get modifed by dijkstraMethod
   dijkstraMethod(verticies, visited); // verticies now holds shortest path
 
-  auto * // TODO
+  solution = getPath(visited);
+
+  return 1;
 }
 
-bool Jug::isPossible(const vector<Vertex> &verticies) const {
+string Jug::getPath(vector<Vertex *> &visited) {
+  Vertex *goal = 0;
+  for (size_t i = 0; i < visited.size(); ++i) {
+    if (visited.at(i)->a == 0 && visited.at(i)->b == N) {
+      goal = visited.at(i);
+    }
+  }
+  Vertex *curr = goal;
+  Vertex *before = 0;
+  stack<string> s;
+  int cost;
+  string path;
+
+  while (curr) {
+    string proposedSolution;
+    before = curr->prev;
+    if (before) {
+      proposedSolution = curr->decision + '\n';
+    }
+
+    s.push(proposedSolution);
+
+    if (before) {
+      for (auto &neighbor : before->neighbors) {
+        if (verticies.at(neighbor.first)->a == curr->a &&
+            verticies.at(neighbor.first)->b == curr->b) {
+          cost = cost + neighbor.second;
+        }
+      }
+    }
+    // reset curr to prev
+    curr = before;
+  }
+  while (!s.empty()) {
+    path = path + s.top();
+    s.pop();
+  }
+  return path + "success " + to_string(cost);
+}
+
+bool Jug::isPossible(vector<Vertex *> &verticies) const {
   for (size_t i = 0; i < verticies.size(); ++i) {
     if (verticies.at(i)->a == 0 && verticies.at(i)->b == N) {
       return true;

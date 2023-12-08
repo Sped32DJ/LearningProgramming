@@ -137,7 +137,7 @@ Vertex *Jug::AddVertex(Vertex *vert, int A, int B, int cost) {
   Vertex *newVert = new Vertex();
   newVert->a = A;
   newVert->b = B;
-  newVert->decision = paths.at(i);
+  newVert->decision = paths.at(paths.size() - 1);
   addUniqueVertex(newVert);
   vert->neighbors.push_back(make_pair(verticies.size() - 1, cost));
   return newVert;

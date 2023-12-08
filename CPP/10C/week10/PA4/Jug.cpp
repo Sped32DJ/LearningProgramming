@@ -36,51 +36,6 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
   Vertex *origin = new Vertex();
   verticies.push_back(origin);
   makeGraph(origin);
-
-  /* vector<int> unfinishedNs; // Holds the weights of the nodes
-  findInGraph(0, 0, unfinishedNs);
-
-  while (unfinishedNs.size() > 0) {
-
-    // Get unfinished node
-    int id = unfinishedNs.back();
-    unfinishedNs.pop_back();
-
-    // Get the node for jug A and B
-    int A = graph[id].a;
-    int B = graph[id].b;
-
-    // State: filling A
-    int fillA = findInGraph(Cb, B, unfinishedNs);
-
-    // State: Filling B
-    int fillB = findInGraph(A, Cb, unfinishedNs);
-
-    // State: Empty A
-    int emptyA = findInGraph(0, B, unfinishedNs);
-
-    // State: Empty B
-    int emptyB = findInGraph(A, 0, unfinishedNs);
-
-    // Pour A to B
-    // (s = volumetric Space (how much air jug holds))
-    int sB = Cb - B;
-    int pourSize = min(A, sB);
-    int pourAtoB = findInGraph(A - pourSize, B + pourSize, unfinishedNs);
-
-    // Pour B to A
-    int sA = Ca - A;
-    pourSize = min(B, sA);
-    int pourBtoA = findInGraph(A + pourSize, B - pourSize, unfinishedNs);
-
-    // Set six outedges for this vertex
-    graph[id].newState[0] = fillA;
-    graph[id].newState[1] = fillB;
-    graph[id].newState[2] = emptyA;
-    graph[id].newState[3] = emptyB;
-    graph[id].newState[4] = pourAtoB;
-    graph[id].newState[5] = pourBtoA;
-  } */
 }
 void Jug::makeGraph(Vertex *vert) {
   FillAJug(vert);
@@ -165,58 +120,6 @@ void Jug::addUniqueVertex(Vertex *newVert) {
   }
 }
 
-// Lecture code
-/* int position = 0;
-for (int i = 0; i <= Ca; ++i) {
-  for (int j = 0; j <= Cb; ++j) {
-    cout << "node " << position++ << ' ';
-    cout << '(' << i << ',' << j << ')' << endl;
-    // Empty A
-    cout << "  " << '(' << 0 << ',' << j << ')' << " => " << pos(Cb, 0, j)
-         << endl;
-    // Empty B
-    cout << "  " << '(' << i << ',' << 0 << ')' << " => " << pos(Cb, i, 0)
-         << endl;
-    // Fill A
-    cout << "  " << '(' << Ca << ',' << j << ')' << " => " << pos(Cb, Ca, j)
-         << endl;
-    // Fill B
-    cout << "  " << '(' << i << ',' << Cb << ')' << " => " << pos(Cb, i, Cb)
-         << endl;
-    // A to B
-    int availableB = Cb - j;
-    int movableToB = min(i, availableB);
-    cout << "  " << '(' << i - movableToB << ',' << j + movableToB << ')'
-         << " ==> " << pos(Cb, i - movableToB, j + movableToB) << endl;
-    // B to A
-    int availableA = Ca - i;
-    int movableToA = min(j, availableA);
-    cout << "  " << '(' << i + movableToA << ',' << j - movableToA << ')'
-         << " ==> " << pos(Cb, i + movableToA, j - movableToA) << endl;
-    //      G.emplace_ back(i, j, pos(Cb, 0, j),                  // Empty A
-    //                     pos(Cb, i, 0),                         // Empty B
-    //                      pos(Cb, Ca, 0),                       // Fill A
-    //                     pos(Cb, i, Cb),                        // Fill B
-    //                    pos(Cb, i - movableToB, j + movableToB),// A to B
-    //                   pos(Cb, i + movableToA, j - movableToA)  // B to A
-    //  )
-  }
-} // Everyting from here and up is lecture code */
-/* int Jug::findInGraph(int A, int B, vector<int> &unfinishedV) {
-  for (size_t i = 0; i < graph.size(); ++i) {
-    if ((graph[i].a == A) && (graph[i].b == B)) {
-      return i;
-    }
-  } */
-
-// New combination
-// Then add to the graph
-/* int id = graph.size();
-unfinishedV.push_back(id);
-graph.push_back(Vertex(A, B, id));
-return id;
-} */
-
 // Standardized code of the well known dijkstra's method
 void Jug::dijkstraMethod(vector<Vertex *> &graph, vector<Vertex *> &visited) {
   queue<Vertex *> unfinishedQ; // Q of vertex objects
@@ -248,24 +151,6 @@ void Jug::dijkstraMethod(vector<Vertex *> &graph, vector<Vertex *> &visited) {
 
 // TODO
 Jug::~Jug() {}
-
-/* void Jug::printGraph() const {
-  cout << "ID\t(A,B)\tfillA\tfillB\temptyA\temptyB\tpourAB\tpourBA\n";
-  for (const auto &ver : graph) { // TODO  simplicity
-    cout << ver.id << "\t(" << ver.a << ',' << ver.b << ')';
-    for (int i = 0; i < 6; ++i) {
-      printState(ver.newState[i]);
-    }
-    cout << endl;
-  }
-}
-
-void Jug::printState(int i) const {
-  cout << '\t' << i;
-  if (i != -1) {
-    cout << '(' << graph[i].a << ',' << graph[i].b << ')';
-  }
-} */
 
 // solve is used to check input and find the solution if one exists
 // returns -1 if invalid inputs. solution set to empty string.

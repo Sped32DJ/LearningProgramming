@@ -12,7 +12,38 @@
 using namespace std;
 
 Vertex::Vertex() : a(0), b(0), distance(INT_MAX), decision(""), prev(0) {}
+Vertex::Vertex(const Vertex &cpy) {
+  a = cpy.a;
+  b = cpy.b;
+  distance = cpy.distance;
+  decision = cpy.decision;
+  prev = cpy.prev;
+}
+
 Vertex::~Vertex() { neighbors.clear(); }
+
+Jug::~Jug() {
+  for (Vertex *v : verticies) {
+    delete v;
+  }
+  verticies.clear();
+}
+Jug::Jug(const Jug &cpy) {
+  Ca = cpy.Ca;
+  Cb = cpy.Cb;
+  N = cpy.N;
+  cfA = cpy.cfA;
+  cfB = cpy.cfB;
+  ceA = cpy.ceA;
+  ceB = cpy.ceB;
+  cpAB = cpy.cpAB;
+  cpBA = cpy.cpBA;
+
+  for (Vertex *v : cpy.verticies) {
+    Vertex *newVertex = new Vertex(*v);
+    verticies.push_back(newVertex);
+  }
+}
 
 Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
          int cpBA)
@@ -117,7 +148,6 @@ Vertex *Jug::createPourVertex(Vertex *vert, const string &decision, int &cost,
   return newVert;
 }
 
-// NOTE  Do I int&cost?
 void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
   if (newVert != nullptr) {
     bool duplicate = isDupe(newVert);
@@ -125,7 +155,7 @@ void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
     if (!duplicate) {
       verticies.push_back(newVert);
       size_t index = findIndex(newVert);
-      vert->neighbors.push_back(make_pair(index, cost)); // Doesn't have cost
+      vert->neighbors.push_back(make_pair(index, cost));
     } else {
       delete newVert;
       newVert = nullptr;
@@ -135,7 +165,7 @@ void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
 
 bool Jug::isDupe(Vertex *newVert) {
   for (size_t j = 0; j < verticies.size(); j++) {
-    if (verticies[j]->a == newVert->a && verticies[j]->b == newVert->b) {
+    if (verticies.at(j)->a == newVert->a && verticies.at(j)->b == newVert->b) {
       return true;
     }
   }
@@ -145,7 +175,7 @@ bool Jug::isDupe(Vertex *newVert) {
 size_t Jug::findIndex(Vertex *newVert) {
   size_t index = 0;
   for (size_t j = 0; j < verticies.size(); j++) {
-    if (verticies[j] == newVert) {
+    if (verticies.at(j) == newVert) {
       index = j;
       break;
     }
@@ -159,16 +189,15 @@ void Jug::addVerticies(Vertex *vert) {
   }
 }
 
-// Standardized code of the well known dijkstra's method
 void Jug::dijkstraMethod(vector<Vertex *> &graph, vector<Vertex *> &visited) {
   queue<Vertex *> unfinishedQ; // Q of vertex objects
 
   for (size_t i = 0; i < graph.size(); ++i) {
     graph.at(i)->distance = INT_MAX; // Set all distances to infinity
-    graph.at(i)->prev = nullptr;
+    graph.at(i)->prev = nullptr;     // previus node is null
   }
 
-  graph.at(0)->distance = 0;
+  graph.at(0)->distance = 0; // First node distance to it's self if 0!
 
   for (size_t i = 0; i < graph.size(); ++i) {
     unfinishedQ.push(graph.at(i));
@@ -188,29 +217,30 @@ void Jug::dijkstraMethod(vector<Vertex *> &graph, vector<Vertex *> &visited) {
   }
 }
 
-// TODO
-Jug::~Jug() {}
-
 // solve is used to check input and find the solution if one exists
 // returns -1 if invalid inputs. solution set to empty string.
 // returns 0 if inputs are valid but a solution does not exist. solution set
 // to empty string. returns 1 if solution is found and stores solution steps
 // in solution string.
 int Jug::solve(string &solution) {
-  // invalid game
-  //
+
+  // invalid game -> -1
   if (isInvalid(Ca, Cb, N, cfA, cfB, ceA, ceB, cpAB, cpBA)) {
     solution.clear();
+    // throw runtime_error("Graph is invalid");
     return -1;
   }
 
+  // Not possible -> 0
   if (!isPossible(verticies)) {
+    // throw runtime_error("unreachable from origin");
     solution.clear();
     return 0;
   }
+
   vector<Vertex *> visited;           // will get modifed by dijkstraMethod
-  dijkstraMethod(verticies, visited); // verticies now holds shortest path
-  int cost;                           // TESTING  cost declared
+  dijkstraMethod(verticies, visited); // verticies now holds shortest paths
+  int cost;
   solution = getPath(visited, cost);
 
   return 1;
@@ -233,15 +263,19 @@ string Jug::getPath(vector<Vertex *> &visited, int &cost) {
       proposedSolution = curr->decision + '\n';
     }
 
+    // dijkstra Method gives us all paths
+    // and in reverse, so push into stack
+    // then order it!
     s.push(proposedSolution);
 
     if (before) {
-      total += updateCost(before, curr);
+      total += updateCost(before, curr); // Sum cost
     }
-    // reset curr to prev
+    // reset curr to prev, iterating backwards
     curr = before;
   }
 
+  // Adding to path and popping from stack
   while (!s.empty()) {
     path = path + s.top();
     s.pop();
@@ -276,23 +310,6 @@ bool Jug::isPossible(vector<Vertex *> &verticies) const {
     }
   }
   return false; // whole loop ran, deemed not possible!
-}
-
-int Jug::getWeight(int index) const {
-  switch (index) {
-  case 0:
-    return cfA;
-  case 1:
-    return cfB;
-  case 2:
-    return ceA;
-  case 3:
-    return ceB;
-  case 4:
-    return cpAB;
-  default:
-    return cpBA;
-  }
 }
 
 // outputs true if invalid

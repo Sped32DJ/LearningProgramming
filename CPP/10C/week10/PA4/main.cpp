@@ -5,9 +5,7 @@ using namespace std;
 
 int main() {
   string solution;
-  cout << "test 0:\n";
   Jug head(3, 5, 4, 1, 2, 3, 4, 5, 6);
-  cout << "test\n";
   if (head.solve(solution) != 1) {
     cout << "Error 3" << endl;
   }

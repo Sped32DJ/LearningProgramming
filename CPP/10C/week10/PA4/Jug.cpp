@@ -33,8 +33,8 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
 
 void Jug::makeGraph(Vertex *vert) {
   for (size_t i = 0; i < paths.size(); ++i) {
-    Vertex *newVert = createNewVertex(vert, i);
     int cost = 0;
+    Vertex *newVert = createNewVertex(vert, i);
 
     if (newVert != nullptr) {
       updateGraph(newVert, vert, cost);
@@ -46,7 +46,7 @@ void Jug::makeGraph(Vertex *vert) {
 
 Vertex *Jug::createNewVertex(Vertex *vert, size_t i) {
   Vertex *newVert = nullptr;
-  int cost = 0;
+  int cost; // TESTING cost declared here
 
   switch (i) {
   case 0: // Jug A fill possibility
@@ -210,15 +210,14 @@ int Jug::solve(string &solution) {
   }
   vector<Vertex *> visited;           // will get modifed by dijkstraMethod
   dijkstraMethod(verticies, visited); // verticies now holds shortest path
-
-  solution = getPath(visited);
+  int cost;                           // TESTING  cost declared
+  solution = getPath(visited, cost);
 
   return 1;
 }
 
-string Jug::getPath(vector<Vertex *> &visited) {
+string Jug::getPath(vector<Vertex *> &visited, int &cost) {
   Vertex *goal = findGoal(visited);
-  int cost = 0;
 
   stack<string> s;
   string path;
@@ -301,14 +300,13 @@ bool Jug::isInvalid(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB,
   // You will want to verify the costs are positive and
   // 0 < Ca ≤ Cb and N ≤ Cb ≤ 1000. If the inputs are invalid solve
   // will return -1
-  bool isNegative = false;
   // Outputs true if a val is negative
   if (Ca < 0 || Cb < 0 || cfA < 0 || cfB < 0 || ceA < 0 || ceB < 0 ||
       cpAB < 0 || cpBA < 0) {
-    isNegative = true;
+    return true;
   }
 
   // Outputs true if invalid
   // Range check !valid && if a val is negative
-  return !((0 < Ca && Ca <= Cb) && (N <= Cb && Cb <= 1000)) && isNegative;
+  return !((0 < Ca && Ca <= Cb) && (N <= Cb && Cb <= 1000));
 }

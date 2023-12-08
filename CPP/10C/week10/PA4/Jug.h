@@ -33,7 +33,7 @@ public:
 private:
   void dijkstraMethod(vector<Vertex *> &, vector<Vertex *> &);
   int getWeight(int) const;
-  string getPath(vector<Vertex *> &);
+  string getPath(vector<Vertex *> &, int &);
 
   void showState(int) const;
 

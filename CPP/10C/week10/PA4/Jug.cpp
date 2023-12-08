@@ -33,8 +33,8 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
 
 void Jug::makeGraph(Vertex *vert) {
   for (size_t i = 0; i < paths.size(); ++i) {
-    int cost = 0;
-    Vertex *newVert = createNewVertex(vert, i);
+    int cost;
+    Vertex *newVert = createNewVertex(vert, i, cost);
 
     if (newVert != nullptr) {
       updateGraph(newVert, vert, cost);
@@ -44,9 +44,8 @@ void Jug::makeGraph(Vertex *vert) {
   addVerticies(vert);
 }
 
-Vertex *Jug::createNewVertex(Vertex *vert, size_t i) {
+Vertex *Jug::createNewVertex(Vertex *vert, size_t i, int &cost) {
   Vertex *newVert = nullptr;
-  int cost; // TESTING cost declared here
 
   switch (i) {
   case 0: // Jug A fill possibility
@@ -118,6 +117,7 @@ Vertex *Jug::createPourVertex(Vertex *vert, const string &decision, int &cost,
   return newVert;
 }
 
+// NOTE  Do I int&cost?
 void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
   if (newVert != nullptr) {
     bool duplicate = isDupe(newVert);
@@ -224,6 +224,7 @@ string Jug::getPath(vector<Vertex *> &visited, int &cost) {
 
   Vertex *curr = goal;
   Vertex *before = nullptr;
+  int total = 0;
 
   while (curr) {
     string proposedSolution;
@@ -235,7 +236,7 @@ string Jug::getPath(vector<Vertex *> &visited, int &cost) {
     s.push(proposedSolution);
 
     if (before) {
-      cost = updateCost(before, curr);
+      total += updateCost(before, curr);
     }
     // reset curr to prev
     curr = before;
@@ -245,7 +246,7 @@ string Jug::getPath(vector<Vertex *> &visited, int &cost) {
     path = path + s.top();
     s.pop();
   }
-  return path + "success " + to_string(cost);
+  return path + "success " + to_string(total);
 }
 
 Vertex *Jug::findGoal(vector<Vertex *> &visited) {

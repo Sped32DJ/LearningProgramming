@@ -52,7 +52,7 @@ private:
   void addUniqueVertex(Vertex *newVert);
   void pourIntoJug(Vertex *, int Vertex::*, int Vertex::*, int, int); */
   void makeGraph(Vertex *vert);
-  Vertex *createNewVertex(Vertex *vert, size_t i);
+  Vertex *createNewVertex(Vertex *vert, size_t i, int &cost);
   Vertex *createVertexWithCapacity(Vertex *a, int, int, const string &, int &,
                                    int);
   Vertex *createPourVertex(Vertex *, const string &, int &, int);

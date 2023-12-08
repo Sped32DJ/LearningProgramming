@@ -19,13 +19,6 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
     : Ca(Ca), Cb(Cb), N(N), cfA(cfA), cfB(cfB), ceA(ceA), ceB(ceB), cpAB(cpAB),
       cpBA(cpBA) {
 
-  // Takes care of all valid logic
-  // Returns true if invalid
-  if (isInvalid(Ca, Cb, N, cfA, cfB, ceA, ceB, cpAB, cpBA)) {
-    throw runtime_error("Invalid, could not be constructed");
-    return; // I think useless
-  }
-
   paths.push_back("fill A");
   paths.push_back("fill B");
   paths.push_back("empty A");
@@ -37,86 +30,132 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
   verticies.push_back(origin);
   makeGraph(origin);
 }
+
 void Jug::makeGraph(Vertex *vert) {
-  FillAJug(vert);
-  FillBJug(vert);
-  EmptyAJug(vert);
-  EmptyBJug(vert);
-  pourAB(vert);
-  pourBA(vert);
+  for (size_t i = 0; i < paths.size(); ++i) {
+    Vertex *newVert = createNewVertex(vert, i);
+    int cost = 0;
 
-  for (auto neighbor : vert->neighbors) {
-    makeGraph(verticies.at(neighbor.first));
+    if (newVert != nullptr) {
+      updateGraph(newVert, vert, cost);
+    }
   }
+
+  addVerticies(vert);
 }
 
-void Jug::FillAJug(Vertex *vert) {
-  if (vert->a < Ca) {
-    AddVertex(vert, Ca, vert->b, cfA);
-  }
-}
+Vertex *Jug::createNewVertex(Vertex *vert, size_t i) {
+  Vertex *newVert = nullptr;
+  int cost = 0;
 
-void Jug::FillBJug(Vertex *vert) {
-  if (vert->b < Cb) {
-    AddVertex(vert, vert->a, Cb, cfB);
-  }
-}
+  switch (i) {
+  case 0: // Jug A fill possibility
+    if (vert->a < Ca) {
+      newVert =
+          createVertexWithCapacity(vert, Ca, vert->b, paths.at(i), cost, cfA);
+    }
+    break;
 
-void Jug::EmptyAJug(Vertex *vert) {
-  if (vert->a > 0) {
-    AddVertex(vert, 0, vert->b, ceA);
-  }
-}
+  case 1: // Jug B fill possibility
+    if (vert->b < Cb) {
+      newVert =
+          createVertexWithCapacity(vert, vert->a, Cb, paths.at(i), cost, cfB);
+    }
+    break;
 
-void Jug::EmptyBJug(Vertex *vert) {
-  if (vert->b > 0) {
-    AddVertex(vert, vert->a, 0, ceB);
-  }
-}
+  case 2: // Jug A empty possibility
+    if (vert->a > 0) {
+      newVert =
+          createVertexWithCapacity(vert, 0, vert->b, paths.at(i), cost, ceA);
+    }
+    break;
 
-void Jug::pourAB(Vertex *vert) {
-  if (vert->b < Cb && vert->a > 0) {
-    Vertex *newVert = AddVertex(vert, vert->a, vert->b, 0);
-    pourIntoJug(newVert, &Vertex::a, &Vertex::b, Cb, cpAB);
-  }
-}
+  case 3: // Jug B empty possibility
+    if (vert->b > 0) {
+      newVert =
+          createVertexWithCapacity(vert, vert->a, 0, paths.at(i), cost, ceB);
+    }
+    break;
 
-void Jug::pourBA(Vertex *vert) {
-  if (vert->a < Ca && vert->b > 0) {
-    Vertex *newVert = AddVertex(vert, vert->a, vert->b, 0);
-    pourIntoJug(newVert, &Vertex::b, &Vertex::a, Ca, cpBA);
-  }
-}
+  case 4: // Pour A into B
+    if (vert->b < Cb && vert->a > 0) {
+      newVert = createPourVertex(vert, paths.at(i), cost, cpAB);
+    }
+    break;
 
-Vertex *Jug::AddVertex(Vertex *vert, int A, int B, int cost) {
-  Vertex *newVert = new Vertex();
-  newVert->a = A;
-  newVert->b = B;
-  newVert->decision = paths.at(paths.size() - 1);
-  addUniqueVertex(newVert);
-  vert->neighbors.push_back(make_pair(verticies.size() - 1, cost));
+  case 5: // Pour B into A
+    if (vert->a < Ca && vert->b > 0) {
+      newVert = createPourVertex(vert, paths.at(i), cost, cpBA);
+    }
+    break;
+
+  default:
+    break;
+  }
+
   return newVert;
 }
 
-void Jug::pourIntoJug(Vertex *vert, int Vertex::*from, int Vertex::*to,
-                      int toCapacity, int cost) {
-  while ((vert->*to) < toCapacity && (vert->*from) > 0) {
-    (vert->*to) += 1;
-    (vert->*from) -= 1;
+Vertex *Jug::createVertexWithCapacity(Vertex *vert, int a, int b,
+                                      const string &decision, int &cost,
+                                      int costValue) {
+  Vertex *newVert = new Vertex();
+  newVert->a = a;
+  newVert->b = b;
+  newVert->decision = decision;
+  cost = costValue;
+  return newVert;
+}
+
+Vertex *Jug::createPourVertex(Vertex *vert, const string &decision, int &cost,
+                              int costValue) {
+  Vertex *newVert = createVertexWithCapacity(vert, vert->a, vert->b, decision,
+                                             cost, costValue);
+  while (newVert->b < Cb && newVert->a > 0) {
+    newVert->b += 1;
+    newVert->a -= 1;
+  }
+  return newVert;
+}
+
+void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
+  if (newVert != nullptr) {
+    bool duplicate = isDupe(newVert);
+
+    if (!duplicate) {
+      verticies.push_back(newVert);
+      size_t index = findIndex(newVert);
+      vert->neighbors.push_back(make_pair(index, cost)); // Doesn't have cost
+    } else {
+      delete newVert;
+      newVert = nullptr;
+    }
   }
 }
 
-void Jug::addUniqueVertex(Vertex *newVert) {
-  bool duplicate = false;
-  for (unsigned j = 0; j < verticies.size(); j++) {
-    if (verticies.at(j)->a == newVert->a && verticies.at(j)->b == newVert->b) {
-      duplicate = true;
+bool Jug::isDupe(Vertex *newVert) {
+  for (size_t j = 0; j < verticies.size(); j++) {
+    if (verticies[j]->a == newVert->a && verticies[j]->b == newVert->b) {
+      return true;
     }
   }
-  if (!duplicate) {
-    verticies.push_back(newVert);
-  } else {
-    delete newVert;
+  return false;
+}
+
+size_t Jug::findIndex(Vertex *newVert) {
+  size_t index = 0;
+  for (size_t j = 0; j < verticies.size(); j++) {
+    if (verticies[j] == newVert) {
+      index = j;
+      break;
+    }
+  }
+  return index;
+}
+
+void Jug::addVerticies(Vertex *vert) {
+  for (auto neighbor : vert->neighbors) {
+    makeGraph(verticies.at(neighbor.first));
   }
 }
 
@@ -159,6 +198,7 @@ Jug::~Jug() {}
 // in solution string.
 int Jug::solve(string &solution) {
   // invalid game
+  //
   if (isInvalid(Ca, Cb, N, cfA, cfB, ceA, ceB, cpAB, cpBA)) {
     solution.clear();
     return -1;
@@ -177,17 +217,14 @@ int Jug::solve(string &solution) {
 }
 
 string Jug::getPath(vector<Vertex *> &visited) {
-  Vertex *goal = 0;
-  for (size_t i = 0; i < visited.size(); ++i) {
-    if (visited.at(i)->a == 0 && visited.at(i)->b == N) {
-      goal = visited.at(i);
-    }
-  }
-  Vertex *curr = goal;
-  Vertex *before = 0;
+  Vertex *goal = findGoal(visited);
+  int cost = 0;
+
   stack<string> s;
-  int cost;
   string path;
+
+  Vertex *curr = goal;
+  Vertex *before = nullptr;
 
   while (curr) {
     string proposedSolution;
@@ -199,21 +236,37 @@ string Jug::getPath(vector<Vertex *> &visited) {
     s.push(proposedSolution);
 
     if (before) {
-      for (auto &neighbor : before->neighbors) {
-        if (verticies.at(neighbor.first)->a == curr->a &&
-            verticies.at(neighbor.first)->b == curr->b) {
-          cost = cost + neighbor.second;
-        }
-      }
+      cost = updateCost(before, curr);
     }
     // reset curr to prev
     curr = before;
   }
+
   while (!s.empty()) {
     path = path + s.top();
     s.pop();
   }
   return path + "success " + to_string(cost);
+}
+
+Vertex *Jug::findGoal(vector<Vertex *> &visited) {
+  for (size_t i = 0; i < visited.size(); ++i) {
+    if (visited.at(i)->a == 0 && visited.at(i)->b == N) {
+      return visited.at(i);
+    }
+  }
+  return nullptr;
+}
+
+int Jug::updateCost(Vertex *before, Vertex *curr) {
+  int cost = 0;
+  for (auto &neighbor : before->neighbors) {
+    if (verticies.at(neighbor.first)->a == curr->a &&
+        verticies.at(neighbor.first)->b == curr->b) {
+      cost += neighbor.second;
+    }
+  }
+  return cost;
 }
 
 bool Jug::isPossible(vector<Vertex *> &verticies) const {

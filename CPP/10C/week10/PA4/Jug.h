@@ -41,7 +41,7 @@ private:
   bool isInvalid(int, int, int, int, int, int, int, int, int) const;
 
   // All used to make a graph
-  void makeGraph(Vertex *vert);
+  /* void makeGraph(Vertex *vert);
   void FillAJug(Vertex *vert);
   void FillBJug(Vertex *vert);
   void EmptyAJug(Vertex *vert);
@@ -50,7 +50,19 @@ private:
   void pourBA(Vertex *vert);
   Vertex *AddVertex(Vertex *vert, int A, int B, int cost);
   void addUniqueVertex(Vertex *newVert);
-  void pourIntoJug(Vertex *, int Vertex::*, int Vertex::*, int, int);
+  void pourIntoJug(Vertex *, int Vertex::*, int Vertex::*, int, int); */
+  void makeGraph(Vertex *vert);
+  Vertex *createNewVertex(Vertex *vert, size_t i);
+  Vertex *createVertexWithCapacity(Vertex *a, int, int, const string &, int &,
+                                   int);
+  Vertex *createPourVertex(Vertex *, const string &, int &, int);
+  void updateGraph(Vertex *, Vertex *, int);
+  int updateCost(Vertex *, Vertex *);
+  bool isDupe(Vertex *);
+  size_t findIndex(Vertex *);
+  void addVerticies(Vertex *vert);
+
+  Vertex *findGoal(vector<Vertex *> &);
 
   vector<string> paths;       // THE path
   vector<Vertex *> verticies; // The possibilities

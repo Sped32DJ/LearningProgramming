@@ -152,7 +152,7 @@ Vertex *Jug::createVertexWithCapacity(Vertex *vert, int a, int b,
   newVert->b = b;
   newVert->decision = decision;
   cost = costValue; // I know this is jank, but it works
-  /* newVert->distance = costValue; */
+  newVert->distance = costValue;
   return newVert;
 }
 

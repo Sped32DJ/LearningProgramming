@@ -16,7 +16,7 @@ struct Vertex {
 
   Vertex();
   ~Vertex();
-  Vertex(int, int, int, string, Vertex *);
+  Vertex(int, int, int, const string &, Vertex *);
   Vertex(const Vertex &);
 };
 
@@ -35,18 +35,19 @@ public:
 
 private:
   void dijkstraMethod(vector<Vertex *> &, vector<Vertex *> &);
-  string getPath(vector<Vertex *> &, int &);
+  string getPath(vector<Vertex *> &);
 
   bool isPossible(vector<Vertex *> &) const;
   bool isInvalid(int, int, int, int, int, int, int, int, int) const;
   bool isDupe(Vertex *);
 
   void makeGraph(Vertex *vert);
-  Vertex *generateNewState(Vertex *vert, size_t i, int &cost);
-  Vertex *createPourVertex(Vertex *, const string &, int &, int);
+  Vertex *generateNewState(Vertex *vert, size_t i);
+  Vertex *createVertexWithCapacity(Vertex *a, int, int, const string &, int);
+  Vertex *createPourVertex(Vertex *, const string &, int);
 
   void addVerticies(Vertex *vert);
-  void updateGraph(Vertex *, Vertex *, int);
+  void updateGraph(Vertex *, Vertex *);
   int updateCost(Vertex *, Vertex *);
 
   size_t findIndex(Vertex *);

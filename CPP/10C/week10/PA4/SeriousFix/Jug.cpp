@@ -12,6 +12,14 @@
 using namespace std;
 
 Vertex::Vertex() : a(0), b(0), distance(INT_MAX), decision(""), prev(nullptr) {}
+
+Vertex::Vertex(int a, int b, int distance, const string &decision, Vertex *prev)
+    : a(a), b(b), distance(distance), decision(decision), prev(prev) {}
+
+/* Vertex *Jug::createVertexWithCapacity(Vertex *vert, int a, int b,
+                                      const string &decision, int &cost,
+                                      int costValue) { */
+
 Vertex::Vertex(const Vertex &cpy) {
   a = cpy.a;
   b = cpy.b;
@@ -19,8 +27,6 @@ Vertex::Vertex(const Vertex &cpy) {
   decision = cpy.decision;
   prev = cpy.prev;
 }
-Vertex::Vertex(int a, int b, int distance, string decision, Vertex *prev)
-    : a(a), b(b), distance(distance), decision(decision), prev(prev) {}
 
 Vertex::~Vertex() { neighbors.clear(); }
 
@@ -62,17 +68,17 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
   paths.push_back("pour B A ");
 
   Vertex *origin = new Vertex();
+  origin->distance = 0;
   verticies.push_back(origin);
   makeGraph(origin);
 }
 
 void Jug::makeGraph(Vertex *vert) {
   for (size_t i = 0; i < paths.size(); ++i) {
-    int cost;
-    Vertex *newVert = generateNewState(vert, i, cost);
+    Vertex *newVert = generateNewState(vert, i);
 
     if (newVert != nullptr) {
-      updateGraph(newVert, vert, cost);
+      updateGraph(newVert, vert);
     }
   }
 
@@ -80,43 +86,44 @@ void Jug::makeGraph(Vertex *vert) {
 }
 
 // takes care of every case (state)
-Vertex *Jug::generateNewState(Vertex *vert, size_t i, int &cost) {
+Vertex *Jug::generateNewState(Vertex *vert, size_t i) {
   Vertex *newVert = nullptr;
 
   switch (i) {
   case 0: // Jug A fill possibility
     if (vert->a < Ca) {
-      newVert = new Vertex(Ca, vert->b, paths.at(i), cost, cfA);
+      newVert = createVertexWithCapacity(vert, Ca, vert->b, paths.at(i), cfA);
+      /* new Vertex(Ca, vert->b, cost, paths.at(i), vert); */
     }
     break;
 
   case 1: // Jug B fill possibility
     if (vert->b < Cb) {
-      newVert = new Vertex(vert->a, Cb, paths.at(i), cost, cfB);
+      newVert = createVertexWithCapacity(vert, vert->a, Cb, paths.at(i), cfB);
     }
     break;
 
   case 2: // Jug A empty possibility
     if (vert->a > 0) {
-      newVert = new Vertex(0, vert->b, paths.at(i), cost, ceA);
+      newVert = createVertexWithCapacity(vert, 0, vert->b, paths.at(i), ceA);
     }
     break;
 
   case 3: // Jug B empty possibility
     if (vert->b > 0) {
-      newVert = new Vertex(vert->a, 0, paths.at(i), cost, ceB);
+      newVert = createVertexWithCapacity(vert, vert->a, 0, paths.at(i), ceB);
     }
     break;
 
   case 4: // Pour A into B
     if (vert->b < Cb && vert->a > 0) {
-      newVert = createPourVertex(vert, paths.at(i), cost, cpAB);
+      newVert = createPourVertex(vert, paths.at(i), cpAB);
     }
     break;
 
   case 5: // Pour B into A
     if (vert->a < Ca && vert->b > 0) {
-      newVert = createPourVertex(vert, paths.at(i), cost, cpBA);
+      newVert = createPourVertex(vert, paths.at(i), cpBA);
     }
     break;
 
@@ -127,30 +134,37 @@ Vertex *Jug::generateNewState(Vertex *vert, size_t i, int &cost) {
   return newVert;
 }
 
-// For pour vertex states
-Vertex *Jug::createPourVertex(Vertex *vert, const string &decision, int &cost,
-                              int costValue) {
-  Vertex *newVert = new Vertex(*vert);
-  newVert->decision = decision;
-  cost = costValue;
-
-  // Adjust values for pour
-  while (newVert->b < Cb && newVert->a > 0) {
-    newVert->b += 1;
-    newVert->a -= 1;
-  }
-
+// NOTE This is late, but I realized I recreated theh wheel (paramaterized
+// constructor) this! This has caused too many sleepless nights this week
+Vertex *Jug::createVertexWithCapacity(Vertex *vert, int a, int b,
+                                      const string &decision, int costValue) {
+  Vertex *newVert = new Vertex(a, b, costValue, decision, vert);
   return newVert;
 }
 
-void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
+// For pour vertex states
+Vertex *Jug::createPourVertex(Vertex *vert, const string &decision,
+                              int costValue) {
+  // newVert is declared using createVertexWithCapacity
+  Vertex *newVert =
+      createVertexWithCapacity(vert, vert->a, vert->b, decision, costValue);
+  while (newVert->b < Cb && newVert->a > 0) {
+    // adjust val for pour
+    newVert->b += 1;
+    newVert->a -= 1;
+  }
+  return newVert;
+}
+
+void Jug::updateGraph(Vertex *newVert, Vertex *vert) {
   if (newVert != nullptr) {
 
     // If it isn't a dupe
     if (!isDupe(newVert)) {
-      verticies.push_back(newVert);
+      verticies.push_back(newVert);      // Adding new vertex to graph
       size_t index = findIndex(newVert); // returns index of vertex
-      vert->neighbors.push_back(make_pair(index, cost));
+      // Makes a pair, first val is index, second val is cost
+      vert->neighbors.push_back(std::make_pair(index, vert->distance));
     } else {
       // deletes dupes
       delete newVert;
@@ -210,6 +224,9 @@ void Jug::dijkstraMethod(vector<Vertex *> &graph, vector<Vertex *> &visited) {
           curr->distance + neighbor.second) {
         graph.at(neighbor.first)->distance = curr->distance + neighbor.second;
         graph.at(neighbor.first)->prev = curr;
+
+        // update queue with the new distance
+        unfinishedQ.push(graph.at(neighbor.first));
       }
     }
   }
@@ -240,13 +257,12 @@ int Jug::solve(string &solution) {
 
   vector<Vertex *> visited;           // will get modifed by dijkstraMethod
   dijkstraMethod(verticies, visited); // verticies now holds shortest paths
-  int cost;
-  solution = getPath(visited, cost); // solution now holds path
+  solution = getPath(visited);        // solution now holds path
 
   return 1;
 }
 
-string Jug::getPath(vector<Vertex *> &visited, int &cost) {
+string Jug::getPath(vector<Vertex *> &visited) {
   Vertex *goal = findGoal(visited);
 
   stack<string> s; // Needs a stack since we reach origin from end node

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-Vertex::Vertex() : a(0), b(0), distance(INT_MAX), decision(""), prev(0) {}
+Vertex::Vertex() : a(0), b(0), distance(INT_MAX), decision(""), prev(nullptr) {}
 Vertex::Vertex(const Vertex &cpy) {
   a = cpy.a;
   b = cpy.b;
@@ -22,12 +22,14 @@ Vertex::Vertex(const Vertex &cpy) {
 
 Vertex::~Vertex() { neighbors.clear(); }
 
+// Clears all the verticies
 Jug::~Jug() {
-  for (Vertex *v : verticies) {
-    delete v;
+  for (size_t i = 0; i < verticies.size(); i++) {
+    delete verticies.at(i);
   }
-  verticies.clear();
+  verticies.clear(); // clear vector
 }
+
 Jug::Jug(const Jug &cpy) {
   Ca = cpy.Ca;
   Cb = cpy.Cb;
@@ -65,17 +67,18 @@ Jug::Jug(int Ca, int Cb, int N, int cfA, int cfB, int ceA, int ceB, int cpAB,
 void Jug::makeGraph(Vertex *vert) {
   for (size_t i = 0; i < paths.size(); ++i) {
     int cost;
-    Vertex *newVert = createNewVertex(vert, i, cost);
+    Vertex *newVert = generateNewState(vert, i, cost);
 
     if (newVert != nullptr) {
       updateGraph(newVert, vert, cost);
     }
   }
 
-  addVerticies(vert);
+  addVerticies(vert); // Adds verticies, starting at origin
 }
 
-Vertex *Jug::createNewVertex(Vertex *vert, size_t i, int &cost) {
+// takes care of every case (state)
+Vertex *Jug::generateNewState(Vertex *vert, size_t i, int &cost) {
   Vertex *newVert = nullptr;
 
   switch (i) {
@@ -126,22 +129,31 @@ Vertex *Jug::createNewVertex(Vertex *vert, size_t i, int &cost) {
   return newVert;
 }
 
+// Helps the assign the verticies with their capacity
+// NOTE This is late, but a paramaterized constructor wouldve been better!
 Vertex *Jug::createVertexWithCapacity(Vertex *vert, int a, int b,
                                       const string &decision, int &cost,
                                       int costValue) {
   Vertex *newVert = new Vertex();
+  // Adding declarations to this new vertex
+  // May seem logical to used a paramaterized constructor,
+  // But, this looks cleaner in the cases
   newVert->a = a;
   newVert->b = b;
   newVert->decision = decision;
   cost = costValue;
+  /* newVert->distance = costValue; */
   return newVert;
 }
 
+// For pour vertex states
 Vertex *Jug::createPourVertex(Vertex *vert, const string &decision, int &cost,
                               int costValue) {
+  // newVert is declared using createVertexWithCapacity
   Vertex *newVert = createVertexWithCapacity(vert, vert->a, vert->b, decision,
                                              cost, costValue);
   while (newVert->b < Cb && newVert->a > 0) {
+    // adjust val for pour
     newVert->b += 1;
     newVert->a -= 1;
   }
@@ -150,13 +162,14 @@ Vertex *Jug::createPourVertex(Vertex *vert, const string &decision, int &cost,
 
 void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
   if (newVert != nullptr) {
-    bool duplicate = isDupe(newVert);
 
-    if (!duplicate) {
+    // If it isn't a dupe
+    if (!isDupe(newVert)) {
       verticies.push_back(newVert);
-      size_t index = findIndex(newVert);
+      size_t index = findIndex(newVert); // returns index of vertex
       vert->neighbors.push_back(make_pair(index, cost));
     } else {
+      // deletes dupes
       delete newVert;
       newVert = nullptr;
     }
@@ -173,16 +186,16 @@ bool Jug::isDupe(Vertex *newVert) {
 }
 
 size_t Jug::findIndex(Vertex *newVert) {
-  size_t index = 0;
+  // searches to find vertex, returns index
   for (size_t j = 0; j < verticies.size(); j++) {
     if (verticies.at(j) == newVert) {
-      index = j;
-      break;
+      return j;
     }
   }
-  return index;
+  return 0;
 }
 
+// Ties verticies together
 void Jug::addVerticies(Vertex *vert) {
   for (auto neighbor : vert->neighbors) {
     makeGraph(verticies.at(neighbor.first));
@@ -204,10 +217,12 @@ void Jug::dijkstraMethod(vector<Vertex *> &graph, vector<Vertex *> &visited) {
   }
 
   while (!unfinishedQ.empty()) {
+    // Keeps pushing back into the queue
     Vertex *curr = unfinishedQ.front();
-    visited.push_back(curr);
-    unfinishedQ.pop();
+    visited.push_back(curr); // adds to the back
+    unfinishedQ.pop();       // pops from the front
     for (auto &neighbor : curr->neighbors) {
+      // if (shortestPath), updates distanca
       if (graph.at(neighbor.first)->distance >
           curr->distance + neighbor.second) {
         graph.at(neighbor.first)->distance = curr->distance + neighbor.second;
@@ -227,13 +242,15 @@ int Jug::solve(string &solution) {
   // invalid game -> -1
   if (isInvalid(Ca, Cb, N, cfA, cfB, ceA, ceB, cpAB, cpBA)) {
     solution.clear();
-    // throw runtime_error("Graph is invalid");
+    /* throw runtime_error("Graph is invalid"); */
+    cerr << "Graph is invalid\n";
     return -1;
   }
 
   // Not possible -> 0
   if (!isPossible(verticies)) {
-    // throw runtime_error("unreachable from origin");
+    /* throw runtime_error("unreachable from origin"); */
+    cerr << "unreachable from origin\n";
     solution.clear();
     return 0;
   }
@@ -241,7 +258,7 @@ int Jug::solve(string &solution) {
   vector<Vertex *> visited;           // will get modifed by dijkstraMethod
   dijkstraMethod(verticies, visited); // verticies now holds shortest paths
   int cost;
-  solution = getPath(visited, cost);
+  solution = getPath(visited, cost); // solution now holds path
 
   return 1;
 }
@@ -249,15 +266,15 @@ int Jug::solve(string &solution) {
 string Jug::getPath(vector<Vertex *> &visited, int &cost) {
   Vertex *goal = findGoal(visited);
 
-  stack<string> s;
-  string path;
+  stack<string> s; // Needs a stack since we reach origin from end node
+  string path;     // Will orgin -> end node path
 
   Vertex *curr = goal;
   Vertex *before = nullptr;
   int total = 0;
 
   while (curr) {
-    string proposedSolution;
+    string proposedSolution; // will hold unprocessed solution
     before = curr->prev;
     if (before) {
       proposedSolution = curr->decision + '\n';
@@ -269,7 +286,7 @@ string Jug::getPath(vector<Vertex *> &visited, int &cost) {
     s.push(proposedSolution);
 
     if (before) {
-      total += updateCost(before, curr); // Sum cost
+      total += updateCost(before, curr); // Sum the cost as its being unwinded
     }
     // reset curr to prev, iterating backwards
     curr = before;
@@ -277,39 +294,44 @@ string Jug::getPath(vector<Vertex *> &visited, int &cost) {
 
   // Adding to path and popping from stack
   while (!s.empty()) {
-    path = path + s.top();
-    s.pop();
+    path += s.top(); // Paths adds from top of the stack
+    s.pop();         // then pops to iterate until stack.empty()
   }
   return path + "success " + to_string(total);
 }
 
+// Returns the goal Vertex
 Vertex *Jug::findGoal(vector<Vertex *> &visited) {
   for (size_t i = 0; i < visited.size(); ++i) {
     if (visited.at(i)->a == 0 && visited.at(i)->b == N) {
       return visited.at(i);
     }
   }
-  return nullptr;
+  return nullptr; // case where goal is unreachable
 }
 
-int Jug::updateCost(Vertex *before, Vertex *curr) {
-  int cost = 0;
-  for (auto &neighbor : before->neighbors) {
-    if (verticies.at(neighbor.first)->a == curr->a &&
-        verticies.at(neighbor.first)->b == curr->b) {
-      cost += neighbor.second;
-    }
-  }
-  return cost;
-}
-
+// returns true if goal can be reached
 bool Jug::isPossible(vector<Vertex *> &verticies) const {
   for (size_t i = 0; i < verticies.size(); ++i) {
     if (verticies.at(i)->a == 0 && verticies.at(i)->b == N) {
       return true;
     }
   }
-  return false; // whole loop ran, deemed not possible!
+  return false; // Deemed not possible!
+}
+
+// returns the cost of the last vertex
+int Jug::updateCost(Vertex *before, Vertex *curr) {
+  int cost = 0;
+  // Iterate over neighbors
+  for (auto &neighbor : before->neighbors) {
+    // if neighbors and curr share jug a & b vals
+    if (verticies.at(neighbor.first)->a == curr->a &&
+        verticies.at(neighbor.first)->b == curr->b) {
+      cost += neighbor.second; // Add cost of neighbor
+    }
+  }
+  return cost; // return sum
 }
 
 // outputs true if invalid

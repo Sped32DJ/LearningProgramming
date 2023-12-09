@@ -41,7 +41,7 @@ private:
   bool isDupe(Vertex *);
 
   void makeGraph(Vertex *vert);
-  Vertex *createNewVertex(Vertex *vert, size_t i, int &cost);
+  Vertex *generateNewState(Vertex *vert, size_t i, int &cost);
   Vertex *createVertexWithCapacity(Vertex *a, int, int, const string &, int &,
                                    int);
   Vertex *createPourVertex(Vertex *, const string &, int &, int);

@@ -16,7 +16,7 @@ struct Vertex {
 
   Vertex();
   ~Vertex();
-  Vertex(int, int, int, const string &, Vertex *);
+  Vertex(int, int, int, string, Vertex *);
   Vertex(const Vertex &);
 };
 
@@ -35,7 +35,7 @@ public:
 
 private:
   void dijkstraMethod(vector<Vertex *> &, vector<Vertex *> &);
-  string getPath(vector<Vertex *> &);
+  string getPath(vector<Vertex *> &, int &);
 
   bool isPossible(vector<Vertex *> &) const;
   bool isInvalid(int, int, int, int, int, int, int, int, int) const;
@@ -43,8 +43,6 @@ private:
 
   void makeGraph(Vertex *vert);
   Vertex *generateNewState(Vertex *vert, size_t i, int &cost);
-  Vertex *createVertexWithCapacity(Vertex *a, int, int, const string &, int &,
-                                   int);
   Vertex *createPourVertex(Vertex *, const string &, int &, int);
 
   void addVerticies(Vertex *vert);

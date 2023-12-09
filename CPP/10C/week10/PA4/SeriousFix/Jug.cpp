@@ -12,14 +12,6 @@
 using namespace std;
 
 Vertex::Vertex() : a(0), b(0), distance(INT_MAX), decision(""), prev(nullptr) {}
-
-Vertex::Vertex(int a, int b, int distance, const string &decision, Vertex *prev)
-    : a(a), b(b), distance(distance), decision(decision), prev(prev) {}
-
-/* Vertex *Jug::createVertexWithCapacity(Vertex *vert, int a, int b,
-                                      const string &decision, int &cost,
-                                      int costValue) { */
-
 Vertex::Vertex(const Vertex &cpy) {
   a = cpy.a;
   b = cpy.b;
@@ -27,6 +19,8 @@ Vertex::Vertex(const Vertex &cpy) {
   decision = cpy.decision;
   prev = cpy.prev;
 }
+Vertex::Vertex(int a, int b, int distance, string decision, Vertex *prev)
+    : a(a), b(b), distance(distance), decision(decision), prev(prev) {}
 
 Vertex::~Vertex() { neighbors.clear(); }
 
@@ -92,30 +86,25 @@ Vertex *Jug::generateNewState(Vertex *vert, size_t i, int &cost) {
   switch (i) {
   case 0: // Jug A fill possibility
     if (vert->a < Ca) {
-      newVert =
-          createVertexWithCapacity(vert, Ca, vert->b, paths.at(i), cost, cfA);
-      /* new Vertex(Ca, vert->b, cost, paths.at(i), vert); */
+      newVert = new Vertex(Ca, vert->b, paths.at(i), cost, cfA);
     }
     break;
 
   case 1: // Jug B fill possibility
     if (vert->b < Cb) {
-      newVert =
-          createVertexWithCapacity(vert, vert->a, Cb, paths.at(i), cost, cfB);
+      newVert = new Vertex(vert->a, Cb, paths.at(i), cost, cfB);
     }
     break;
 
   case 2: // Jug A empty possibility
     if (vert->a > 0) {
-      newVert =
-          createVertexWithCapacity(vert, 0, vert->b, paths.at(i), cost, ceA);
+      newVert = new Vertex(0, vert->b, paths.at(i), cost, ceA);
     }
     break;
 
   case 3: // Jug B empty possibility
     if (vert->b > 0) {
-      newVert =
-          createVertexWithCapacity(vert, vert->a, 0, paths.at(i), cost, ceB);
+      newVert = new Vertex(vert->a, 0, paths.at(i), cost, ceB);
     }
     break;
 
@@ -138,35 +127,19 @@ Vertex *Jug::generateNewState(Vertex *vert, size_t i, int &cost) {
   return newVert;
 }
 
-// Helps the assign the verticies with their capacity
-// NOTE This is late, but a paramaterized constructor wouldve been better than
-// this! This has caused too many sleepless nights this week
-Vertex *Jug::createVertexWithCapacity(Vertex *vert, int a, int b,
-                                      const string &decision, int &cost,
-                                      int costValue) {
-  Vertex *newVert = new Vertex();
-  // Adding declarations to this new vertex
-  // May seem logical to used a paramaterized constructor,
-  // But, this looks cleaner in the cases
-  newVert->a = a;
-  newVert->b = b;
-  newVert->decision = decision;
-  cost = costValue; // I know this is jank, but it works
-  /* newVert->distance = costValue; */
-  return newVert;
-}
-
 // For pour vertex states
 Vertex *Jug::createPourVertex(Vertex *vert, const string &decision, int &cost,
                               int costValue) {
-  // newVert is declared using createVertexWithCapacity
-  Vertex *newVert = createVertexWithCapacity(vert, vert->a, vert->b, decision,
-                                             cost, costValue);
+  Vertex *newVert = new Vertex(*vert);
+  newVert->decision = decision;
+  cost = costValue;
+
+  // Adjust values for pour
   while (newVert->b < Cb && newVert->a > 0) {
-    // adjust val for pour
     newVert->b += 1;
     newVert->a -= 1;
   }
+
   return newVert;
 }
 
@@ -175,10 +148,9 @@ void Jug::updateGraph(Vertex *newVert, Vertex *vert, int cost) {
 
     // If it isn't a dupe
     if (!isDupe(newVert)) {
-      verticies.push_back(newVert);      // Adding new vertex to graph
+      verticies.push_back(newVert);
       size_t index = findIndex(newVert); // returns index of vertex
-      // Makes a pair, first val is index, second val is cost
-      vert->neighbors.push_back(std::make_pair(index, cost));
+      vert->neighbors.push_back(make_pair(index, cost));
     } else {
       // deletes dupes
       delete newVert;
@@ -268,12 +240,13 @@ int Jug::solve(string &solution) {
 
   vector<Vertex *> visited;           // will get modifed by dijkstraMethod
   dijkstraMethod(verticies, visited); // verticies now holds shortest paths
-  solution = getPath(visited);        // solution now holds path
+  int cost;
+  solution = getPath(visited, cost); // solution now holds path
 
   return 1;
 }
 
-string Jug::getPath(vector<Vertex *> &visited) {
+string Jug::getPath(vector<Vertex *> &visited, int &cost) {
   Vertex *goal = findGoal(visited);
 
   stack<string> s; // Needs a stack since we reach origin from end node

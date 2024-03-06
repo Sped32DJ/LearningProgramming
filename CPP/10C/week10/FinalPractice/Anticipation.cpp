@@ -67,3 +67,54 @@ public:
   void push() {}
   void pop();
 };
+
+// Doing Queue again!
+template <typename T> class Queue {
+private:
+  struct Node {
+    T value;
+    Node *next;
+    Node(const T &v) : value(v), next(nullptr) {}
+  };
+  unsigned maxSize;
+  Node *head;
+  Node *tail;
+  unsigned length;
+
+public:
+  Queue(unsigned maxSize)
+      : maxSize(maxSize), head(nullptr), tail(nullptr), length(0) {}
+  void enqueue(const T &x) {
+    if (length == maxSize) {
+      throw runtime_error("overflow");
+    }
+    Node *n = new Node(x);
+    if (!tail) {
+      head = tail = n;
+    } else {
+      n->next = head;
+      head = n;
+    }
+    length++;
+  }
+  void dequeue() {
+    if (isEmpty()) {
+      throw runtime_error("underflow");
+    }
+    Node *victim = head;
+    head = head->next;
+    delete victim;
+    --length;
+    if (length == 0)
+      tail = nullptr; // Fix tail on empty
+  }
+  const T &peek() const { // May not return a Node*! Read Q!
+    if (isEmpty()) {
+      throw runtime_error("underflow");
+    }
+    return head->value;
+  }
+  bool isEmpty() const {
+    return head == nullptr; // or length == 0
+  }
+};

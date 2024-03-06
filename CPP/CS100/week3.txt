@@ -1,0 +1,219 @@
+Emergency Procedure:
+- Decide if you should stop the sprint
+- Improve the next sprint
+
+Pop the Happy Bubble
+- You feel very comfortable with what you have
+- Comfort
+- Can stop you from making any further developments
+- Realize ways things may be imprved
+- you must take steps to evaluate and see if you are in a happy bubble
+- There is always something you can do better
+
+Definition of Ready
+- Make sure you are on track and same page iwth hte team
+= The team has agreed on the task with everyone
+- everyone is ready for the sprint
+- able to
+
+Scrum of Scrums
+- Deliver complex solutions for large groups
+- useful to solve a problem with a large group of groups
+- Multiple teams to work on a single project and various people on the same continous product
+
+User Stories
+I want to have this ____ to be able to do this ___
+I want {feature} so {that}
+3 C's
+    Card, Conversation, Confirmation
+Epics: large stories
+
+As a {user_role}
+
+Stoy-writting workshop is required to write these stories
+    Happens a couple times
+    Includes whole team plus external stakeholders
+    Brainstorm to generate stories
+    goal is to write as many as possble
+    Outside sources may be able to write some good ideas
+
+    Why?
+        Shift focus from writting to talking
+            Requirements written down
+            "You built what I asked for but its not what I needed"
+        Words are imprecise
+            "Entree comes with soup or salad and bread"
+    EX:
+        "The user can enter a name, it can be 127 character "
+            Must the user enter a name?
+            Can it be other than 127
+        THe system should promnenetly display a warning mssage whenever the user enteres invalid data
+            What does "should" mean?
+            What does prominenty display mean?
+            Is invalid data defined elsewhere?
+    Stories are understadable
+    Support and encourageg iterative development
+        Slowly turn epics into individual features
+    Stories support articipatory design
+        Participatory vs empirical design
+            There is the "You design for the customer"
+            or the "You design with the cusstomer and their feedback is important"
+    They must not be too broad, or too specific
+
+All user stories should be INVEST
+    Independant (of other storeis)
+    Negotiable (not specific contract for features)
+    Valuable (to the product)
+    Estimiable (good approximation)
+        Anything that is very big is hard to estimate
+    Small (So as to fit within an iteration)
+    Testable (in principle, even if there isn;t a test for it)
+    It's hard to write a test for everything
+
+As a professor, i should be able to viw PDF documents uploaded for grading
+    1. Open PDF within program and assign it a grade
+    2. Download a PDF from program for grading a hard copy
+    3. Batch download all students submissions for grading hard copies
+
+As a student, I should be able to upload PDF documents so I don't have to turn in hard copies
+    1. Copy and paste text into the input field
+    2. Have bold, italics, and underline option for text
+    3. Have basic paragraph formatting (indenting)
+    4. Allow for bullets, dashes and number lists
+
+1 epic for Canvas
+
+Pre-requisites (for software construction)
+Gather all the requirements, all the user details
+You need to see if these goals given to you are worth solving
+    Make sure it is not a two minute computatino
+    Some problems are very easy to solve within minutes
+        Using existing software
+Requirements
+    What the program needs
+    What technologies
+    How to solve the problems
+You must know the architecture
+    Mobile design? Desktop?
+    What will it run on
+    Where will it run
+    How will it run
+
+Problem-Defined
+    A clear one or two page Definition of what the problem is without any reference to a solution
+
+Requirements
+    Why have explicit requirements?
+        Userse can review and agree with them
+        Helps resolve conflicts (early on)
+        Minimize changes after development begins
+    Stable requirements don't exist
+        Not until broken down further
+    Handling requirements changes
+        Use checklist
+        Everyone should understad the cost
+        Have procedure for controlling changes
+        Use an SDLC that acommadates changes
+        Evaluate business value of the changes
+            When there is an idea for a new feature
+            Is this idea very important, or a money pit
+        Dump the project (last resort)
+            Usually if they do not even know what they want
+            Very shitty requirements
+                Requirements must be stable
+                May go over budget
+                Project will fail
+                Go through many changes
+
+Architecture
+    Must agree on details related to the design
+    Program organization
+    Major classes
+    Data design
+    Business rules
+    UI design
+    Resource Management
+    Security
+    Performance
+    Scalability
+    Interperability
+    Internationalization/Localization
+    Input/Output
+    Error Processing
+    Fault Tolerance
+    Architectural Feasibility
+    Overengineering
+    Buy vs build decisions
+    Reuse decisions
+    change strategy
+    General Architectural Quality
+
+Cost of failing to fulfil Pre-requisites
+    Problem definition: Waste time solving the wrong problem
+    Requirements: Missing the details of the system
+
+UML Notation
+    Unified Modeling Language
+    Object-modeling language
+    Standardized set of symbols for modeling systems
+    Model of system is used to documen and communicate the characteristics, relationships, and functionality of each componenets within the system
+
+    Language agnostic language (as in, for software)
+    Takes a lot of time to make this
+    UML 2.0 is quite the most important one, the one from 2005
+        2.5.1 is the latest version, if you know 2.0, you are fine
+
+Structural Diagrams
+    (Draw one for your project!)
+    Class Diagram:
+        represent classes, interfaces, and associations between classes.
+            They model the object orientation of a system
+    Object Diagram:
+        Lke class diagram, but focus instantiations (objects).
+        They model the static view of system
+    Component Diagram:
+        Represents (e.g. classes and interfaces) and their relationships/dependacies.
+        Used model implementation view of a system.
+    Deployment Diagram:
+        Represent a set of nodes (e.g. hardware, software) and their relationships.
+        They model the physical entities of a system.
+
+Class Diagrams:
+
+    Account_Name
+    ========================
+    -Customer_Name: String
+    - Balance:int
+    +addFunds(): Void
+    + withDraw(): int
+    + transfer(): Void
+
+You can represent inheritance
+
+Make sure classes are not inheriting from each other and so on
+    Or how one stores to another class
+    Sideways connecting lines, associations
+
+Associations is "has-a" relationship
+Inheritance is "is-a" relationship
+
+Associations (membership)
+    Aggregaion
+    Composition
+
+Both mean association, and mean solid line between associations
+
+Composition
+    For whole part composition
+    Solid Diamond
+    If you destroy the whole, the parts will be destroyed
+    ChessBoard -> squares[64]
+        If chessboard kill, squares mean nothing
+
+
+Aggregation
+    Hollow Diamond
+    This can be orphans
+    Container - containee
+    Bag -> apple & milk
+        Apple & Milk can independantly exist

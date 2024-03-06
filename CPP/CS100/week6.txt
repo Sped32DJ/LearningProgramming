@@ -1,0 +1,160 @@
+Iterators
+    Part of SOLID
+    Can be used to iterate through an array
+
+int arr[10];
+int *p = arr*;
+
+int *p = new_int[10]; // Better memory safe
+*p
+*p(p+1)
+*p(p+2)
+
+delete p;
+
+Iterators are solely for iterating
+    Simple datatypes
+    Point to some place in memory
+
+// Object in UML
+Iterator
+- size; int
+- index; int
+// Needs to pass reference to change the value, rather than copy
+// Can be manipulated
++ current(); int &(getter) {return v.at(index)}
+// Like, current() = 100; // actually changes the value inside the vector
++ next(): void // for iterator
++ previous() : void // for iterator
+
+// Like that, you don't care about pre-order or post-order transversal
+// Easier to read
+// Single function that can work for linked lists or vectors or anything, it will all be the same universal code
+Search(Iterator){
+    current()
+    next()
+}
+Iterators make algorithms independent data structures (container type)
+
+Iterator Category, there are 5 types
+    Input
+    Output
+    Forward
+        - Can input and output forward
+    Bidirectional
+        - Forward and backwards
+        - Can only visit neighbors
+        - List
+        - Map
+        - Multimap
+        - Set
+        - Multiset
+    Random-Access
+        - More powerful, can adapt based off current status
+        - Like a pointer, will go to an address
+            - Can skip steps and so on
+        - Vector
+        - Deque
+
+// Convenience and usability
+vector<int> v = {1,2,3};
+
+vector<int>::iterator i;
+
+int j;
+
+// Can't handle linked lists lol
+for(j = 0; i < 3;++j){
+    cout << v[j] << " ";
+}
+
+// This will work on linked lists, vectors, arrays, anything
+// Easier for scalability
+// the ++i calls the iostream::++ overload function call for transversal
+for (i = v.begin(); i != v.end();++i){
+    cout << *i << " ";
+}
+
+Popular to use iterators using
+begin() and end() method
+Advanced(iterator, increment) // can skip amount of steps
+Next(Iterator, increment) // doesn't modify iterator, returns a new one instead
+Prev(Iterator, decrement) // returns copy
+Inserter(container, iterator)
+
+Classes:
+Need to be small
+Should not implement useless interfaces: How to determine if it is useless?
+Classes should be stable: What is the bottleneck
+Should be flexible
+Classes should be cohesive: Everything unified
+
+S - Single Responsibility Principle (SRP)
+Seriously break up everything
+    Have all those single purpose classes
+        AreaOutputter class, AreaCalculator class, JSONAreaOutputter Class, and another for HTML
+How to know if a class has too many Responsibilities
+    Many methods, especially if they fulfil multiple purposes.
+    If you can not name the class, it is doing too much
+        classes must have descriptive names
+        You shouldn't really have a single mega ultra class
+    Try to tweak the class, and describe it in a short sentence
+
+Midterm 1 Practice (Discussion):
+    Github flow stuff, kinda easy
+    git revert HEAD // reverts to last commit
+Unit Testing
+    Hopefully no GMock questions
+
+Coding Methodologies
+    Waterfall kinda ass
+    DOn't cowboy code
+Agile Methods
+    Scrum
+        Master scrum, its a team, it goes in sprints
+        They work to finish an epic
+        Roles:
+            Everyone plays
+            Scrum Master
+            Scrum Team
+            Product Owner
+    KanBam (Sign Boards)
+        A board of everything required, and it's status in terms of progress
+
+Epics:
+    Card
+        "as a <user role>, I <want/need/can/etc> <goal> so that <reason>"
+        user role should never be <developer>
+    Conversation
+    Confirmation
+
+Epics and user stories are so good because you can fix problems early on.
+    If you fix issues later on, the costs are much more expensive.
+
+// Look at more lecture 2 stuff
+Requirements -> architecture -> construction ->
+Pre-requisites
+Architecture
+    top-level design
+    Architecture changes are more expensive, catch them early on
+    Needs a strong foundation to start construction
+
+UML Notation
+    Usa Case Diagrams
+    Class Diagragrams
+        Name
+        Attributes
+            - value;int
+        Features
+            + getVal();int
+        Composition and the other one
+            Full vs empty diamonds connectinng
+    Interaction Diagrams
+
+Testing (Mainly on testing)
+    Unit and Integration testing
+Assert: Generates fatal
+
+FIRST (know every word)
+
+Google Test Famkework

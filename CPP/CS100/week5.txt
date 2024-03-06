@@ -1,0 +1,249 @@
+General Notes for Google Test Framework
+EXPECT_FLOAT_EQ_NEAR
+EXPECT_NEAR(expected, val, error +- 0.0001)
+
+Never write code tightly coupled to a file system
+    Always use variables that adapt to their environment
+    Works on any machine, despite operating system (hopefully)
+
+void area(){
+    // compute area
+    cout << area;
+}
+    This makes code tightly coupled to cout (maybe you should modify private object variable)
+    Or
+        time = clock.now();
+    Or reading from a file in the filesystem
+        To test, you must read from that file
+        How would you fix this?
+        Have a current clock a function that can return it
+How to fix coupled cout code?
+    You may also want to test the formatting of this string.
+    Convert to buffer that gets printed out
+        <ostream> oss (output string stream)
+
+void    area(ostream & out){
+         double rad = 10.0;
+         ostringstream oss;
+         area(oss, rad);
+         EXPECT_EQ(oss.str(),"314");
+    }
+
+Hard to write test when functions are responsible for too much
+    KISS + unix philosoph
+
+Integration system
+    Verfies sytems work together ()
+    Test defects
+
+Testing, you can test bottom up, and then top down
+    I would prefer bottom up to make sure backend works perfectly
+    Sandwich testing, go bottom up and top down simultanously
+        Can be done since we have multiple members
+    Unit testing is a large portion of the grade
+
+Other types of Function Testing
+    (Functional testing)
+    You don't really want to be testing non-important things, like reliability of external factors
+        i.e. How reliable is the server?
+    Smoke Testing
+        First type of testing made by QA team
+            How ready is this for the QA to take care of?
+            If there is no smoke, then QA can now start testing
+        After smoke testing and QA, it is ready for end-user
+    Alpha/Beta testing
+        This is for the General audience, released to a small cohort
+            Alpha would be for internal audience, they will treat it like an end-user with feedback
+        With Beta, only 5% or 10% gets the new design, all real users who are ready for beta testing.
+            By the Beta, there shouldn't be any major problems (unless you are a game dev)
+    User Acceptance Testing (UAT)
+        The client is there to test the software, then they decide if its good or not
+
+Non-function testing
+    Performance
+        Done to check whether or not system meets the Performance requirements.
+            Function execution time, network latency, webpage render times
+    Load Testing
+        The max workload without degredation (ie user capacity)
+    Stress Testing
+        How hard it is stressed beyond specificaation in order to check how and when it fails
+            Check to see what fails first
+    Security Testing
+        Make sure user information is safe
+            Data is all encrypted
+        Make sure people can't accidentally deleted everything
+            Log are made to see who did it
+            Have enough internal control.
+            Maybe a backup, or to know where everything went
+    Compatability testing
+        Having a testing environment of your specific clients and general clients
+            Mac, windows, firefox, chrome, mobile, iphone, android
+            Maybe windows only, make it work in every version of the OS
+    Reliability/Recovery Testing
+        Network outages, database failures, or receiving bad data
+        Have redundant copies everywhere
+        Be able to recover
+            Recover safely and rollback if server dies in the middle of a transaction
+            Database gets flooded, user data doesn't go away
+        SLO or SLA agreement. Saying that out of the year, the server will only be down for an hour
+            If you can't provide this, you pay penalties
+    Usability Testing
+        Hard to use, not user friendly
+        Bring in new people and see how they interact with the program
+        How long it takes them to figure out a feature
+        How long does it take to get to a common feature
+    Localization
+        UI can be easily accessed.
+        Translations are correct and very appropriate
+            Understand some languages are right to left and other left to right
+        Federal policies and ways to store data and so on
+        Localized currency
+        Uber to work in India, you need to add a credit card
+            Many people didn't have a credit card at all in other countries
+            There are cash only options for other countries
+    Globalization
+
+
+Thursday
+Exam next Thursday
+    Design Document, Monday 10pm
+    First scrum meetings
+    2 checkins
+        With TAs
+    Due during lab
+
+What will be on Exam 1?
+    What will be covered today
+        About testing
+        Interfaces will be for exam2
+    Lectures, discussion, lab, all that for exam
+    Up to lab 4 will be on exam
+    Mostly multiple choice questions with some open ended questions
+    Not heavy on memorizations, mostly skills
+    Bring a cheat sheet
+        One page double sided
+        Review session 1 day pre-exam
+        There will be a collaborative notes
+
+NOTE Practice more UML exam stuff
+
+Functional vs non-function tests
+    All other aspects that are not related to correctness
+    How much load it can take until it fails, and what fails first
+
+Localization Testing, where we ended off
+    Uber failed in developing countries due to the cash oriented economy.
+    Measurements
+        F -> C
+        miles -> km
+        and so on
+    Adjust to work on 3G networks for emerging markets
+    This is to localize an application for a specific country.
+
+Globalization Testing
+    This works for languages, and culture format.
+    This is for the program to work anywhere, support all formats.
+
+Compliance (conformance) testing
+    Makes sure it complies with all goals and regulations
+    Works with all the local laws of the countries where this will be launched.
+        How to manage data and so on.
+
+Regression Testing
+    Make sure you re-run all tests with every change.
+        Make sure a new change doesn't break anything else.
+Testing Infrastructure
+    Unit testing framework -> Google Tests
+    Wikipedia shows all the unit testing frameworks
+Make sure tests have a good code coverage
+    Ideally 100%, but you actually don't want that.
+        Some of the code is for errors that should never run, unless an absolute bug happens
+        The goal should be 100%, or approaching 100%
+    90% ideal for regression testing
+    80% absolute minimun coverage
+    60-70% for typical coverage for projects that don't use a tool for it.
+Coveralls is a common code coverage system
+Continous Integration (CI)
+    Developers merge their changes back to the main branch as often as possible.
+    changes being validated by creating a build and running automated tests against it.
+    By doing so, avoid the integration hell that usually happens for release day to merge their changes. Relies heavily on automated testing to validate changes
+    This includes the nightly builds having new updates, meaning the morning people may deal with the bugs of last night.
+Continous Delivery/Deployment(CD)
+    Continously delivering and deploying features
+        Would this be a rolling release?
+
+Introduction to Interfaces
+    Dealing with the software through a user interface, rather than a bunch of code
+Encapsulation
+    Bundling data with methods that operate on that data
+    C++, you do this through private & protected members
+        Protected can be changed by other classes
+Abstractions
+    Being able to use a a machine rather than recognizing how the machine was made
+    v.push_back(10);
+        Abstraction, this hides a lot backend computation.
+    Hides unecessary details through public methods
+        public getters and setters, doing a lot more work.
+Interface:
+    Description
+
+class A{...};
+// Has all public access from class A as public
+class B : public A {...};
+// has all public access from class B and A
+class C : public B {...};
+
+// Abstract class
+class Animal {
+    private:
+    string name;
+    int age;
+
+    public:
+    void set_name(string n){
+        name = n;
+    }
+    string get_name(){
+        return name;
+    }
+
+    virtual void sound() = 0;
+};
+
+class Cat: public Animal{
+    public:
+    virtual void sound(){
+        cout << "meow";
+    }
+};
+class Dog: public Animal{
+    public:
+    virtual void sound(){
+        cout << "woof";
+    }
+}
+
+Make these virtual for dynamic run-time binding
+    virtual -> dynamic binding
+    non-virtual -> static biding, binded during compile time
+
+Animal *a = new cat();
+a->sound(); // with dynamic binding, does cat. Static->does Animal
+
+vector<Animal *> animals;
+
+animals.push_back(new Cat());
+animals.push_back(new Dog());
+
+
+for(auto animal: animals){
+    animal->sound();
+    // Prints "meow" then "woof"
+}
+
+Inheritance helps write extendable code to where you can easily add more features
+    And make old code work
+    You can easily add more features extendably
+    Makes it more maintainable since we know the old code is already tested
+        The bug for a specific child class will not affect any other objects
+        Subclasses can't affect the main class or other subclasses

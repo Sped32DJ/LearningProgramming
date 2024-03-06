@@ -1,0 +1,131 @@
+UML Notation part II
+Class diagrams, make sure that everything ends up pointing to it's parent
+The aggregation and composition diamond.
+    Filled or empty
+is-a relationsip for inheritance
+    Open diamond
+Has-a is association
+    Closed diamond
+A class that uses another class
+    uses-a association
+MVC, tags that you add to each block
+    It is a single tag, so it is like a table/sinle tag
+    Model entity
+    View Boundary
+    Controller
+    entity
+
+Behavioral Diagrams
+    Use Case Diagram: Represent use case view of the system including actors and their relationsip
+    Interacion Diagram: Represent sequence of interactions within the system
+    State Machine Diagram: shows state of system and triggers for changing between one state and the other
+    Activity Flow Diagram:
+
+Self-call: message that an object sends to itself
+Condition: indicates when a message is sent. The message is sent only if the Condition is true
+
+Dotted lines back is for return messages
+
+Lifeline vs activation bar
+    Lifeline is how far the program goes
+    The activation bar what is active all the time.
+        The main loop that keeps the continuity (persistency)
+
+Use case diagrams
+    Shows interactions between systems/users
+    Describes a set of scenarios and is commonly used to capture requirements
+
+Testing
+    Write the tests before writting the code
+    Write tests that fail
+    Make the code work
+    Eliminate redundacy
+Unit Testing
+    3 phases of unit testing
+        Arrange Phase: Initialize a portion of the application you want to test
+        Act phase: Apply some stimulus to that portion
+        Assert Phase: Observe and verify the resulting behavior
+
+Example: Arrange Phase
+TEST(Addition, CanAddTwoNumbers){
+    // arrange
+    int val1=2, val2=2;
+    // Act
+    int result = add(2,2);
+
+    // Assert
+    EXPECT_EQ(result, 4); // result is expected to be equal to 4
+    ASSERT_EQ(result, 4);
+    EXPECT_TRUE(result == 4);
+    ASSERT_TRUE(,,);
+
+}
+
+TEST(<Suite Name>, <test name>){
+    // arrange
+    Ex: two integers
+
+    // Act
+
+    // Assert
+}
+
+Discussion:
+TEST(MathTest, testMultiplication){
+    int val1 = multiply(2,3);
+    EXPECT_EQ(val1, 6);
+    EXPECT_EQ(val1, val2); // Checks if val1 == val2
+}
+
+
+Thursday
+QA Testing, these people decide if features ship, they test the features using testing software
+    These people don't know the internals, but test the stability of code
+    Blackbox testing (Don't really look at code)
+        Helps to reduce bias
+    Test driven design
+
+    3 units of phase testing
+        Arrange, Act, assert
+
+Test Driven Design TDD
+    You write the test knowing that it will fail
+        Make sure it fails just to make sure it fails
+        If it correctly fails, that means the test works and correctly marks a test as failing
+            Sometimes tests indefinetely pass since they are buggy
+
+ASSERT_EQ vs EXPECT_EQ
+    ASSERT generate fatal failures
+    EXPECT generates non-fatal failures
+    Assert fails mid-function if the state is not correct (generates fatal failures)
+    Expecte continues until the end of the function even if the state fails (generates non-fatal failures)
+
+Unit Testing has 2 categories
+    State-based: verifying test produces correct results or that the resulting state is correct
+    Interactions-based: verifying that test properly invokes certain methods
+
+TEST(MidPointTests, changeXFirstQuadrant){
+    //  Arrange
+    Point p1(0,2);
+    Point p2(4,2);
+
+    //  Act
+    Point xp = midPoint(p1,p2);
+
+    //  Assert
+    // Observed output should be the expected
+    ASSERT_NE(p->x,nullptr);
+    ASSERT_EQ(p->x,2); // Can potentially segfault a nullptr
+    ASSERT_EQ(p->y,2);
+
+}
+
+Clean tests
+    Don't try to test everything within a single test
+        That's why there is a testsuite (bunch up all the tests and descriptions)
+            For failed test, easier to debug
+        Have good test coverage, make sure most of the code is tested
+
+
+    Make the code work
+    Eliminate redundacy

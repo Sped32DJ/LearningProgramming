@@ -1,0 +1,61 @@
+Defensive programming cont.
+    Assertions
+        Very similar to unit tests, but assetions are part of production code, and you can use them to:
+            validate data
+            verify a file is open or close
+            that a file is open with the right privaledges (read-only, write, etc)
+            That a value hasn't been changed by a routine
+            That a pointer is not null
+            That a container is empty or full
+        assetions are used to check for conditions that should never happen, and if they do, the program should stop
+        Assertions are checked during runtime
+            They fail at run-time
+            Aborts compiling if static assertions fail
+            Static_assertion require constant expression that can be evaluated during compilation time
+        void MySQRT(double value){
+            assert(value >= 0 && "the value is non-negative");
+            static_assert(sizeof(value) == 4, "integerss are less than 4 bytes")
+        }
+        Never
+            assert(value++>0); // Assume that assertions can be removed and code still functions the same
+        if(value<0){
+            throw runntime_error;
+        }
+        The reason to still include this is that you can remove assertions
+        Error-handling
+            Return a neutral value when the system needs to keep going after an error
+            Return the next valid piece of data if you can handle data loss
+            Return the same answer as prerious time if real time variance is not that important
+            Return the closets legal value if reading from calibrated instruments
+            Log a warning messsaage to a fle if error handling is done offline
+            Call an error-processing routine to make debugging easier
+            Display an error messaage (be sure to sanitize)
+                Don't tell them "wrong password"
+                or even worse... "Wrong username"
+            Shut down the system
+        Barricading a system
+            When working with dirty data (such as data coming from the internet)
+                it is a good idea to seperate the error-handling logic from the system
+Offensive Programming
+    Make sure asserts ABORT the program
+        Make sure your failures are very loud and crash
+        Nothing should fail softly, something that forces you to fix the bug immediately
+    Completely full memory allocated to detect compilation errors
+    Design your case statement default or else caluses so they fail hard
+    Fill an object with junk before deleting
+        Employee *e = new Employee
+        // fill e->name with junk
+        delete e; // Hope your deconstructor is good
+        This will prevent against the USE AFTER DELETE bug
+            You can't use an object in memory after you delete it
+            Your code will still work, but it won't because it was never overwritten
+                Since the memory address of e still points to the "correct" data since it was overwritten
+    Make the system send you an email with log messages
+        Stronger way to ammend log files
+
+C++ debug mode
+#define DEBUG
+#if defined( DEBUG )
+#define DebugCode( code_fragment ) { code_fragment }
+#else
+

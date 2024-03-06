@@ -1,0 +1,144 @@
+D- Dependacy Inversion Principle
+    Instead of depending directly on a low level module
+        Depend on an abstraction
+        In the case where the low level module is changed & upscaling
+    Then functions who focus on a simple purpose
+        Deliver just delivers, the function writer decides when to take care of paying
+End of SOLID principles
+
+Next topic is still about design
+    Emergent Design
+        You don't really need to design everything
+            You don't require full upfront design planning
+
+Emergent Desgin comes from education
+    Within Agile, it referes to a framework that delivers functionality, letting design take form on its own
+    TDD
+        Eliminate redundacy
+        The whole design develops from this
+        Design in chunks
+            Produces very small code, in small code chunks
+    4 Rules of Simple Design
+        Run all tests
+            A system mst be verifiable
+            TO verify a system, we must test it
+            Knowing that we need to test the system, forces us to design classes that follow SRP
+            A testable system is decoupled and follows the DIP
+        Constains no duplication
+            Merge functionality makes the system simpler
+            Sometimes functions are similar but don't do the exacct same thing
+            Especially before moving forward
+            Template Method (used to remove duplication)
+                Create a template that everything will inheret from
+                There will be some duplication
+                Ex:
+                    A data miner that is written for 4 different data formats
+                    If you dupe more than twice, just start rescaling the system
+                        Eliminate redundacy
+                    If there is something with a known sequence of steps
+                        Create an abstract class, and concrete classes build from it
+                        This should all be moved to the base class
+                    That would be a mine() algorithm that is a set of steps
+                        Every step being a repetitive function
+                        Implement these pure virtual methods
+                        (I think I am good and have been doing this)
+                        virtual functions means you will later define them
+
+        Express the intent of the programmer (Expressive!)
+            Good naming
+            Good testing
+            Keep classes and functions small
+            Clear interfaces
+            Make your code elegant
+        Minimize the number of classes and methods
+            Kinda conflicting with single responsibility principle
+            Basically KISS
+            Minimal classes and methods
+            Last rule of priority
+            After you have made your code functional, try to minimize the number of classea and functions
+            Small classes and small functions should not b a dogma, but do it when it makes sense
+            Virtual methods bring more runtime
+    Advantages of Emergent Design
+        Keeps development focused on functionality
+        Lack of overengineering
+        Keeps discussion pragmatic and systematic
+        Saves time in resources spent in designing systems
+    Disadvantages
+        No plan for changes which cause design to deteriorate
+        No plan for growth which limit future development
+        Ignores crucal dependacies which can translate in wrong implementation
+        Lacks coordination which can cause development deadlocks
+        Most of these problems are mitigated with clear and SOLID interface creation from the very beginning
+            If you make classes open for extension, it shouldn't be too bad
+
+Starting Strong
+    Turn off implicit declarations
+    Declare all variables
+    Use naming convention
+    Check variable names
+    * Most of these are enforced by g++
+        Such as avoiding implicit variables
+        Along with unused variables
+When to initialize variable
+    Try: Try to initialize the declaration time
+    Do: If you can't init at declaration, do it close to when it is used
+    Better: Declare and define close to where it is used
+
+    Window of vulnerability
+        The gap between declaration and actually using it
+
+
+Thursday
+strong coding
+Use const when possible
+Reset counters and accumulators
+Initialize a class's member data in its constructor
+
+Localize Refrences to Variables
+    Scope is how long your variable is known and can be referenced.
+        Minimize the scope
+    Code between references to a variable is a "window of vulnerability"
+    We can calculate how close together references are by computing the span of variable
+    Localize your references, reduce risks
+    Lifetime of a variable is between first and laast reference
+    Span of a vaiable is calculated by how many lines of code average in between references
+
+Group Related statements
+    I have already been doing this
+        But when calling void non-page outputting statements
+            Start with ex: All triangle back end then endl endl, circle stuff
+            Rather than triangle.Setbase(2); circle.Setradius(2)
+            Instead, triangle.setbase(2);triangle.setHeight(4); endl endl; circle.setRadius()
+
+Naming Variables
+
+Intention Revealinng Names
+    Longer variable names make it easier to debug
+    Choose good meaningful names
+    Avoid disinformation
+        userNum vs usersNum vs numUsers
+        XYZControllerForEfficientHandlingOfStrings
+        XYZControllerForEfficientStorageOfString
+        Have a convention
+            userCount
+            userNum
+        User Pronouncable Names for variables
+    Naming conventions
+        i & j for integer indexes
+        p for pointer
+        v for Vectors
+        Consts, typdefs and preprocessors macros ALL_CAPS
+        Vairbale and functions use lowercase for first word (snakeCase)
+        underscore exclusive for names in all caps and certain kinds of prefixes
+        Difference between class names and object names
+            Triangle aTriangle
+
+Defensive Programming
+    Similar to defensive driving
+        Being very aware and let people be assholes around you to protect yourself
+        Assume those around you are bound to make mistakes
+        Don't assume those around you make mistakes.
+        Assume everyone else is an idiot.
+        Instead of garbage in garbage out
+            You should be able to detect garbage and not output anything if there is garbage input or bug
+            Make sure the past parameter is good.

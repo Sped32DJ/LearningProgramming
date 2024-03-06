@@ -1,0 +1,75 @@
+SRP
+    Seperate everything to itself
+
+class CoffeeShop{
+    constructor(name:string, address: Address){}
+    getName(){}
+    getAddr(){}
+}
+class Address{
+    constructor(city:string, zipCode: int){}
+}
+public class AddressService{
+    public void changeAddress(city:string, zipCode:int){}
+}
+
+OCP (Open-closed principle)
+    "software entities.. shoud be open for extension, but closed for modification"
+
+Current code:
+class CoffeeShop{
+    constructor(name:string, address: Address){}
+    getName(){}
+    getAddress(){}
+}
+class InvoiceService{
+    generateInvoice(shop: CoffeeShop):strint{
+        let invoice = "";
+        if(shop instanceOf A){
+            invoice = "some format of invoice";
+        } else if()
+    }
+}
+
+// Discussion
+
+SOLID principles
+S - Single Responsibility Principle
+    Class should have only one reason to change
+    Single purpose class and single Responsibility
+    Common SRP Violation:
+        Class that manages and modifies data also outputs to the console
+O = Open-closed Principle
+    Software entities should be open for extension, but not modification
+    Can use polymorphism to implement OCP
+Liskov's Stubstituion Principle (LSP)
+    "Objects should be replacable with their subtypes without affecting the correctneess of the program"
+    Classes should inheret from some other class
+Interface Segregation Principle (ISP)
+    Clients should never be forced to impleent an interface that it doesn't use
+    Clients shouldn't be forced to depend on methods they do not use
+    If an inherited class does not inherit all functions from an interface, then the interafce should probably be broken down...
+Dependacy inversion principle
+    "entities must depend on abstractions not on concretions.
+    It states tat the high-level module must not depend on the low-level module, but they should edpdn on abstractions"
+    High level modules depend on low levels. low levels are the tools that are fed into the high level. Dependacies are low level.
+    If your low level dependacies will be changed in the future, make an abstraction, for scaling for when the low level details changes.
+        For example, SQL server stuff, and you want to move over to MongoDB when you got the resources
+        Create abstractions to make scaling much easier. Do this while it is cheap
+        Instead of SQLConnection, do DBConnection, and the backend of that is SQL (Or the current affordable DB)
+
+
+// Thursday lecture
+
+High level module (or class)
+    Class that an action with a tool
+    Class that uses a tool
+Low-level module (or class)
+    The tool is needed to execute the action
+    Class that implements the tool
+Abstraction:
+    Represents an interface that connects the two classes
+Details:
+    How tool works
+
+

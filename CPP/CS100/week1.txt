@@ -1,0 +1,31 @@
+Make sure code works well
+    No memory leaks
+    good unit tests
+    can't be hacked / security risk
+
+Ideas
+    Program that can grab the cheapest flight prices
+
+    How to eat the cheapest (good) food on campus
+        Include food ETA's
+        include app redirects
+            Include the app's benefits
+        How far away you are from the campus, include if you are at a parking lot, like 50 (UV)
+        Also add Big Springs parking lot feature
+        All terminal based
+            The back end should be what matters the most
+            It should give you options of food after a questionare
+            something like a preference algorithm
+        If anyone is good at graphs, we should graph the campus
+            Have the graph visualizer library thing
+
+    A program that lets that gives people the most efficient seats for an airplane to board as soon as possible
+        It is kinda like a game
+            Names for NPCs, along with time taken to board every person
+            Time taken using graphs and how long it takes for people to sit down once they get there
+                Then merge conflicts
+        Reason, we have a cheap airline, it is fast and efficient, and strict on time
+            No reserved seating because that kills time, (time for another entire flight)
+            Pure utility, but obviously there will be a first class
+                (I think this algorithm already exists)
+                You can choose each algorithm

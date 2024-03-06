@@ -1,0 +1,101 @@
+Workflow techniques
+Waterfall Method
+    Very bad, only practical if you are perfect
+Cowboy Coding
+    You can only get away with this in small projects, and easy projects
+Kanban (signboard in Japanese)
+    For Just-in-time manufacturing developed by Toyota
+    Takes into account the fact that some parts of the manufacturing process is faster than the other
+    Has a WIP limit
+        These parts must be done before you go onto the next
+    Make sure to move at least one task to DONE per day, makes work more satisfying!
+    Helps move everything into tasks that can be done
+        You can see all the goals, and you can see every required task
+Use Github Projects to make a progress board
+    Useful to keep people on track, track all progress
+Trello is another program that can keep progress of projects
+
+Scrum
+    Related to teamwork
+        Work with crossfunctional team functions
+        self-organized teams
+    Pillars to scrum
+        Transparency
+            key elements of projects are visible and understood by those responsible for the outcome.
+                Everyone knows what they are doing, and how thier work integrates with everyone else
+        Inspection
+            Continous checks on the progress torwards a sprint goal
+        Adaption
+            Change course as soon as undesireable unforseen events take place
+    Scrum VALUES
+        Commitment
+            To achieve every team's goal in every sprint
+        Courage
+            Work through conflict and challenges together so they can do the right thing
+        Focus
+            Exclusively on team's goals and the spring backlog
+        Openness
+            With stakeholders being transparent about work and challenges they face
+        Respect
+            Each other to be technically capable and working with good intent
+    Patterns
+        Repeatedly known and proven to work patterns used by other teams and therefore adopted as part of SCRUM model
+    Antipatterns:
+        Concrete experiences that have disrupted SCRUM patterns in the past and are likely to show up in future
+        Document the good and the bad
+            All the failed and bad attempts documented
+                The experience to getting to this final product
+    Artifacts:
+        Documentation generated often as result of a pattern
+
+    Scrum Roles
+        SCRUM Master
+            Typically filled by project manager or team leads
+            Removes impediments from scrum team
+            Enforces scrum principles
+        Scrum team
+            Typicaly, 5-10 crossfunctional members
+            Members ar full time
+            Members can only change teams between sprints
+        Product Owner
+            Acts like a single voice for the "user"
+            Knows what features (not development tasks) need to be built and in what sequence
+            Typically, a product manager
+
+    Spring Cycle
+        Product owners create product backlog of features that need to be developed, and prioritize backlog based on current needs
+        Highest priority tasks are broken down into small deliverable tasks, which are then prioritized by developers and estimated for time
+        Tasks are assingned to members that can be completed in the next spring,
+            a short period of time where development goals are fixed and cannot be changeed (usually 2 weeks)
+        Information and issues shared between members thorugh daily standup meetings
+        Each spring, goal and progress are re-assessed and re-prioritzed and new sprint is planned
+        After spring review, have a spring retrospective, to review the scrum process
+    Spring Planning
+        Sprinng Cycle: 2 weeks
+        Total work hours/day: 8 hours/day
+        Other work hours per day: 4 hour/day
+        Actual work hours per day: 8-4 = 4 hour/day
+        4 hours/day * 5 days/week * 2 weeks = 40 hours/sprint
+        Each team member can support 40 hours worth of work in a sprint
+        Scrum team size: 4 members
+        5 members * 40 hours/sprint = 200 hours/sprint total team effort
+
+    SCRUM MEETING
+        At least every other day
+        5-10 minutes
+        Status, say progress of tasks
+        Required new tasks
+        current progress of project
+        Make sure everyone is making progress
+        You can easily just do this on discord/zoom
+            doodle.com
+            when2meet.com
+        Instead of a standing meeting, planking standup meeting, makes people want to finish talking fast
+
+User Stories
+Template:
+    As a [user type], I want/need/... to [goal] so that [reason]
+        Reason is sometimes optional is goal is intuitive
+
+3 C's
+    Card, Conversation, Confirmation

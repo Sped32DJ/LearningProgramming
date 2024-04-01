@@ -1,0 +1,64 @@
+Code tuning
+    Make sure to use optimizer friendly compilers
+        Make sure to use the right flags
+        For debugging, you should enable -O0 optimization
+        For release, you go -O3 for optimization level
+    What more can we do to reduce run-time?
+        Reduce input/output operations
+            Printing results, asking for user inputs
+        Paging and page defalts: when the computer needs to rely on secondary
+            storage and the data is not found in the main memory
+            Paging is when your memory is full and you are trying to fill it
+                It ends up using the file as storage, OS level paging
+    Choosing the wrong programming language
+        There are compiled, byte code (java), and interpreted code
+    Steps for tuning
+        Develop the software by using well-designed code that's easy to understand and modify
+        If performance is poor
+            Save working code snapshot
+            Measure system to find hot spots
+            Determine whether the weak performance comes from inadequate design
+                Data types, or algorithms and whether code
+                tuning is appropriate.
+                Go back to step 1 if not appropriate
+            Tune the bottleneck identified in previus step
+            Measure each improvement one at a time
+            If an imprvement doesnt impove the code, revert the code saved in step a
+
+Stop testing when you know the answer
+    Short circuit evaluation is supported by C++ and Java
+        The way to make loops
+        Stopping the loop when you realize that you have search enough times
+        Like in Dijstkra, you make things as true if they are found, then if true
+            exit loop
+            Conditionally in an if statement
+                using break
+Loops:
+    One of the most commong bottlenecks in code are loops
+    Writting loops correctly can have great impact in performance
+Loop interchange
+    Have the outer loop with the smallest, and the inner loop as largest
+Don't include constant code into the loop
+    Const values being recalculated does nothing
+
+Discussion
+    Lecture 5 interfaces in OOP
+    Encapsulation
+        Prevents data from being accessed from other classes
+        Protected, and private
+            Protected can be accessed through inheritance
+    Interface:
+        Decides what an object can do and how to interact with the object
+        It is the way classes are made
+    Lecture 6:
+    Operations for iterators
+        begin()
+        End()
+        Advance()
+        Prev()
+        Next()
+        Inserter()
+
+Strong coding
+    Span of a variable is the average amount of lines where it is accessed
+        Need more practice, amont of lines between each reference divided by references

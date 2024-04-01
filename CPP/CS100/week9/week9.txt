@@ -59,3 +59,139 @@ C++ debug mode
 #define DebugCode( code_fragment ) { code_fragment }
 #else
 
+Discussion
+Refactoring & Unit Test
+    You should create unit tests for code you plan to refactor
+Refactoring techniques
+    Extract Method
+        Most common refactoring strategy
+        Take a parat of a function, and make it its own function
+    Inline Function (Get good at making one liners)
+        Inverse of extraction
+        Combine multiple functions into one
+        Do this whena  function has a trivial implementation
+        Turn a multi variable operation into on
+    Rename Variable
+        Make variable names more descriptive
+        Remove abbreviations that are hardd to understand
+    Replace Conditional with polymorphism
+        Turn conditional statements that check datatype into a single polymorphic case
+        Allows for more cases to easily be added later
+        A good way to fix an ope-closed principle violation
+
+Thursday lecture
+How much defense in production?
+    Leave code that checks for important errors
+    Removee code for trivial errors
+    Remove code that results in hard crashes
+    Leave code that allows the program to crash gracefully
+    Log errors for tech support
+    Make usre your messages are friendly and clean
+
+Code Optimmization and Maintenance
+    The code is finished, what happens after a system, or a feature is released?
+    How do we maintain coding quality during code maintenance?
+        Code degrades if you are fixing patches on the spot
+        Last minute post release issues are not really handled with the upmost care
+    What steps can we take to improve program performance?
+
+Refactoring
+    Definition:
+        A change made to the internal structure of the software to make it easier to understand and cheaper to modif wthiout changing its observable behavior
+    Code evolves, and when it does, we need to ensure that quality practicess are still present
+    In other words, evolution should improve the internal quality of the system, not worsen
+        The code should not be degrading and should maintain quality and stability
+    Can reduce redundancy and cut down on duplication
+    Adding a new features is not refactoring,
+        It is just a change to make it more readable and more extensible
+        Improves QOL for Programmers
+        Everytime you touch the code, clean it and leave it better than when you last seen it.
+            Leave it better than when you first saw it
+    Code smells
+        Garbage is smelly and bad code will give upa stink that is easily noticeable
+        Issues such as
+            Duplicated code
+            Long routines (same for loops)
+            Classes with multiple responsibilities
+            Bad interfaces
+            Routines with poor names
+            Data members are public
+            Subclasses not implementing the inherited interface
+        Smelly classes
+            No Consistent level of abstraction
+                Interface that violates SOLID principles or are not balanced
+                AN imbalance example, having Dog and Wolf inherit from the class Canine but Cat and Lion be unrelated
+            Too many parameters
+                Classes and functions that are of appropriate size should not need a big list of parameters
+            Compartmentalized changes
+                A class with many responsibilities will likely see more changes to one side of the class than another
+            Dependacy Inheritancec Principle (DIP)
+                PasswordReminder(mySQLConnection *con) // It shouldn't use mySQL, it should be named DBConnection
+            You want functions to be around 3/4 parameters (it all varies)
+            Parallel Changes
+                Set of classes need to be updated if something changes in the system (like a change in output requires 15 classes to change)
+            Parallel Inheritance hierarchies
+                Having to add a subclass to one hierarchy after adding one to another
+            A useless class
+                kekw
+            A class that uses mroe features of another class than its own features
+                For example, a GasStation class that only calls routines from GasPump
+                class GasStation{
+                    private:
+                        GasPump pump;
+                    public:
+                        pump.fuel();
+                        void fz()
+                        pump.fs();
+        Other smells
+            Use of global variables
+            Primitive data types being overloaded
+                You can't just have double temperature; double money;
+                Rather, class temperature{}
+                class money{}
+                Like that, you can output the correct format
+                Scaleability
+                You can format it,
+                Can't have anything out of bounds, like -276C
+                    Or you can have an acceptable range
+                    Or support Kelvin, F, C
+                    Have a currency tied to silver, and output the local currency
+                Go heavy on abstraction, make coding enjoyable and so much easier
+                    Just don't overdo the abstraction
+            Commens are constantly explaining difficult code
+                This means your code sucks, its not readable
+            "just-in-case" code
+        When not to refactor
+            Shound't replace code fixes
+            Code fixes / fixing bugs
+            Refactoring should not be large, small changes are more stable
+            Refactoring is not an option when the code needs tossing out
+        When should you refactor?
+            When you add a new routine
+            When you add a new class
+            After you fix a defect
+            When a module is being problematic
+            When a module is too complex
+            When you are reviewing production code
+
+CPU Performance over time
+    CPUs get more powerful
+        Meaning, slowly make your programs less efficient
+Code-Tuning
+    Unlike refactoring, tuning is about making the correct code more efficient
+    When deciding what to tune, focus on the Pareto principle (80 20 rule)
+        20% of your code will result to 80% of compile time
+            Studies show 50% of the execution time results to 4% of the code
+            So focus on that 4% and bother fixing them withe they greatly affect execution time
+    Improving performance can take many forms including code tuning whcih will usually requir external tools
+    The most obvious form of improving performance is buying new hardware
+    Even two implementations with the same algorithmic complexity can perform differently
+
+    shorter but slower
+        for i = 1 to 10
+                a[i] = i
+            end for
+        Longer but faster
+            a[1] = 1
+            a[2] = 2
+            a[3] = 3

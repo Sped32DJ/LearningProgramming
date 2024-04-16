@@ -1,0 +1,47 @@
+Combinational vs Sequential logic
+
+Combinational
+    Output is pure function of its current inputs
+    Output doesn't change regardless how many times the logic is triggered.
+    Static, every day, you expect the exact same input and behavior
+        Almost as if it had no memory
+    Implementation is boolean algebra
+Sequential
+    Output depends on current and the previous sequence of inputs
+    Dynamic
+        Maybe something like rolling keys, new input, same output
+        ~There is memory remembering
+        There is a current state and there is a next state.
+            Once the current state triggers Combinational logic
+            It then goes to the next state, this next state interracts with memory element
+            After interraction, next state becomes current state, then the cycle continues
+    Implementation is finite state machines
+
+Boolean Algebra
+    3 fundamental logic operations: AND, OR, and NOT
+    Which abstract algebra with set operations: intersection, union, complement
+
+Truth Tables
+    Used to represent relationship between inputs and outputs
+    Gray codes: 00, 01, 10, 11
+    NAND - !(ab)        (Not AND; AND complement)       (gray code: 1110)
+    NOR - !(a+b)        (Not OR; OR complement)         (gray code: 1000)
+    XOR - (a+b)(!a + !b) or (a !b) + (!a b) or (symmetrical difference between a and b)     (odd operator) (gray code: 0110)
+        Exclusive-OR (Ex-OR for abbreviation)
+        - Returns 1 if there is an odd number of variables that are 1s otherwise returns 0
+    XNOR - ab + !a !b   (concurrence operator) (gray code: 1001)
+        Exclusive-NOR (Ex-NOR for abbreviation)
+        - Returns 1 if there is an even nunmber of variables that are 1s otherwise returns 0
+
+AND gate (*)
+    0 0 = 0
+    0 1 = 0
+    1 0 = 0
+    1 1 = 1
+OR gate (+)
+
+NAND and NOR are universal gates
+    you can build any circuit with everything NAND or NOR
+    Simplifies design as you ojnly need one type of gate
+    NANDO only neeeds 4 transistors - gate delay is smaller than OR/AND that needs 6 transistors.
+    NAND is slightly faster than NOR due to the physics nature

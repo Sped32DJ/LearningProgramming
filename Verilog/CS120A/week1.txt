@@ -1,0 +1,15 @@
+Major topics of the quarter
+Combinational Logic
+    Logic Gates
+    Boolean Algebra
+    K-maps
+Sequential Logic
+    Finite State machines
+    Clock
+    Flip-Flops
+Datapath Components
+    Adder, mux, multipliers, comparator, encoder, decoder
+    Registers, shifteres, counter
+HLSM (High-Level State Machine)
+RTL (register transfer level) design
+Verilog programming in Labs (!!)

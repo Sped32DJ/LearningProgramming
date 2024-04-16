@@ -1,0 +1,17 @@
+For midterm:
+    Study combination and know some sequential logic.
+    Understand what they mean and what they are
+    Week 7: midterm
+    NAND gates are cheaper and faster than NOR gates
+Definitions of Boolean Function Expressions:
+    Complement: variable with a bar over it or a ` - A`, !B, C_ (top bar)
+    Literal: Variable or its complement - A, !A, B, !B, C, !C
+    Implicant (Product term): product of literals - ABC, AC, BC
+    Implicate (sum terms): sum of literals - (A+B+C), (A+C), (B+C)
+    Minterm: AND that includes all input variables - ABC, !A BC, AB !C
+    Maxterm: OR that includes all input variables -
+
+Choose tables are going to have 8 rows
+    Row Number          x1 x2 x3        minterm         maxterm
+
+XNOR - When both bits are the same

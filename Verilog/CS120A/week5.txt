@@ -1,0 +1,54 @@
+Identifier and keyword
+    An identifiers is designer-defined named usd for items such as modules, inputs, and outputs
+        Identifiers are case sensitive
+        Must start with alpha or _
+            The rest of the letters can be numbers or $
+        ex: testEn and testEN are different
+    Keword is a word that is part of the language
+        Ex: Module, input output
+        Cannot use cannot use a keyword as an Identifier
+The Adder
+    Made up of full adders, but starts with an half adder
+
+Always block - Combinational logic
+    executes when the condition is the sensitivity list occurs
+
+    module FA(input a,
+        input b,
+        output cout,
+        output out);
+    always@(a or b or cin)
+    begin
+        assign out = (bunch of logic)
+        assign cout = (bunch of logic)
+    end
+        endmodule
+    You can remove the always block, since the assign function does the heavy lifting
+        As long as the input triggers the logic to output to change, then the assign function will update the output
+        Given the input changes, the output will change accord to the logic assigned to it
+    When is it useful?
+        Executes when the sensitivity list occurs
+
+    always@(posedge clk)
+    begin
+    ...
+    ...
+    end
+
+    = is a blocking assignment
+        Assignment happens immediately and effects the subsequent statements in the always block
+    <= is a non-blocking assignment
+        All teh assignments happen at the end of the block
+    Assignment rules:
+        LHS must be a reg
+        RHS, may be a wire, reg, const, or expressions with operatirs using one or more wires, regs, consts
+
+    reg a[3:0]
+    reg b[3:0]
+    reg c[3:0]
+    always @(posedge clock)
+    begin
+        a <= b;
+        c <= a;
+    end
+        This means c contains the old a, and not b (or just write better sequential code lol; at least that what I believe it does)

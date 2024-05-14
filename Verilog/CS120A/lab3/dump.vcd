@@ -1,0 +1,147 @@
+$date
+	Tue Apr 30 13:05:59 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module bcdtoled_tb $end
+$var wire 1 ! g $end
+$var wire 1 " f $end
+$var wire 1 # e $end
+$var wire 1 $ d $end
+$var wire 1 % c $end
+$var wire 1 & b $end
+$var wire 1 ' a $end
+$var reg 1 ( sw0 $end
+$var reg 1 ) sw1 $end
+$var reg 1 * sw2 $end
+$var reg 1 + sw3 $end
+$scope module uut $end
+$var wire 1 ( sw0 $end
+$var wire 1 ) sw1 $end
+$var wire 1 * sw2 $end
+$var wire 1 + sw3 $end
+$var wire 4 , bundle [3:0] $end
+$var reg 1 ' a $end
+$var reg 1 & b $end
+$var reg 1 % c $end
+$var reg 1 $ d $end
+$var reg 1 # e $end
+$var reg 1 " f $end
+$var reg 1 ! g $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b0 ,
+0+
+0*
+0)
+0(
+0'
+0&
+0%
+0$
+0#
+0"
+1!
+$end
+#50000
+1"
+1#
+1$
+0%
+0&
+1'
+b1 ,
+1(
+#100000
+0!
+0#
+0$
+0'
+1%
+0&
+0(
+b10 ,
+1)
+#150000
+0%
+0!
+1#
+0$
+0&
+0'
+b11 ,
+1(
+#200000
+0"
+0!
+1$
+0%
+0&
+1'
+0(
+0)
+b100 ,
+1*
+#250000
+0$
+0'
+0!
+0"
+0%
+1&
+b101 ,
+1(
+#300000
+0#
+0!
+0"
+0$
+0%
+0'
+0(
+b110 ,
+1)
+#350000
+0&
+1!
+1"
+1#
+1$
+0%
+0'
+b111 ,
+1(
+#400000
+0!
+0"
+0#
+0$
+0%
+0&
+0'
+0(
+0)
+0*
+b1000 ,
+1+
+#450000
+0!
+0"
+1#
+0$
+0%
+0&
+0'
+b1001 ,
+1(
+#500000

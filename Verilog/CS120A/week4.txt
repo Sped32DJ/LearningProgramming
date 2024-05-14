@@ -1,0 +1,67 @@
+Incompletely Specified Functions:
+    Certain input conditions can never occur:
+        A circuit can be designed by ignoring this condition
+        ex: x1, x2 = 11
+    A function that has don't care condition(s) is said to be incompletely specified
+    Assume that the function value for these valuationss is either 1 or 0, whichever more useful
+    We can easily add a don't care condition to all the values where the enabler bit is disabled.
+    Or for 7 segment displays, we ignore all the values that come after 9. Despite being possible in binary, we ignore them since they are not possible
+    We just add x's to the truth tables to show that we do not care about that part of the table
+        Despite it being very possible combination
+
+Don't really need gate-level hardware design when you are using an HDL
+    HDLs are used to describe and model peration of digital circuits
+    Specify simulation procedures for the circuit and check its response.
+        Simulation requires logic simulator
+    Synthesis: tranformation of the HDL description into a physical implementation (transistors, gates)
+        When human does: logic design
+            (Hence, class called logic design)
+        When machine does: synthesis
+    Use verilog to implement and verify your built processor
+
+    Datatype:
+        bit-vector is the only datatype of Verilog
+        A bit can be one of the following
+            0: logic zero
+            1: logic one
+            X: unknown logic value... don't care
+            Z: high impedance, floating
+        Bit-vectors expressed in multiple ways
+            4-bit binary: 4'b11_10 (4'b: 4bit binary; underscore for readability)
+            16-bit hex: 16'hA02F
+            32-bit decimale: 32'd270 (32'd: 32bit decimal)
+    Logical vs bitwise
+        Logical:
+            The logical (boolean, T/F) value is equivalent
+        Bitwise:
+            The values have identical binary
+    Conditional: condition ? value_if_true : value_if_false
+
+    Wire and Reg (They mean the same)
+        Wire:
+            Used to denote a hardware net
+                Continously assignd values and do not store
+            single wire
+                wire my_wire;
+            array of wires
+                wire[7:0] my_wire;
+        Reg:
+            Used for procedural assignments - values that store information until the next value assignment is made
+                again, can be single reg or an array
+
+                reg result; //1-bit reg
+                reg[7:0] result; //8-bit reg
+
+                Reg is not necessarily a hardware register (then wtf is it?)
+                    I'll just assume it holds data
+    How to code an adder in verilog?
+        Out = A'B + AB'
+        Cout = AB
+
+        module HA(input a,
+        input b,
+        output cout,
+        output out);
+        assign out = (~a & b)|(a & ~b);
+        assign cout = a&b;
+        endmodule

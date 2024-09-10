@@ -12,4 +12,10 @@ class Solution:
         i = 0
 
         while i < len(s):
-
+            j = i
+            while s[i] != '$':
+                j += 1 # Holds the end of the string
+            length = int(s[i:j])
+            dStr.append(s[j + 1: i + length])
+            i = j #Now they are in the same page
+        return dStr

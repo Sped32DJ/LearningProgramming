@@ -14,9 +14,12 @@ def nPrimeNumber(n):
     return currNum
 
 def isPrime(n):
-    if n % 2 != 0 or n % 3 != 0:
-        return True
-    return False
+    if n == 2 or n == 3: return True
+    if n < 2 or n % 2 == 0: return False
+    if n < 9: return True
+    if n % 3 == 0: return False
+    # Prime numbers > 3 are in the form 6n -+ 1
+
 
 n = 100001
 nthPrime = nPrimeNumber(n)

@@ -9,24 +9,28 @@ char cIntHexSelector(const unsigned int, const unsigned char);
 
 // create unsigned char and unsigned int variables here
 int main(int argc, char *argv[]) {
-  printf("1st Argument: argv[0]\n");
+  printf("1st argument: %s\n", argv[0]);
 
-  printf("3rd Arugment: argv[2]\n");
+  printf("3rd arugment: %s\n", argv[2]);
 
-  printf("argv[0] in binary: cptrCharToBinary(argv[0])\n");
+  printf("%s in binary: %s\n", argv[0], cptrchartobinary(argv[0]));
 
-  printf("lower 4 bits of argv[0]: cCharHexSelector(argv[0])\n");
+  printf("lower 4 bits of %s: %s\n", argv[0], ccharhexselector(argv[0]));
 
-  printf(
-      "digit index argv[3] of argv[2] in hex is: cIntHexSelector(argv[3])\n");
-  // write your code here
+  printf("digit index %s of %s in hex is: %s\n", argv[3], argv[2],
+         cinthexselector(atoi(argv[3]), argv[2]));
+  return 0;
 }
 
-char *cptrCharToBinary(const unsigned char toBin) {
-  int val = atoi(toBin);
+char *cptrCharToBinary(const unsigned char val) {
+  int n = atoi(val);
+  char *bin;
   for (int i = 31; i >= 0; --i) {
-  //  std::cout << ((n >> i) & 1); // Shift right and bitwise AND with 1 (C++)
+    printf("((n>>i)&1)\n"); // Shift right and btiwse AND with 1
   };
+  return bin;
 }
+
+char cCharHexSelector(const unsigned char hex, const unsigned char) {}
 
 // implement your functions here

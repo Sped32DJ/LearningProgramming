@@ -27,11 +27,11 @@ char *cptrCharToBinary(const unsigned char val) {
   int n = atoi(val);
   char *bin; // Remember this is a pointer...
 
-  int i = 0;
   // while n is not #0
-  while (~(n & 0x00)) {
+  while (n != 0) {
     // Adding to right of string
     // Checking LMB
+    // FIX: Not sure if it works for pointers
     if (n & 0x80) {
       bin += '1';
     } else {
@@ -39,13 +39,25 @@ char *cptrCharToBinary(const unsigned char val) {
     }
     // Popping off the top (LMB)
     n << 1;
-    ++i;
   }
+
+  bin += '\0';
+
   return bin;
 };
 
-char cCharHexSelector(const unsigned char hex, const unsigned char hex) {};
+char cCharHexSelector(const unsigned char nibble, const unsigned char bit) {
+  // if bit == 0; lower nibble
+  // if bit == 1; upper nibble
+  // TODO: Return as hex instead int
 
-char cIntHexSelector(const unsigned int index, const unsigned char hex) {};
+  return (bit) ? atoi(nibble & 0x0F) : atoi(nibble >> 4);
+};
+
+char cIntHexSelector(const unsigned int val, const unsigned char index) {
+  // TODO Convert the int
+  // Make sure it outputs as a char
+  return (val >> (index * 4));
+};
 
 // implement your functions here

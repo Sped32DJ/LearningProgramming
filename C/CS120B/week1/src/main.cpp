@@ -14,13 +14,15 @@ int main(int argc, char *argv[]) {
 
   printf("3rd arugment: %s\n", argv[2]);
 
-  printf("%s in binary: %s\n", argv[0], cptrCharToBinary(argv[0]));
+  printf("%s in binary: %s\n", argv[0], cptrCharToBinary(*argv[0]));
   // Not sure if %s will dereference cptrCharToBinary
 
-  printf("lower 4 bits of %s: %s\n", argv[0], ccharhexselector(argv[0]));
+  printf("lower 4 bits of %s: %s\n", argv[0],
+         cCharHexSelector(*argv[0], *argv[2]));
 
   printf("digit index %s of %s in hex is: %s\n", argv[3], argv[2],
-         cinthexselector(atoi(argv[3]), argv[2]));
+         cIntHexSelector(atoi(argv[3]), *argv[2]));
+
   return 0;
 };
 

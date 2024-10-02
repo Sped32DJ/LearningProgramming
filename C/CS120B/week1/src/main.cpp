@@ -10,18 +10,24 @@ char cIntHexSelector(const unsigned int, const unsigned char);
 // create unsigned char and unsigned int variables here
 int main(int argc, char *argv[]) {
   // NOTE: Do I need to free any memory?
-  printf("1st argument: %s\n", argv[0]);
+  // argv[0] = .pio/build/stable/program
+  // argv[1] = (actual input)
+  printf("1st argument: %s\n", argv[1]);
 
-  printf("3rd arugment: %s\n", argv[2]);
+  printf("3rd arugment: %s\n", argv[3]);
 
-  printf("%s in binary: %s\n", argv[0], cptrCharToBinary(*argv[0]));
-  // Not sure if %s will dereference cptrCharToBinary
+  char *binary = cptrCharToBinary(*argv[1]);
+  printf("%s in binary: %s\n", argv[1], binary);
+  free(binary);
 
-  printf("lower 4 bits of %s: %s\n", argv[0],
-         cCharHexSelector(*argv[0], *argv[2]));
+  printf("lower 4 bits of %s: %c\n", argv[1],
+         cCharHexSelector(atoi(argv[1]), *argv[3]));
+  // NOTE: Why pass atoi?
+  // %c passes a char string
 
-  printf("digit index %s of %s in hex is: %s\n", argv[3], argv[2],
-         cIntHexSelector(atoi(argv[3]), *argv[2]));
+  printf("digit index %s of %s in hex is: %c\n", argv[4], argv[3],
+         cIntHexSelector(atoi(argv[4]), strtoul(argv[3], NULL, 10)));
+  // NOTE: What does strtoul do?
 
   return 0;
 };
@@ -29,9 +35,6 @@ int main(int argc, char *argv[]) {
 char *cptrCharToBinary(const unsigned char val) {
   /* int n = atoi(val); */
   char *bin = (char *)malloc(sizeof(char[9])); // Remember this is a pointer...
-  if (!bin) {
-    return NULL;
-  }
 
   /* // while n is not #0
   while (n != 0) {

@@ -21,15 +21,13 @@ int main(int argc, char *argv[]) {
   free(binary);
 
   printf("lower 4 bits of %s: %c\n", argv[1],
-         cCharHexSelector(atoi(argv[1]), *argv[3]));
+         cCharHexSelector(atoi(argv[1]), *argv[2]));
   // NOTE: Why pass atoi?
   // %c passes a char string
 
   printf("digit index %s of %s in hex is: %c\n", argv[4], argv[3],
-         cIntHexSelector(atoi(argv[4]), strtoul(argv[3], NULL, 16)));
-  // Is the base 10 or 16?
-  // NOTE: What does strtoul do?
-  //    It converts the int into hex
+         cIntHexSelector(atoi(argv[3]), strtoul(argv[4], NULL, 16)));
+  // strtoul is required to convert
 
   return 0;
 };
@@ -54,7 +52,8 @@ char *cptrCharToBinary(const unsigned char val) {
 
   // Start from the beginning
   for (int i = 7; i >= 0; --i) {
-    bin[7 - i] = (val & (1 << i)) ? '1' : '0'; // Goes through each bit
+      // FIX  This one line of code needs fixing and we good
+    bin[7 - i] = (val & (0x80 >> i)) ? '1' : '0'; // Goes through each bit
 
     // Ex: i = 1
     // bin[6] = val & (1 << 2) ->

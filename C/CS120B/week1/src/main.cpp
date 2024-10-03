@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
   printf("3rd arugment: %s\n", argv[3]);
 
-  char *binary = cptrCharToBinary(*argv[1]);
+  char *binary = cptrCharToBinary(atoi(argv[1]));
   printf("%s in binary: %s\n", argv[1], binary);
   free(binary);
 
@@ -51,9 +51,11 @@ char *cptrCharToBinary(const unsigned char val) {
   } */
 
   // Start from the beginning
+  /* printf("%d\n", val); // Debugging */
   for (int i = 7; i >= 0; --i) {
-      // FIX  This one line of code needs fixing and we good
-    bin[7 - i] = (val & (0x80 >> i)) ? '1' : '0'; // Goes through each bit
+    // FIX  This one line of code needs fixing and we good
+
+    bin[7 - i] = (val & (0x01 << i)) ? '1' : '0'; // Goes through each bit
 
     // Ex: i = 1
     // bin[6] = val & (1 << 2) ->

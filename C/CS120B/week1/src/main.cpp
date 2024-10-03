@@ -52,7 +52,6 @@ char *cptrCharToBinary(const unsigned char val) {
 
   // Start from the beginning
   for (int i = 7; i >= 0; --i) {
-      // FIX  This one line of code needs fixing and we good
     bin[7 - i] = (val & (0x80 >> i)) ? '1' : '0'; // Goes through each bit
 
     // Ex: i = 1

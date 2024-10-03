@@ -26,8 +26,10 @@ int main(int argc, char *argv[]) {
   // %c passes a char string
 
   printf("digit index %s of %s in hex is: %c\n", argv[4], argv[3],
-         cIntHexSelector(atoi(argv[4]), strtoul(argv[3], NULL, 10)));
+         cIntHexSelector(atoi(argv[4]), strtoul(argv[3], NULL, 16)));
+  // Is the base 10 or 16?
   // NOTE: What does strtoul do?
+  //    It converts the int into hex
 
   return 0;
 };

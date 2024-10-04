@@ -12,15 +12,16 @@ int main(int argc, char *argv[]) {
   // NOTE: Do I need to free any memory?
   // argv[0] = .pio/build/stable/program
   // argv[1] = (actual input)
-  printf("1st argument: %s\n", argv[1]);
+  printf("1st Argument: %s\n", argv[1]);
 
-  printf("3rd arugment: %s\n", argv[3]);
+  printf("3rd Argument: %s\n", argv[3]);
 
   char *binary = cptrCharToBinary(atoi(argv[1]));
   printf("%s in binary: %s\n", argv[1], binary);
   free(binary);
 
-  printf("lower 4 bits of %s: %c\n", argv[1],
+  (atio(argv[2])) ? print("upper") : printf("lower");
+  printf(" 4 bits of %s: %c\n", argv[1],
          cCharHexSelector(atoi(argv[1]), *argv[2]));
   // NOTE: Why pass atoi?
   // %c passes a char string
@@ -73,7 +74,7 @@ char cCharHexSelector(const unsigned char nibble, const unsigned char bit) {
   // if bit == 0; lower nibble
   // if bit == 1; upper nibble
 
-  unsigned char resultNibble = (bit) ? nibble & 0x0F : (nibble >> 4) & 0x0F;
+  unsigned char resultNibble = (!bit) ? nibble & 0x0F : (nibble >> 4) & 0x0F;
   // If lesser than 10, you start at zero
   // if greater than 10, you start at A, then remove 10 to account for the
   // increase

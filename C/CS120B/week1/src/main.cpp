@@ -20,11 +20,12 @@ int main(int argc, char *argv[]) {
   printf("%s in binary: %s\n", argv[1], binary);
   free(binary);
 
-  (atio(argv[2])) ? print("upper") : printf("lower");
+  (atoi(argv[2])) ? printf("upper") : printf("lower");
   printf(" 4 bits of %s: %c\n", argv[1],
-         cCharHexSelector(atoi(argv[1]), *argv[2]));
+         cCharHexSelector(atoi(argv[1]), atoi(argv[2])));
   // NOTE: Why pass atoi?
   // %c passes a char string
+  //    Requires the binary of an integer
 
   printf("digit index %s of %s in hex is: %c\n", argv[4], argv[3],
          cIntHexSelector(atoi(argv[3]), strtoul(argv[4], NULL, 16)));
@@ -74,7 +75,7 @@ char cCharHexSelector(const unsigned char nibble, const unsigned char bit) {
   // if bit == 0; lower nibble
   // if bit == 1; upper nibble
 
-  unsigned char resultNibble = (!bit) ? nibble & 0x0F : (nibble >> 4) & 0x0F;
+  unsigned char resultNibble = (bit) ? (nibble >> 4) & 0x0F : nibble & 0x0F;
   // If lesser than 10, you start at zero
   // if greater than 10, you start at A, then remove 10 to account for the
   // increase

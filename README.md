@@ -2,6 +2,7 @@
 * So far
 * Python
 * C++
+* C
 * LC3 (Educational Assembly language) 
 
 # Future

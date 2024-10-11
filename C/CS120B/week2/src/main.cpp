@@ -1,8 +1,12 @@
 #include <avr/io.h>
-#include <serialATmega.h>
+#include <util/delay.h>
 
 unsigned char GetBit(unsigned char x, unsigned char k) {
   return ((x & (0x01 << k)) != 0);
+}
+
+unsigned char SetBit(unsigned char x, unsigned k, unsigned char b) {
+  return (b ? (x | (0x01 << k)) : (x & ~(0x01 << k)));
 }
 
 int nums[16] = {
@@ -24,21 +28,25 @@ int nums[16] = {
     0b1000111  // f
 };
 
-int count = 0;
+unsigned char count = 0;
 
 // Does this do 7-seg and LED
 void outNum(int num) {
   PORTD = nums[num] << 1; // assigns bits 1-7 of nums(a-f) to pins 2-7 of port d
-  PORTB =
-      SetBit(PORTB, 0,
-             nums[num] & 0x01); // assigns bit 0 of nums(g) to pin 0 of port b
+  PORTB = SetBit(PORTB, 0, nums[num] & 0x01);
 }
 
-// TODO  How to detect the RESET button?
-// Not sure if I can just A0 and A1
-unsigned char Reset() { return (DDRB >> 4) & 0x01; }
+// TODO  DDRB is the LED register
+void outLED(int num) {
+  PORTB = SetBit(PORTB, 2, num & 0x01); // LED 0
+  PORTB = SetBit(PORTB, 3, num & 0x02); // LED 1
+  PORTB = SetBit(PORTB, 4, num & 0x04); // LED 2
+  PORTB = SetBit(PORTB, 5, num & 0x08); // LED 3
+}
 
-unsigned char Button() { return (DDRB >> 5) & 0x01; }
+unsigned char Button() { return GetBit(PINC, 4); }
+
+unsigned char Reset() { return GetBit(PINC, 5); }
 
 enum states {
   INIT,
@@ -51,19 +59,31 @@ void Tick() {
   // TODO: complete transitions
   switch (state) {
   case INIT:
-    // TODO  Make this the off stage (Do I need to?)
-    count = 0;
-    outNum(count);
+    if (Button()) {
+      /* _delay_ms(50); */
+      /* if (Button()) { */
+        state = INCREMENT;
+      /* } */
+    }
     break;
   case START:
-    (RESET || count > 14) ? state = START : ++count;
+    if (Reset() || count >= 15) {
+      state = INIT;
+    } else if (Button()) {
+      state = INCREMENT;
+    }
+
     break;
   case INCREMENT:
-    // TODO Declare the RESET button
-    // make sure count > 14 is valid
-    (RESET || count > 14) ? state = START : ++count;
+    if (Reset()) {
+      state = INIT;
+    } else if (Button()) {
+      if (count < 15) {
+        ++count;
+      }
+      state = START;
+    }
     break;
-
   default:
     state = INIT;
     break;
@@ -72,32 +92,44 @@ void Tick() {
   // TODO: Complete Actions
   switch (state) {
   case INIT:
-    RESET = 0x0;
-    count = 0x0;
+    count = 0;
     outNum(count);
+    outLED(count);
     break;
   case START:
-    RESET = 0x0;
-    count = 0x0;
     outNum(count);
+    outLED(count);
     break;
   case INCREMENT:
     outNum(count);
+    outLED(count);
     break;
   default:
-    state = START;
     break;
   }
 }
-int main(void) {
-  // TODO: initialize all outputs and inputs
-  // TODO: initialize your state
-  DDRD = 0xFF; // Data Direction Register, 7-segment
-  DDRC = 0x00; // LEDs
-  DDRB = 0x00; // Buttons
 
-  /* states STATE = INIT; */
-  /* FFRB = 0x00; */
+int main(void) {
+  // 7-segment display (PORTD)
+  DDRD = 0xFF;  // Set all pins output
+  PORTD = 0x00; // Clear PORTD
+
+  // LEDs (PORTB)
+  DDRB = 0xFF; // PORTB as output
+  PORTB = 0x00;
+
+  // Buttons
+  DDRC = 0x00; // Set all PORTC to input
+  PORTC = 0xFF;
+  /* // Buttons (A4 and A5)
+  DDRC &= ~(1 << DDC4);   // Set A4 (PC4) as input
+  DDRC &= ~(1 << DDC5);   // Set A5 (PC5) as input
+  PORTC |= (1 << PORTC4); // Enable pull-up resistor on A4
+  PORTC |= (1 << PORTC5); // Enable pull-up resistor on A5 */
+
+  state = INIT;
+  count = 0x01;
+  // 1,7, B,D is bad
 
   while (1) {
     Tick(); // Execute one SM tick
@@ -105,14 +137,3 @@ int main(void) {
 
   return 0;
 }
-
-/* int main(void) {
-  while (1) {
-    if ((PINB >> 2) & 0x01) {
-      PORTD = PORTD | 0x08;
-    } else {
-      PORTD = PORTD & 0x07;
-    }
-  }
-  return 0;
-} */

@@ -60,29 +60,30 @@ void Tick() {
   switch (state) {
   case INIT:
     if (Button()) {
-      /* _delay_ms(50); */
-      /* if (Button()) { */
         state = INCREMENT;
-      /* } */
     }
     break;
+
   case START:
-    if (Reset() || count >= 15) {
+    if (Reset() || count > 15) {
       state = INIT;
     } else if (Button()) {
       state = INCREMENT;
     }
-
     break;
+
   case INCREMENT:
     if (Reset()) {
       state = INIT;
     } else if (Button()) {
-      if (count < 15) {
+      if (count < 16) {
         ++count;
+      } else {
+	state = INIT;
       }
       state = START;
     }
+
     break;
   default:
     state = INIT;
@@ -96,14 +97,17 @@ void Tick() {
     outNum(count);
     outLED(count);
     break;
+
   case START:
     outNum(count);
     outLED(count);
     break;
+
   case INCREMENT:
     outNum(count);
     outLED(count);
     break;
+
   default:
     break;
   }
@@ -133,6 +137,7 @@ int main(void) {
 
   while (1) {
     Tick(); // Execute one SM tick
+    _delay_ms(100);
   }
 
   return 0;

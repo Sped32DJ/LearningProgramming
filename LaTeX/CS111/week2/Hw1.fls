@@ -156,6 +156,7 @@ INPUT /usr/share/texmf-dist/fonts/tfm/public/latex-fonts/lasy8.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/latex-fonts/lasy6.tfm
 INPUT /home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-italic.luc
 INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
+INPUT /home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman8-regular.luc
 INPUT ./Hw1.aux
 INPUT ./Hw1.out
 INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb

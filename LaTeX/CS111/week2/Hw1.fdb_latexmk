@@ -1,17 +1,19 @@
 # Fdb version 4
-["pdflatex"] 1728881784.18347 "Hw1.tex" "Hw1.pdf" "Hw1" 1728881784.97 0
+["pdflatex"] 1728891162.5403 "Hw1.tex" "Hw1.pdf" "Hw1" 1728891163.34875 0
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bold.luc" 1728865262.70255 128397 53dbaa5b4c7b3d10233247a7fd2f1cfb ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-italic.luc" 1728865826.25282 136299 373d5295d6476fb0d6e78644e136c25e ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-regular.luc" 1728865262.33855 127314 b46a30f4ca531350aac9079aa523042e ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-bold.luc" 1728865262.64255 128286 dfc00623b3bae8851f7df0d3d7a72972 ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-italic.luc" 1728865262.55955 135230 cbd787a68d8c612fd77bebb4ec7c1880 ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-regular.luc" 1728865262.49155 127657 c9d11ec6a23bb78b502043969a9465c0 ""
+  "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman8-regular.luc" 1728865262.77155 128133 e7c3164c4f667e153af6c48db231e45a ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/names/luaotfload-names.luc.gz" 1728865262.23355 421662 5aa88f3db6d8707a496d361fbcadd89a ""
   "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.otf" 1727349926 111240 0af0b64d6d3df41bead3f9de314afbd4 ""
   "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman10-italic.otf" 1727349926 118828 4d461c73423fe2666dad2ff0dfc3ca68 ""
   "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf" 1727349926 111536 ae9d1b331000d544f47e5223081b7b54 ""
   "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman12-bold.otf" 1727349926 110496 b9c8767d4cc3bf3f4b21f676bf89aa78 ""
   "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman12-italic.otf" 1727349926 117732 558aeb4ada25b652cc2e9bcf0771e962 ""
+  "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman8-regular.otf" 1727349926 111948 cee9e390fd6d23cfb4d6871ba2a9ee5b ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1727349926 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1727349926 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1727349926 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -153,9 +155,9 @@
   "/usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload.lua" 1727349926 13565 50482dad4c221a79dbdbb982122baf8c ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1728863954.23287 5312047 b07fcd2a9090df96fc745b92a3db793b ""
   "/var/lib/texmf/web2c/luahbtex/lualatex.fmt" 1728863951 12260143 4f7e309fee23182202a6dab2458dfbd6 ""
-  "Hw1.aux" 1728881784.83588 278 0f35f9319707baa4b85ceaf8d3c691a6 "pdflatex"
-  "Hw1.out" 1728881784.72188 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "Hw1.tex" 1728881784.07889 6541 4b93581463165604b808be2e10b9a89b ""
+  "Hw1.aux" 1728891163.20041 278 11d9e444c547f3517385600f93a9ab55 "pdflatex"
+  "Hw1.out" 1728891163.07641 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "Hw1.tex" 1728891162.43342 9358 f5cd1a9f2e297aa5cb4ba7c428d2fa7a ""
   (generated)
   "Hw1.aux"
   "Hw1.log"

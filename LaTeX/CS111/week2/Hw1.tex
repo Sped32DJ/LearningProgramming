@@ -60,7 +60,7 @@
 \student{Kat} % <-- Cat's name
 \vskip 0.1in\noindent\hrule\vskip 0.2in
 \assignment{1}                           % <-- ASSIGNMENT NUMBER ******
-\duedate{Friday, Oct 10th}              % <-- DUE DATE ***************
+\duedate{Monday, Oct 14th}              % <-- DUE DATE ***************
 
 %----------------------------------------------------------
 
@@ -141,18 +141,93 @@ h(n) = \Theta(n^2 + 5)
   (a) Use properties of quadratic functions to prove that 3$x^2$ \geq $(x + 1)^2$ for all real x \geq 4. \\
   \smallskip
 
-  (b) Use mathematical induction and the inequality from part (a) to prove that $3^n$ \geq $2^n$ + $3n^2$ for all integers n \geq 4.\\
+  We can expand the quadratic to 
   \smallskip
 
+  $3x^2$ \geq $x^2+2x+1$ \\
+  
+  You can solve for the roots of this re-arranged equation
+  \smallskip
+
+  $2x^2 - 2x -1$ \geq 0 \\
+
+  The two roots are -0.366 and 1.366, we can exclude the negative value.
+  We can conclude that when x is any value greater than 1.3, the inequality will hold true.
+  Meaning that the inequality holds true for all real x \geq 2. \\
+  
+
+  (b) Use mathematical induction and the inequality from part (a) to prove that $3^n$ \geq $2^n$ + $3n^2$ for all integers n \geq  4.\\
+  \smallskip
+
+  Base Case: $3^4 \geq 2^4 + 3 \cdot 4^2$ 
+  \to $81 \geq 64$ (statement holds true) \\
+
+  Inductive Hypothesis: Assuming that $3^k \geq 2^k + 3k^2$ is true for k \geq 4.
+  We can prove this holds true for k+1
+  \smallskip
+ 
+  $3^{k+1} \geq 2^{k+1} + 3(k+1)^2$ \\
+  
+
+  Given by inductive hypothesis that $3^k = 2^k + 3k^2$
+  \smallskip
+
+  $3(2^k + 3k^2) \geq 2^{k+1} + 3(k+1)^2$ \\
+
+  Further simplifying this equation
+  $2^k (3-2) + 6k^2 - 6k - 3 \geq 0$ 
+  \smallskip
+
+  $2^k + 3(k^2 - 2k -1) \leq 0$ \\
+
+  Given, part (a) where we proved $n^2 - 2n -1$ held true for x \geq 4.
+   Therefore, this identical quadratic will also hold true for x \geq 4. \\
+ 
   (c) Let $g(n)$ = $2^n + 3n^2$ and $h(n) = 3^n$. Using the inequality from part (b), prove that $g(n) = O(h(n)).$ \\
-  \smallskip
 
+  \begin{proof}
+  Proof for $g(n) = \Theta(h(n))$
+
+    \item Recall inequality (b) where we establish
+    \begin{enumerate}
+        \item First, we establish the base case:
+        \begin{itemize}
+          \item $3^n \geq 2^n + 3n^2$ for all integers $n \geq 4$ 
+        \end{itemize}
+      \item $g(n)$ in terms of $h(n)$: Since $g(n) = 2^2 + 3^2$,
+        we can substitue for the inequality
+        \begin{equation}
+          g(n) \leq 3^n for all (n\geq4)
+        \end{equation}
+
+      \item Choose Constants:
+        \begin{itemize}
+          \item C = 1
+          \item $n_0 = 4$
+        \end{itemize}
+        Then becomes: 
+        \begin{equation*}
+          g(n) \geq 1\cdot3^n for all (n\geq4)
+        \end{equation*}
+      \item Conclude the proof: We established that $g(n)$ 
+        is bound by C\cdot h(n) for all $n\geq n_0$, which leads us to 
+        \begin{equation} 
+          g(n) = \Theta(h(n))
+        \end{equation}
+With the use of the Big-\Theta notation definition, we have proved that:
+\begin{equation}
+  g(n) = \Theta(h(n)) where g(n) = 2^n + 3n^2
+  and 
+  h(n) = 3^n
+\end{equation}
+    \end{enumerate} 
+  \end{proof}
 \end{problem}
 
 
 %----------------------------------------------------------
 \begin{problem}
-    Give asymptotic estimates, using \Theta-notationm for the following functions\\
+    Give asymptotic estimates, using \Theta-notation for the following functions\\
    
     \noindent(a) $3n^3 - 15n^2 + 2n +4$\\
 
@@ -216,7 +291,7 @@ h(n) = \Theta(n^2 + 5)
 
     \Theta($n^5 4^n + n5^n$) \\
 
-    exponentials grow faster than quadratics and 
+    Exponentials grow faster than quadratics and 
     $5^n > 4^n$
     \smallskip
 
@@ -229,8 +304,19 @@ h(n) = \Theta(n^2 + 5)
 \vskip 0.2in
 \paragraph{Academic integrity declaration.}
 
+I individually did the homework, mostly because I did it over the weekend
+and the labs for other classes took a lot of time out the week. \\
+
+Resource used: geeksforgeeks.org article called "Big O Notation Tutorial – A Guide to Big O Analysis" \\
 I used \href{http://polysum.tripod.com/Sum_Formulas.gif}{this picture} 
 $"(http://polysum.tripod.com/Sum_Formulas.gif)"$
-look up the summation formulas.
+look up the summation formulas to remember what I forgot when I took Calculs II.\\
+
+I also had to look up the law of logs to remember the base of the log is equivalent to two logs being divided. 
+Along with a \LaTeX  
+cheat sheet for every time I needed a specific character. 
+I am not sure if this must be stated, but I used the vim-tex plugin to my IDE to assist with writing in \LaTeX \\
+
+
 
 \end{document}

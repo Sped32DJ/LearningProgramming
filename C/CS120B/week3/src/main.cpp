@@ -83,14 +83,16 @@ void Tick() {
 
   case INIT:
     PORTD = SetBit(PORTD, 3, 1); // RGB Red (Must stay on)
-    PORTD = SetBit(PORTD, 5, 0); // Turn off 7-segment
+    PORTD = SetBit(PORTD, 5, 1); // Turn off 7-segment
     state = OFF;
     break;
+
   case OFF:
     if (Button()) {
       state = ON;
     }
     break;
+
   case ON:
     if (Button()) {
       state = OFF;
@@ -108,18 +110,22 @@ void Tick() {
 
   case INIT:
     break;
-  case ON:
-    PORTD = SetBit(PORTD, 5, 1); // Turn ON 7-segment
 
+  case ON:
     // Read Potentiometer and display
     unsigned int adcVal = ADC_read(0); // Read from A0
     int mappedVal = map(adcVal, 0, 255, 0, 15);
-    outNum(mappedVal - 1);
+    outNum(mappedVal);
+    // Debuggin, if in this state, Red turns off
+    // PORTD = SetBit(PORTD, 3, 0); // RGB Red (Must stay on)
     PORTD = SetBit(PORTD, 5, 0);
     break;
+
   case OFF:
-    PORTD = SetBit(PORTD, 5, 1);
+    PORTD = SetBit(PORTD, 5, 1); // turn off 7-segment
+    PORTD = SetBit(PORTD, 3, 0); // RGB Red (Must stay on)
     break;
+
   default:
     break;
   }
@@ -128,7 +134,7 @@ void Tick() {
 int main(void) {
   ADC_init(); // initializes the analog to digital converter
 
-  // RGB LED
+  // RGB LED + 7-seg's 'g' + Red LED
   DDRD = 0xFF;  // Set all pins output
   PORTD = 0x00; // Clear PORTD
 
@@ -147,7 +153,8 @@ int main(void) {
   // Debuggin
   // PORTD = SetBit(PORTD, 3, 1); // Red RGB
   // PORTD = SetBit(PORTD, 4, 1); // Red LED
-  //  PORTD = SetBit(PORTD, 5, 0); // 7-segment power; 1 = off, 0 = on
+  // PORTD = SetBit(PORTD, 5, 1); // 7-segment power; 1 = off, 0 = on
+  // outNum(15);
 
   while (1) {
 

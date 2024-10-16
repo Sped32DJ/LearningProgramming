@@ -1,6 +1,9 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <timerISR-Fixed.h>
 #include <util/delay.h>
+
+void TimerISR(void) { TimerFlag = 1; }
 
 unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
   return (b ? (x | (0x01 << k)) : (x & ~(0x01 << k)));
@@ -79,6 +82,9 @@ void Tick() {
   switch (state) {
 
   case INIT:
+    PORTD = SetBit(PORTD, 3, 1); // RGB Red (Must stay on)
+    PORTD = SetBit(PORTD, 5, 0); // Turn off 7-segment
+    state = OFF;
     break;
   case OFF:
     if (Button()) {
@@ -102,12 +108,16 @@ void Tick() {
 
   case INIT:
     break;
-  case OFF:
-    // Turn 7-segment off (turning the power off)
+  case ON:
+    PORTD = SetBit(PORTD, 5, 1); // Turn ON 7-segment
+
+    // Read Potentiometer and display
+    unsigned int adcVal = ADC_read(0); // Read from A0
+    int mappedVal = map(adcVal, 0, 255, 0, 15);
+    outNum(mappedVal - 1);
     PORTD = SetBit(PORTD, 5, 0);
     break;
-  case ON:
-    // Turn 7-segment off (turning the power on)
+  case OFF:
     PORTD = SetBit(PORTD, 5, 1);
     break;
   default:
@@ -134,6 +144,10 @@ int main(void) {
 
   TimerSet(1000);
   TimerOn();
+  // Debuggin
+  // PORTD = SetBit(PORTD, 3, 1); // Red RGB
+  // PORTD = SetBit(PORTD, 4, 1); // Red LED
+  //  PORTD = SetBit(PORTD, 5, 0); // 7-segment power; 1 = off, 0 = on
 
   while (1) {
 

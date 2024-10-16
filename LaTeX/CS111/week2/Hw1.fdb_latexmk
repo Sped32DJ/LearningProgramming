@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1728891162.5403 "Hw1.tex" "Hw1.pdf" "Hw1" 1728891163.34875 0
+["pdflatex"] 1728961000.17624 "Hw1.tex" "Hw1.pdf" "Hw1" 1728961000.98339 0
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bold.luc" 1728865262.70255 128397 53dbaa5b4c7b3d10233247a7fd2f1cfb ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-italic.luc" 1728865826.25282 136299 373d5295d6476fb0d6e78644e136c25e ""
   "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-regular.luc" 1728865262.33855 127314 b46a30f4ca531350aac9079aa523042e ""
@@ -155,9 +155,9 @@
   "/usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload.lua" 1727349926 13565 50482dad4c221a79dbdbb982122baf8c ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1728863954.23287 5312047 b07fcd2a9090df96fc745b92a3db793b ""
   "/var/lib/texmf/web2c/luahbtex/lualatex.fmt" 1728863951 12260143 4f7e309fee23182202a6dab2458dfbd6 ""
-  "Hw1.aux" 1728891163.20041 278 11d9e444c547f3517385600f93a9ab55 "pdflatex"
-  "Hw1.out" 1728891163.07641 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "Hw1.tex" 1728891162.43342 9358 f5cd1a9f2e297aa5cb4ba7c428d2fa7a ""
+  "Hw1.aux" 1728961000.83736 278 2d47d5955ebeaace4667922a434826eb "pdflatex"
+  "Hw1.out" 1728961000.71236 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "Hw1.tex" 1728960999.2444 9382 5ca0635cc57a11451b4d79070f78fe7d ""
   (generated)
   "Hw1.aux"
   "Hw1.log"

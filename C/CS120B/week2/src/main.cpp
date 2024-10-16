@@ -32,8 +32,8 @@ unsigned char count = 0;
 
 // Does this do 7-seg and LED
 void outNum(int num) {
-  PORTD = nums[num] << 1; // assigns bits 1-7 of nums(a-f) to pins 2-7 of port d
-  PORTB = SetBit(PORTB, 0, nums[num] & 0x01);
+ // PORTD = nums[num] << 1; // assigns bits 1-7 of nums(a-f) to pins 2-7 of port d
+  //PORTB = SetBit(PORTB, 0, nums[num] & 0x01);
 }
 
 // TODO  DDRB is the LED register

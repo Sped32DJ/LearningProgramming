@@ -97,15 +97,13 @@ void Tick() {
 
   case ON:
     if (Button()) {
-      // state = OFF;
-      state = DECREMENT;
-      count = map(ADC_read(0), 0, 1023, 0, 15);
+      state = OFF;
+      // state = DECREMENT;
+      // count = mappedPoten;
     }
     break;
   case DECREMENT:
-    if (Button()) {
-      state = OFF; // Skips animation and straight to off
-    } else if (count >= 0) {
+    if (count > 0) {
       state = DECREMENT;
     } else {
       state = OFF;
@@ -134,16 +132,8 @@ void Tick() {
 
   case OFF:
     PORTD = SetBit(PORTD, 5, 1); // turn off 7-segment
-    PORTD = SetBit(PORTD, 2, 1); // Green RGB on
-    // Making sure below are not on
-    PORTD = SetBit(PORTD, 3, 0); // Red RGB off
-    PORTD = SetBit(PORTD, 4, 0); // Red LED off
     break;
   case DECREMENT:
-    PORTD = SetBit(PORTD, 2, 0); // Green RGB off
-    PORTD = SetBit(PORTD, 3, 1); // Red RGB on
-    PORTD = SetBit(PORTD, 4, 1); // Red LED
-
     outNum(count);
     --count;
     break;

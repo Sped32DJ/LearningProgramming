@@ -42,8 +42,10 @@ long map(long x, long in_min, long in_max, long out_min, long out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+// Two inputs
 unsigned char Button() { return !GetBit(PINC, 5); }
 unsigned char PhotoRes() { return (ADC_read(1) < 100) ? 1 : 0; }
+
 // 7SEG layout:   abcdefg
 int nums[16] = {
     0b1111110, // 0
@@ -80,7 +82,6 @@ enum states { INIT, OFF, ON, DECREMENT } state;
 void Tick() {
 
   // State Transistions
-  // TODO: complete transitions
   switch (state) {
 
   case INIT:
@@ -118,7 +119,6 @@ void Tick() {
   }
 
   // State Actions
-  // TODO: complete transitions
   switch (state) {
 
   case INIT:

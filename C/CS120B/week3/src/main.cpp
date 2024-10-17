@@ -64,6 +64,8 @@ int nums[16] = {
     0b1000111  // f
 };
 
+int count = 0;
+
 // TODO: complete outNum()
 void outNum(int num) {
   PORTB = nums[num] >> 1; // assigns bits 1-7 of nums(a-f)
@@ -73,7 +75,7 @@ void outNum(int num) {
   // 7th pin is the middle segment
 }
 
-enum states { INIT, OFF, ON } state;
+enum states { INIT, OFF, ON, DECREMENT } state;
 
 void Tick() {
 
@@ -82,7 +84,7 @@ void Tick() {
   switch (state) {
 
   case INIT:
-    PORTD = SetBit(PORTD, 3, 1); // RGB Red (Must stay on)
+    PORTD = SetBit(PORTD, 2, 1); // RGB Green (Must stay on)
     PORTD = SetBit(PORTD, 5, 1); // Turn off 7-segment
     state = OFF;
     break;
@@ -95,6 +97,17 @@ void Tick() {
 
   case ON:
     if (Button()) {
+      state = OFF;
+    }
+    if (Button()) {
+      state = DECREMENT;
+      count = mappedPoten;
+    }
+    break;
+  case DECREMENT:
+    if (count > 0) {
+      state = DECREMENT;
+    } else {
       state = OFF;
     }
     break;
@@ -114,8 +127,8 @@ void Tick() {
   case ON:
     // Read Potentiometer and display
     unsigned int adcVal = ADC_read(0); // Read from A0
-    int mappedVal = map(adcVal, 0, 255, 0, 15);
-    outNum(mappedVal);
+    int mappedPoten = map(adcVal, 0, 1023, 0, 15);
+    outNum(mappedPoten);
     // Debuggin, if in this state, Red turns off
     // PORTD = SetBit(PORTD, 3, 0); // RGB Red (Must stay on)
     PORTD = SetBit(PORTD, 5, 0);
@@ -123,8 +136,11 @@ void Tick() {
 
   case OFF:
     PORTD = SetBit(PORTD, 5, 1); // turn off 7-segment
-    PORTD = SetBit(PORTD, 3, 0); // RGB Red (Must stay on)
+    PORTD = SetBit(PORTD, 2, 1); // RGB Green (Must stay on)
     break;
+  case DECREMENT:
+    outNum(count);
+    --count;
 
   default:
     break;

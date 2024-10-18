@@ -6,8 +6,14 @@
 \documentclass[12pt]{article}
  
 \usepackage[margin=1in]{geometry} 
-\usepackage{setspace}
- 
+\usepackage{setspace,fancyhdr}
+
+\pagestyle{fancy} 
+\pagestyle{fancy}
+\fancyhf{}
+
+\fancyhead[R]{Topete \thepage}
+
 \begin{document}
  
 % --------------------------------------------------------------
@@ -21,12 +27,15 @@ EE/CS 120B}
 \maketitle
 
 \doublespacing
-\begin{center}
+
+% TODO Make sure to fix this bad boy up
 For my real-world embedded system, I will make an automated hydroponic controller.
-I call it, Hydroponic Garten Kontroller \textbf{(HGK} for short. 
-\end{center}
+I call it, Hydroponic Garten Kontroller \textbf{(HGK)} for short. 
+I believe this would be a great and creative way to think about real world use cases for embedded systems.
+I assume that this is what real hydroponic plants do to manage their garden.
+So it would be very fitting to add this 
 
-
+\pagebreak
 \section{Inputs:}
 
 \begin{tabular}{ l l l }
@@ -54,16 +63,33 @@ I call it, Hydroponic Garten Kontroller \textbf{(HGK} for short.
    \textbf{B7}: & System Status & \quad (0 = Off; 1 = On) \\
 \end{tabular}
 
+\pagebreak
 \section{States:}
+
 \begin{enumerate}
-  \item\textbf{Idle State:}
-  \item\textbf{Watering State:}
-  \item\textbf{Nutrient State:}
-  \item\textbf{Lighting Control State:}
-  \item\textbf{Temperature Kontrol State:}
-  \item\textbf{Error State:}
+  \item\textbf{Idle State:}\\
+    Monitors inputs without making any changes
+  \item\textbf{Watering State:}\\
+    Activates water pumps based on Water Level Sensor \textbf{(A0)}.
+  \item\textbf{Nutrient State:}\\
+    Activates the nutrient pump based on Nutrient Level Sensor \textbf{(A1)}.
+  \item\textbf{Lighting Control State:}\\
+    Activates based on Light Sensor \textbf{(A2)}.
+  \item\textbf{Temperature Kontrol State:}\\
+    Activates based on Temperature Sensor \textbf{(A3)}.
+  \item\textbf{Error State:}\\
+    Activate the alarm if any critical sensor indicates an error.
+    It should be able to send out a mass email and SMS to everyone with a log file attached.\\
+    Examples would be if the water pump remains on despite water level being reached (potential flooding).
+    A calculation can be done of how much water has probably spilled by now.\\
+   The temperature is having trouble and remains out of range after a set amount of time, or overheating and the heater stays on. 
 \end{enumerate}
 
+\section{State Transitions:}
+
+\begin{itemize}
+  \item if\textbf{(A5)}, emergency stop transition to Error State
+\end{itemize} 
  
 
 % --------------------------------------------------------------

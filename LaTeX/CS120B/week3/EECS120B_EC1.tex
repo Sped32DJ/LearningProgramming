@@ -1,0 +1,73 @@
+% --------------------------------------------------------------
+% This is all preamble stuff that you don't have to worry about.
+% Head down to where it says "Start here"
+% --------------------------------------------------------------
+ 
+\documentclass[12pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{setspace}
+ 
+\begin{document}
+ 
+% --------------------------------------------------------------
+%                         Start here
+% --------------------------------------------------------------
+ 
+\title{EC 1: HGK}
+\author{Danny Topete\\ %replace with your name
+EE/CS 120B}
+
+\maketitle
+
+\doublespacing
+\begin{center}
+For my real-world embedded system, I will make an automated hydroponic controller.
+I call it, Hydroponic Garten Kontroller \textbf{(HGK} for short. 
+\end{center}
+
+
+\section{Inputs:}
+
+\begin{tabular}{ l l l }
+   \textbf{A0}: & Water Level Sensor & \quad (0 = Low; 1 = Normal) \\
+   \textbf{A1}: & Nutrient Level Sensor & \quad (0 = Low; 1 = Normal) \\
+   \textbf{A2}: & Light Sensor & \quad (0 = Low; 1 = Normal) \\
+   \textbf{A3}: & Temperature Sensor & \quad (0 = Out Of Range; 1 = Normal) \\
+   \textbf{A4}: & Manual Override Switch & \quad (0 = Auto; 1 = Manual) \\
+   \textbf{A5}: & Emergency Stop Button & \quad (0 = Running; 1 = Stop) \\
+   \textbf{A6}: & Timer Signal & \quad (scheduled watering and light) \\
+   \textbf{A7}: & Reset Signal & \quad (0 = Normal; 1 = Reset) \\
+\end{tabular}
+
+\section{Outputs:}
+
+\begin{tabular}{ l l l }
+
+   \textbf{B0}: & Water Pump & \quad (0 = Off; 1 = On) \\
+   \textbf{B1}: & Nutrient Pump & \quad (0 = Off; 1 = On) \\
+   \textbf{B2}: & Grow Light & \quad (0 = Off; 1 = On) \\
+   \textbf{B3}: & Heater/Cooler & \quad (0 = Off; 1 = On) \\
+   \textbf{B4}: & Status LED & \quad (0 = Off; 1 = On) \\
+   \textbf{B5}: & Alarm & \quad (0 = Off; 1 = On) \\
+   \textbf{B6}: & Manual Override Signal & \quad (0 = Off; 1 = On) \\
+   \textbf{B7}: & System Status & \quad (0 = Off; 1 = On) \\
+\end{tabular}
+
+\section{States:}
+\begin{enumerate}
+  \item\textbf{Idle State:}
+  \item\textbf{Watering State:}
+  \item\textbf{Nutrient State:}
+  \item\textbf{Lighting Control State:}
+  \item\textbf{Temperature Kontrol State:}
+  \item\textbf{Error State:}
+\end{enumerate}
+
+ 
+
+% --------------------------------------------------------------
+%     You don't have to mess with anything below this line.
+% --------------------------------------------------------------
+ 
+\end{document}t

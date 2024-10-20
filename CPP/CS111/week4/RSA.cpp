@@ -23,8 +23,8 @@ unsigned int modInverse(unsigned int a, unsigned int m);
 int main() {
   cout << "Solving the RSA" << endl;
   
-// fill in our dollar store hashmap
-
+// fill in our dollar store hashmap, 
+// TODO: Fill hash(map) function
 vector<char> map[38];
 for(int i = 7; i < 32; ++I){
 map[i] = 'A' + i;
@@ -72,10 +72,17 @@ string decrypt(string message, int d, int n) { return message**d % n; }
 
 // "break" RSA
 string crack(string message, int e, int n) { 
+
 //find decryption exponent
-int d = modInverse(e,n);
-message = message**d % n;
-return message;
+// TODO, doesn't respect hashmap as of now!!
+int d = modInverse(e,EulerTotient(e,n));
+string crack;
+for (char c : message){
+int m = pow(static_cast<int>(c),d) % n);
+crack += static_cast<char>(m);
+}
+
+return crack;
 }
 
 unsigned int EulerTotient(unsigned int p, unsigned int q) {
@@ -95,6 +102,6 @@ unsigned modInverse(unsigned int a, unsigned int p) {
 
 // Proves primality of a non-carmichael numbers
 bool FermatsLittleTheorem(unsigned int a, unsigned int p) {
-  return ((a **(p - 1) % p) == 1) ? 1 : 0;
+  return ((pow(a ,(p - 1)) % p) == 1) ? 1 : 0;
   //  return modInverse(a, p);
 }

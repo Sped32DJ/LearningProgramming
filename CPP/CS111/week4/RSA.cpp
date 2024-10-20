@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -9,6 +10,9 @@ string encrypt(string message, int e, int n);
 
 // Private key: (d, n)
 string decrypt(string message, int d, int n);
+
+// "break" RSA
+string crack(string message, int e, int n);
 
 unsigned int EulerTotient(unsigned int p, unsigned int q);
 
@@ -66,6 +70,14 @@ string encrypt(string message, int e, int n) { return message; }
 
 string decrypt(string message, int d, int n) { return message; }
 
+// "break" RSA
+string crack(string message, int e, int n) { 
+//find decryption exponent
+int d = modInverse(e,n);
+message = message**d % n;
+return message;
+}
+
 unsigned int EulerTotient(unsigned int p, unsigned int q) {
   return (p - 1) * (q - 1);
 }
@@ -83,6 +95,6 @@ unsigned modInverse(unsigned int a, unsigned int p) {
 
 // Proves primality of a non-carmichael numbers
 bool FermatsLittleTheorem(unsigned int a, unsigned int p) {
-  return ((a ^ (p - 1) % p) == 1) ? 1 : 0;
+  return ((a **(p - 1) % p) == 1) ? 1 : 0;
   //  return modInverse(a, p);
 }

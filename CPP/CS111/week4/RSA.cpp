@@ -66,9 +66,9 @@ map[37] = "'";
   return 0;
 }
 
-string encrypt(string message, int e, int n) { return message; }
+string encrypt(string message, int e, int n) { return message**e % n; }
 
-string decrypt(string message, int d, int n) { return message; }
+string decrypt(string message, int d, int n) { return message**d % n; }
 
 // "break" RSA
 string crack(string message, int e, int n) { 

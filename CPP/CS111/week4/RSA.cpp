@@ -51,6 +51,11 @@ map[37] = "'";
     cout << "p and q must be greater than 2" << endl;
     return 1;
   }
+// FIX DIS
+// I think fltT takes in a,q. not sure 
+if(!FLT(a,p) && !FLT(a,q)){
+cout << "both numbers must be prime" << endl;
+}
 
   // Check if p and q are the same
   if (p == q) {

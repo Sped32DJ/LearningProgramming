@@ -23,7 +23,7 @@ int main() {
 
 vector<char> map[38];
 for(int i = 7; i < 32; ++I){
-map[i] = A+I;
+map[i] = 'A' + i;
 }
 map[33] = ' ';
 map[34] = '?';

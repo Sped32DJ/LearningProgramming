@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -17,6 +18,18 @@ unsigned int modInverse(unsigned int a, unsigned int m);
 
 int main() {
   cout << "Solving the RSA" << endl;
+  
+// fill in our dollar store hashmap
+
+vector<char> map[38];
+for(int i = 7; i < 32; ++I){
+map[i] = A+I;
+}
+map[33] = ' ';
+map[34] = '?';
+map[35] = ',';
+map[36] = '.';
+map[37] = "'";
 
   // The two prime numbers
   unsigned int p = 61;

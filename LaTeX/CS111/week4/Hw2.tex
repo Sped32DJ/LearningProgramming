@@ -1,0 +1,125 @@
+% https://www.overleaf.com/learn/latex/Main_Page <-- latex resources
+% <--- percent sign starts a comment line in Latex
+
+%----------------------------------------------------------------------------------
+%
+% This is a sample assignment .tex file. Put your name, assignment number and the
+% due date below, as shown.
+% If you work with a partner, create another line with command \student{his/her name}
+%
+% Before you typeset your own assignment try to preview and print this one. If you
+% have LaTeX installed on your machine, you need to:
+%   1. Save this in a file, say hw.tex
+%   2. Run "pdflatex hw"
+%	3. LaTeX produces a pdf file that you can view with/print any pdf viewer
+%
+% Alternatively you can also compile and preview it in overleaf.com, the online
+% LaTeX editor.
+%
+
+%----------------------------------------------------------------------------------
+
+\documentclass[11pt]{article}
+
+%----------------------------------------------------------------------------------
+% this is a list of latex packages that may be useful in this document
+%----------------------------------------------------------------------------------
+
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{amsfonts,amsmath,latexsym,amssymb,amsthm}
+\usepackage[nothing]{algorithm}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usepackage{hyperref}
+%----------------------------------------------------------------------------------
+% some macros below. don't worry about these.
+%----------------------------------------------------------------------------------
+
+
+\newcommand{\student}[1]{{\noindent\Large\em {#1} \hfill}\vskip 0.1in}
+
+\newcommand{\assignment}[1]{\centerline{\large\bf CS111 Homework {#1}}}
+
+\newcommand{\duedate}[1]{{\centerline{due {#1}}}}
+
+\newcommand{\assign}{\,\leftarrow\,}
+
+\newcounter{prnum}
+\setcounter{prnum}{0}
+\newenvironment{problem}{{\vskip 0.2in\noindent\bf Problem
+       \addtocounter{prnum}{1} \arabic{prnum}.}}{\vskip 0.1in}
+
+%----------------------------------------------------------------------------------
+% the actual source for the document starts here
+%----------------------------------------------------------------------------------
+
+\begin{document}
+
+\student{Danny Topete} % <-- Replace with your name
+%\student{Kat} % <-- Cat's name
+\vskip 0.1in\noindent\hrule\vskip 0.2in
+\assignment{2}                           % <-- ASSIGNMENT NUMBER ******
+\duedate{Monday, Oct 28th}              % <-- DUE DATE ***************
+
+%----------------------------------------------------------
+
+\begin{problem}\\
+Prove the following statement:\\
+If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
+\begin{enumerate}
+  \item Simplifying (mod 20) \\
+    Given that p>5 and $gcd(p,20)$ = 1, we know that p is odd.
+    We also know that if \\
+    $gcd(p,20)$ = 1, then p is not divisible by 2 or 5.
+    Giving us $p^2 \equiv 1 (mod$ 4) and \\$p^2 \equiv 1 (mod$ 5);
+    given from the statement $gcd(p, 5\cdot2^2)= 1.$\\
+    \begin{enumerate}
+      \item (Mod 5)\\
+        \begin{equation*}
+          (p^2 - 21)\equiv 1 - 21 \equiv 1-1 \equiv 0 (mod 5)\\
+        \end{equation*}
+        \begin{equation*}
+          (p^2 + 16)\equiv 1 + 16 \equiv 17 \equiv 2 (mod 5)
+        \end{equation*}
+      \item (Mod 4)
+        \begin{equation*}
+          (p^2 - 21)\equiv 1-21 \equiv -20 \equiv 0 (mod 4)
+        \end{equation*}
+        \begin{equation*}
+          (p^2 +16)\equiv 1 + 16 \equiv 17 \equiv 1 (mod 4)
+        \end{equation*}
+        By applying (Mod 4)
+        \begin{equation*}
+          (p^2 - 21)(p^2 + 16) \equiv 0\cdot1 \equiv 0 (mod 4)
+        \end{equation*}
+    \end{enumerate}
+  \item By applying the Chinese Remainder Theorem, we can combine the results from (a) to get the following:
+    \begin{equation*}
+      (p^2 - 21)(p^2 + 16) \equiv 0 (mod 20)
+    \end{equation*}
+\end{enumerate}
+  
+\end{problem} 
+\clearpage
+
+
+%----------------------------------------------------------
+
+\begin{problem} \\
+  test
+\end{problem}
+
+\clearpage
+
+%----------------------------------------------------------
+\begin{problem}
+  test
+\end{problem}
+
+%----------------------------------------------------------
+
+\vskip 0.2in
+\paragraph{Academic integrity declaration.}
+I did this myself, trust me.
+\end{document}

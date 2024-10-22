@@ -7,7 +7,7 @@
 
 // TODO: for exercise 2 and 3, the initial
 // passcode should be up, down, left, right
-unsigned char passcode[4] = {up, down, left, right}
+unsigned char passcode[4] = {'u', 'd', 'l', 'r'}
 
 unsigned char
 SetBit(unsigned char x, unsigned char k, unsigned char b) {
@@ -47,13 +47,20 @@ unsigned int ADC_read(unsigned char chnl) {
 // exercise. they behave the same, the only difference is outDir() outputs 4
 // direction and a neutral
 // center, r, l, d, u
+// I can probably make this a case statement for each input "c,r,l,d,u"
 int directions[5] = {0b0000001, 0b0000101, 0b0110000, 0b0111101, 0b0011100};
 // TODO: complete the array containg the values needed
 // for the 7 segments for each of the 4 directions
 // a  b  c  d  e  f  g
 // TODO: display the direction to the 7-seg display. HINT: will be very similar
-// to outNum()
-void outDir(int dir) {}
+void outDir(int dir) {
+  PORTB = directions[dir] >> 1;
+  // Bitshift twice
+  PORTD = SetBit(PORTD, 7, directions[dir] & 0x01);
+  // 8th pin is in the middle segment
+  // NOTE: 9th pin is a period
+  // I think it is wired for a reason
+}
 
 int phases[8] = {0b0001, 0b0011, 0b0010, 0b0110, 0b0100,
                  0b1100, 0b1000, 0b1001}; // 8 phases of the stepper motor step
@@ -75,15 +82,20 @@ void Tick() {
 
   case INIT:
     break;
-  case LEFT:
-    outDir(2) break;
+  case CENTER:
+    outDir(0);
+    break;
   case RIGHT:
-    outDir(1) break;
+    outDir(1);
+    break;
+  case LEFT:
+    outDir(2);
+    break;
   case DOWN:
+    outDir(3);
     break;
   case UP:
-    break;
-  case CENTER:
+    outDir(4);
     break;
 
   default:
@@ -97,6 +109,16 @@ void Tick() {
 
   case INIT:
     break;
+  case CENTER:
+    break;
+  case RIGHT:
+    break;
+  case LEFT:
+    break;
+  case DOWN:
+    break;
+  case UP:
+    break;
 
   default:
     break;
@@ -107,6 +129,18 @@ int main(void) {
   // TODO: initialize all outputs and inputs
 
   ADC_init(); // initializes the analog to digital converter
+
+  // Stepper Motor + 2 pins of 7 segment
+  DDRB = 0xFF; // PORTB as output
+  PORTB = 0x00;
+
+  // Joystick + 2 LED's
+  DDRC = 0x03;   // Last two bits are output, rest input
+  PORTC = ~0x03; // All put last two pins are output
+
+  // majority of 7 of segmenet (just bit shift later on)
+  DDRD = 0xFF;  // Set all pins output
+  PORTD = 0x00; // Clear PORTD
 
   state = INIT;
 

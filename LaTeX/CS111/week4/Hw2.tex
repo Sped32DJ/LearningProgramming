@@ -74,15 +74,14 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
     $gcd(p,20)$ = 1, then p is not divisible by 2 or 5.
     Giving us $p^2 \equiv 1 (mod$ 4) and \\$p^2 \equiv 1 (mod$ 5);
     given from the statement $gcd(p, 5\cdot2^2)= 1.$\\
+
     \begin{enumerate}
-      \item (Mod 5)\\
-        \begin{equation*}
-          (p^2 - 21)\equiv 1 - 21 \equiv 1-1 \equiv 0 (mod 5)\\
-        \end{equation*}
-        \begin{equation*}
-          (p^2 + 16)\equiv 1 + 16 \equiv 17 \equiv 2 (mod 5)
-        \end{equation*}
-      \item (Mod 4)
+      \item (Mod 4)\\
+    For odd integers, p \equiv 1 (mod 2):
+    \begin{equation*}
+      p^2 \equiv 1 (mod 4)
+    \end{equation*}
+    Therefore we have:
         \begin{equation*}
           (p^2 - 21)\equiv 1-21 \equiv -20 \equiv 0 (mod 4)
         \end{equation*}
@@ -93,10 +92,60 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
         \begin{equation*}
           (p^2 - 21)(p^2 + 16) \equiv 0\cdot1 \equiv 0 (mod 4)
         \end{equation*}
+      \item (Mod 5)
+        Given that we have $gcd(p,5) = 1$, we know $p \not\equiv 0(mod 5)$
+        \begin{equation*}
+          p^2 \equiv 1 (mod 5)
+        \end{equation*}
+        or
+        \begin{equation*}
+         p^2 \equiv 4 (mod 5) 
+        \end{equation*}
+        This grants us two cases:
+        \begin{enumerate}
+          \item If $p^2$ \equiv 1 (mod 5) then:\\
+            \begin{equation*}
+              p^2 - 21 \equiv 1 - 21 \equiv -20 \equiv 0 (mod 5)
+            \end{equation*}
+            \begin{equation*}
+              p^2 + 16 \equiv 1 + 16 \equiv 17 \equiv 2(mod 5)
+            \end{equation*}
+            This case would result in:
+            \begin{equation*}
+              (p^2 - 21) (p^2 + 16) \equiv 0\cdot2\equiv 0(mod 5)
+            \end{equation*}
+          \item If $p^2$ \equiv 4 (mod 5), then:\\
+            \begin{equation*}
+              (p^2 - 21) \equiv 4 - 21 \equiv -17 \equiv 3 (mod 5)
+            \end{equation*}
+            \begin{equation*}
+              (p^2 + 16)\equiv 4 + 16 \equiv 20 \equiv 0 (mod 5)
+            \end{equation*}
+            This case would result in:
+            \begin{equation*}
+              (p^2 - 21)(p^2 + 16) \equiv 3\cdot0 = 0(mod 5)
+            \end{equation*}
+            Both cases would result in 0(mod 5)
+        \end{enumerate}
     \end{enumerate}
-  \item By applying the Chinese Remainder Theorem, we can combine the results from (a) to get the following:
+  \item Combining Results
+    We have:
+    \begin{equation*}
+      (p^2 - 21) (p^2 + 16)\equiv 0 (mod 4)
+    \end{equation*}
+    and
+    \begin{equation*}
+      (p^2 - 21)(p^2 + 16)\equiv 0 (mod 5)
+    \end{equation*}
+    Since $gcd(4,5) = 1$, we can conclude:
     \begin{equation*}
       (p^2 - 21)(p^2 + 16) \equiv 0 (mod 20)
+    \end{equation*}
+
+  \item Conclusion:\\
+    We have proven if $p>5$ and $gcd(p,20)$ = 1, then:
+    \begin{equation*}
+      (p^2 - 21) (p^2 + 16) \equiv 0 (mod 20)
     \end{equation*}
 \end{enumerate}
   
@@ -107,7 +156,18 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
 %----------------------------------------------------------
 
 \begin{problem} \\
-  test
+  Alive's RSA public key is P = (e,n) = (7,4453). 
+  Bob sends Alice the message by encoding it follows.
+  First he assigns numbers to characteres: A is 7... Z is 32, blank is 33,
+  quotation marks: 34, a comma: 35, a period: 36,
+  an apostraphe: 37. Then uses RSA to encode each number seperately.
+  \begin{enumerate}
+    \item Describe step by stop how you arrived at the solution:
+      show how to find p and q, \phi(n) and d.
+      \begin{enumerate}
+        \item d = (e,n)
+      \end{enumerate}
+  \end{enumerate}
 \end{problem}
 
 \clearpage

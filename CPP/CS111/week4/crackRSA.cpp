@@ -51,6 +51,8 @@ int main() {
   // n, (given by problem)
   unsigned int n = 4453;
 
+  cout << "test\n";
+
   // Actual cracking
   cout << "Cracking the RSA"
        << crack(encoded, static_cast<int>(e), static_cast<int>(n), hmap)
@@ -84,32 +86,37 @@ string decrypt(string message, int d, int n) {
 
 // "break" RSA
 string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
+  cout << "test2\n";
 
   // Find p and q
   // n = p * q
   int p, q;
-  for (int i = 0; i < sqrt(n); ++i) {
-    if (n % i == 0) {
-      p = i;
+  for (int i = 3; i < sqrt(n); ++i) {
+    if (!(n % i)) {
+      p = i; // p is the current val of i
       i = n; // stops further iterations
     }
   }
   q = n / p; // Find q from p
 
+  cout << "p = " << p << endl << "q = " << q << endl;
   // Find d
   // d = e^-1 (mod phi(n))
   int d;
-  for (int i = 0; i < sqrt(n); ++i) {
-    if ((e * i) % EulerTotient(p, q)) {
+  for (int i = 3; i < n; ++i) {
+    if ((e * i) % EulerTotient(p, q) == 1) {
       d = i;
       i = n; // stop iterations
     }
   }
+  cout << "d = " << d << endl;
 
   string crackedMessage;
 
   for (int encryptedVal : message) {
-    int decryptedVal = pow(encryptedVal, d) % static_cast<double>(n);
+    int decryptedVal = static_cast<int>(pow(static_cast<double>(encryptedVal),
+                                            static_cast<double>(d))) %
+                       n;
 
     // debug output
     if (decryptedVal >= 0 && decryptedVal < hmap.size()) {

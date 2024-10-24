@@ -103,13 +103,21 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   // Find d
   // d = e^-1 (mod phi(n))
   int d;
+  int phi_n = EulerTotient(p, q);
+
   for (int i = 3; i < n; ++i) {
-    if ((e * i) % EulerTotient(p, q) == 1) {
+    if ((e * i) % phi_n == 1) {
       d = i;
       i = n; // stop iterations
     }
   }
   cout << "d = " << d << endl;
+  cout << "n = " << n << endl;
+  if (d * e == 1 % phi_n) {
+    cout << "d is verified\n";
+  } else {
+    cout << "not verified\n";
+  }
 
   string crackedMessage;
 

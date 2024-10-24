@@ -108,6 +108,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   // Find p and q
   // n = p * q
   int p, q;
+
   // i += 2 to skip even numbers
   for (int i = 3; i < sqrt(n); i += 2) {
     if (!(n % i)) {
@@ -116,29 +117,18 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
     }
   }
   q = n / p; // Find q from p
+  int phi_n = EulerTotient(p, q);
 
   cout << "n = " << n << endl;
-  cout << "phi(n) = " << EulerTotient(p, q) << endl;
+  cout << "phi(n) = " << phi_n << endl;
   cout << "e = " << e << endl;
   cout << "p = " << p << endl << "q = " << q << endl;
   // Find d
   // d = e^-1 (mod phi(n))
-<<<<<<< HEAD
-  int d;
-  int phi_n = EulerTotient(p, q);
-
-  for (int i = 3; i < n; ++i) {
-    if ((e * i) % phi_n == 1) {
-      d = i;
-      i = n; // stop iterations
-    }
-  }
-=======
-  int d = modInverse(e, EulerTotient(p, q));
->>>>>>> refs/remotes/origin/main
+  int d = modInverse(e, phi_n);
   cout << "d = " << d << endl;
   cout << "n = " << n << endl;
-  if (d * e == 1 % phi_n) {
+  if (d * e == (1 % phi_n)) {
     cout << "d is verified\n";
   } else {
     cout << "not verified\n";

@@ -33,7 +33,9 @@ int modularExponentiation(int base, int exp, int mod) {
   }
   return result;
 }
+
 // Uses Fermat's Little Theorem to check primality
+// Function was never used, but quite useful
 bool isPrime(unsigned int p);
 
 int modInverse(int a, int m);

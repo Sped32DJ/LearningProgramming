@@ -14,14 +14,31 @@ string decrypt(string message, int d, int n);
 // "break" RSA
 string crack(vector<int> &message, int e, int n, const vector<char> &hmap);
 
-unsigned int EulerTotient(unsigned int p, unsigned int q);
+int EulerTotient(int p, int q);
 
 unsigned int modExp(unsigned int base, unsigned int exp, unsigned int mod);
 
+int modularExponentiation(int base, int exp, int mod) {
+  int result = 1;
+  base = base % mod; // Handle base larger than mod
+
+  while (exp > 0) {
+    // If exp is odd, multiply base with result
+    if (exp % 2 == 1) {
+      result = (result * base) % mod;
+    }
+    // exp must be even now
+    exp = exp >> 1;             // Divide exp by 2
+    base = (base * base) % mod; // Square the base
+  }
+  return result;
+}
+
 // Uses Fermat's Little Theorem to check primality
+// Function was never used, but quite useful
 bool isPrime(unsigned int p);
 
-unsigned int modInverse(unsigned int a, unsigned int m);
+int modInverse(int a, int m);
 
 // Fills our "hashmap"
 void FillHash(vector<char> &map);
@@ -91,7 +108,8 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   // Find p and q
   // n = p * q
   int p, q;
-  for (int i = 3; i < sqrt(n); ++i) {
+  // i += 2 to skip even numbers
+  for (int i = 3; i < sqrt(n); i += 2) {
     if (!(n % i)) {
       p = i; // p is the current val of i
       i = n; // stops further iterations
@@ -99,9 +117,13 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   }
   q = n / p; // Find q from p
 
+  cout << "n = " << n << endl;
+  cout << "phi(n) = " << EulerTotient(p, q) << endl;
+  cout << "e = " << e << endl;
   cout << "p = " << p << endl << "q = " << q << endl;
   // Find d
   // d = e^-1 (mod phi(n))
+<<<<<<< HEAD
   int d;
   int phi_n = EulerTotient(p, q);
 
@@ -111,6 +133,9 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
       i = n; // stop iterations
     }
   }
+=======
+  int d = modInverse(e, EulerTotient(p, q));
+>>>>>>> refs/remotes/origin/main
   cout << "d = " << d << endl;
   cout << "n = " << n << endl;
   if (d * e == 1 % phi_n) {
@@ -121,11 +146,8 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
 
   string crackedMessage;
 
-  for (int encryptedVal : message) {
-    int decryptedVal = static_cast<int>(pow(static_cast<double>(encryptedVal),
-                                            static_cast<double>(d))) %
-                       n;
-
+  for (double encryptedVal : message) {
+    int decryptedVal = modularExponentiation(encryptedVal, d, n);
     // debug output
     if (decryptedVal >= 0 && decryptedVal < hmap.size()) {
       crackedMessage += hmap.at(decryptedVal);
@@ -137,9 +159,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   return crackedMessage;
 }
 
-unsigned int EulerTotient(unsigned int p, unsigned int q) {
-  return (p - 1) * (q - 1);
-}
+int EulerTotient(int p, int q) { return (p - 1) * (q - 1); }
 
 unsigned int modExp(unsigned int base, unsigned int exp, unsigned int mod) {
   unsigned int result = 1;
@@ -154,15 +174,32 @@ unsigned int modExp(unsigned int base, unsigned int exp, unsigned int mod) {
   return result;
 }
 
-unsigned modInverse(unsigned int a, unsigned int p) {
-  a = a % p;
+int modInverse(int a, int p) {
+  int m0 = p, y = 0, x = 1;
 
-  for (unsigned int x = 1; x < p; ++x) {
-    if ((a * x) % p == 1) {
-      return x;
-    }
+  if (p == 1)
+    return 0; // No inverse
+
+  while (a > 1) {
+    // q is quotient
+    int q = a / p;
+    int t = p;
+
+    // p is the remainder
+    p = a % p;
+    a = t;
+    t = y;
+
+    y = x - q * y;
+    x = t;
   }
-  return 1;
+
+  // Makes x positive
+  if (x < 0) {
+    x += m0;
+  }
+  //  return (x + p) % p;
+  return (x + m0) % m0;
 }
 
 // Proves primality of a non-carmichael numbers

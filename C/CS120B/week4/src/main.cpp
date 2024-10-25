@@ -1,16 +1,17 @@
-#include "timerISR.h"
+#include "timerISR-Fixed.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
+
+void TimerISR() { TimerFlag = 1; }
 
 // TODO: declare your global variables here
 
 // TODO: for exercise 2 and 3, the initial
 // passcode should be up, down, left, right
-unsigned char passcode[4] = {'u', 'd', 'l', 'r'}
+unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
 
-unsigned char
-SetBit(unsigned char x, unsigned char k, unsigned char b) {
+unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
   return (b ? (x | (0x01 << k)) : (x & ~(0x01 << k)));
   //   Set bit to 1           Set bit to 0
 }
@@ -51,12 +52,12 @@ unsigned int ADC_read(unsigned char chnl) {
 int directions[5] = {0b0000001, 0b0000101, 0b0110000, 0b0111101, 0b0011100};
 // TODO: complete the array containg the values needed
 // for the 7 segments for each of the 4 directions
-// a  b  c  d  e  f  g
+// a  b  c  d  Actions  g
 // TODO: display the direction to the 7-seg display. HINT: will be very similar
 void outDir(int dir) {
-  PORTB = directions[dir] >> 1;
+  PORTD = directions[dir] << 1;
   // Bitshift twice
-  PORTD = SetBit(PORTD, 7, directions[dir] & 0x01);
+  PORTB = SetBit(PORTB, 0, directions[dir] & 0x01);
   // 8th pin is in the middle segment
   // NOTE: 9th pin is a period
   // I think it is wired for a reason
@@ -65,62 +66,55 @@ void outDir(int dir) {
 int phases[8] = {0b0001, 0b0011, 0b0010, 0b0110, 0b0100,
                  0b1100, 0b1000, 0b1001}; // 8 phases of the stepper motor step
 
-enum states {
-  INIT,
-  LEFT,
-  RIGHT,
-  DOWN,
-  UP,
-  CENTER
-} state; // TODO: finish the enum for the SM
+bool Button() { return GetBit(PINC, 4); }
+
+float GetAxis(char port) {
+  float raw = ADC_read(port);
+  return (raw / 1023.0);
+}
+
+void JoystickTick() {
+  float xAxis = GetAxis(2);
+  float yAxis = GetAxis(3);
+
+  if (yAxis > 0.6) {
+    outDir(1); // up, 1
+  } else if (yAxis < 0.4) {
+    outDir(2); // down, 2
+  } else if (xAxis > 0.6) {
+    outDir(4); // right, 4
+  } else if (xAxis < 0.4) {
+    outDir(3); // left, 3
+  } else {
+    outDir(0); // center
+  }
+}
+enum states { WAIT, PRESS } state; // TODO: finish the enum for the SM
 
 void Tick() {
 
   // State Transistions
   // TODO: complete transitions
   switch (state) {
-
-  case INIT:
+  case WAIT:
     break;
-  case CENTER:
-    outDir(0);
+  case PRESS:
     break;
-  case RIGHT:
-    outDir(1);
-    break;
-  case LEFT:
-    outDir(2);
-    break;
-  case DOWN:
-    outDir(3);
-    break;
-  case UP:
-    outDir(4);
-    break;
-
   default:
-    state = INIT;
+    state = WAIT;
     break;
   }
 
   // State Actions
-  // TODO: complete transitions
+  // TODO: complete Actions
   switch (state) {
 
-  case INIT:
+  case WAIT:
     break;
-  case CENTER:
+  case PRESS:
     break;
-  case RIGHT:
-    break;
-  case LEFT:
-    break;
-  case DOWN:
-    break;
-  case UP:
-    break;
-
   default:
+    state = WAIT;
     break;
   }
 }
@@ -135,19 +129,20 @@ int main(void) {
   PORTB = 0x00;
 
   // Joystick + 2 LED's
-  DDRC = 0x03;   // Last two bits are output, rest input
-  PORTC = ~0x03; // All put last two pins are output
+  DDRC = 0x00;  // Last two bits are output, rest input
+  PORTC = 0xFF; // All put last two pins are output
 
   // majority of 7 of segmenet (just bit shift later on)
   DDRD = 0xFF;  // Set all pins output
   PORTD = 0x00; // Clear PORTD
 
-  state = INIT;
+  state = WAIT;
 
   TimerSet(1); // period of 1 ms. good period for the stepper mottor
   TimerOn();
 
   while (1) {
+    JoystickTick();
 
     Tick(); // Execute one synchSM tick
     while (!TimerFlag) {

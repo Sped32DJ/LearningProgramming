@@ -5,11 +5,11 @@
 
 void TimerISR() { TimerFlag = 1; }
 
-// TODO: declare your global variables here
 unsigned int count = 0;
-// TODO: for exercise 2 and 3, the initial
-// passcode should be up, down, left, right
+unsigned int index = 0;
+
 unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
+unsigned char inputs[4];
 
 unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
   return (b ? (x | (0x01 << k)) : (x & ~(0x01 << k)));
@@ -44,23 +44,15 @@ unsigned int ADC_read(unsigned char chnl) {
   return ((high << 8) | low);
 }
 
-// directions[] and outDir() replaces nums[] and outNum() from previous
-// exercise. they behave the same, the only difference is outDir() outputs 4
-// direction and a neutral
-// center, r, l, d, u
-// I can probably make this a case statement for each input "c,r,l,d,u"
+// Order: c, r, l, d, u
 int directions[5] = {0b0000001, 0b0000101, 0b0110000, 0b0111101, 0b0011100};
-// TODO: complete the array containg the values needed
-// for the 7 segments for each of the 4 directions
-// a  b  c  d  Actions  g
-// TODO: display the direction to the 7-seg display. HINT: will be very similar
+
 void outDir(int dir) {
   PORTD = directions[dir] << 1;
   // Bitshift twice
   PORTB = SetBit(PORTB, 0, directions[dir] & 0x01);
   // 8th pin is in the middle segment
   // NOTE: 9th pin is a period
-  // I think it is wired for a reason
 }
 
 void outLED(int num) {
@@ -78,29 +70,82 @@ float GetAxis(char port) {
   return (raw / 1024.0);
 }
 
+void addToInputs(char dir) {
+  if (index >= 4) {
+    index = 0;
+  }
+  if (index == 0 || inputs[index - 1] != dir) {
+    inputs[index] = dir;
+    ++index;
+  }
+}
+
+// Waits n amount of ticks
+// Each tick is 1ms, 1 tick = 1 ms
+void Wait(int ticks) {
+  for (int i = 0; i < ticks; ++i) {
+    while (!TimerFlag) {
+    }
+    TimerFlag = 0;
+  }
+}
+
+// on is basically a bool that turns LEDs on or off
+void SetLEDs(unsigned char on) {
+  PORTC = SetBit(PORTC, 0, on);
+  PORTC = SetBit(PORTC, 1, on);
+}
+
+// FIX: idk if it should be ccw or cw
+void Rotate(bool ccw) {
+  if (ccw) {
+    for (int i = 0; i < 8; ++i) {
+      // Clears out 4 motor output pins and adds new phase
+      PORTB = (PORTB & 0xC3) | phases[i] << 2;
+      while (!TimerFlag) {
+      }
+      TimerFlag = 0;
+    }
+  } else {
+    for (int i = 7; i >= 0; --i) {
+      // Clears out 4 motor output pins and adds new phase
+      PORTB = (PORTB & 0xC3) | phases[i] << 2;
+      while (!TimerFlag) {
+      }
+      TimerFlag = 0;
+    }
+  }
+}
+
 void JoystickTick() {
   float xAxis = GetAxis(2);
   float yAxis = GetAxis(3);
+  if (index > 3) {
+    index = 0;
+  }
 
   if (yAxis > 0.6) {
     outDir(1); // up, 1
+    addToInputs('u');
   } else if (yAxis < 0.4) {
     outDir(2); // down, 2
+    addToInputs('d');
   } else if (xAxis > 0.6) {
     outDir(4); // right, 4
+    addToInputs('r');
   } else if (xAxis < 0.4) {
     outDir(3); // left, 3
+    addToInputs('l');
   } else {
     outDir(0); // center
   }
 }
-enum states { WAIT, PRESS } state; // TODO: finish the enum for the SM
+enum states { WAIT, PRESS } state;
 
 void Tick() {
   JoystickTick();
 
   // State Transistions
-  // TODO: complete transitions
   switch (state) {
   case WAIT:
     if (Button()) {
@@ -125,11 +170,15 @@ void Tick() {
   }
 
   // State Actions
-  // TODO: complete Actions
   switch (state) {
 
   case WAIT:
     outLED(count);
+    // NOTE: If passcode is correct
+    // Maybe it should be its own state
+    if (passcode == inputs) {
+      rotate();
+    }
     break;
   case PRESS:
     break;
@@ -140,8 +189,6 @@ void Tick() {
 }
 
 int main(void) {
-  // TODO: initialize all outputs and inputs
-
   ADC_init(); // initializes the analog to digital converter
 
   // Stepper Motor + 2 pins of 7 segment

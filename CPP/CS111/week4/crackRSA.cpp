@@ -128,6 +128,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   int d = modInverse(e, phi_n);
   cout << "d = " << d << endl;
   cout << "n = " << n << endl;
+  // FIX:
   if (d * e == (1 % phi_n)) {
     cout << "d is verified\n";
   } else {
@@ -142,7 +143,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
     if (decryptedVal >= 0 && decryptedVal < hmap.size()) {
       crackedMessage += hmap.at(decryptedVal);
     } else {
-      crackedMessage += '?'; // placeholder
+      crackedMessage += 'e'; // placeholder
     }
   }
 

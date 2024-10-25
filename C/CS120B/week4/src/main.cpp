@@ -6,7 +6,7 @@
 void TimerISR() { TimerFlag = 1; }
 
 // TODO: declare your global variables here
-
+unsigned int count = 0;
 // TODO: for exercise 2 and 3, the initial
 // passcode should be up, down, left, right
 unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
@@ -63,6 +63,11 @@ void outDir(int dir) {
   // I think it is wired for a reason
 }
 
+void outLED(int num) {
+  PORTC = SetBit(PORTC, 0, num & 0x01); // LED 0
+  PORTC = SetBit(PORTC, 1, num & 0x02); // LED 1
+}
+
 int phases[8] = {0b0001, 0b0011, 0b0010, 0b0110, 0b0100,
                  0b1100, 0b1000, 0b1001}; // 8 phases of the stepper motor step
 
@@ -70,7 +75,7 @@ bool Button() { return GetBit(PINC, 4); }
 
 float GetAxis(char port) {
   float raw = ADC_read(port);
-  return (raw / 1023.0);
+  return (raw / 1024.0);
 }
 
 void JoystickTick() {
@@ -92,13 +97,27 @@ void JoystickTick() {
 enum states { WAIT, PRESS } state; // TODO: finish the enum for the SM
 
 void Tick() {
+  JoystickTick();
 
   // State Transistions
   // TODO: complete transitions
   switch (state) {
   case WAIT:
+    if (Button()) {
+      state = PRESS;
+      ++count;
+    } else {
+      state = WAIT;
+    }
+    if (count > 3) {
+      count = 0;
+    }
     break;
   case PRESS:
+    if (!Button()) {
+      state = WAIT;
+    }
+
     break;
   default:
     state = WAIT;
@@ -110,6 +129,7 @@ void Tick() {
   switch (state) {
 
   case WAIT:
+    outLED(count);
     break;
   case PRESS:
     break;
@@ -129,8 +149,8 @@ int main(void) {
   PORTB = 0x00;
 
   // Joystick + 2 LED's
-  DDRC = 0x00;  // Last two bits are output, rest input
-  PORTC = 0xFF; // All put last two pins are output
+  DDRC = 0x03;   // Last two bits are output, rest input
+  PORTC = ~0x03; // All put last two pins are output
 
   // majority of 7 of segmenet (just bit shift later on)
   DDRD = 0xFF;  // Set all pins output
@@ -142,8 +162,6 @@ int main(void) {
   TimerOn();
 
   while (1) {
-    JoystickTick();
-
     Tick(); // Execute one synchSM tick
     while (!TimerFlag) {
     } // Wait for SM period

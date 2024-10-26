@@ -10,6 +10,7 @@ unsigned int index = 0;
 
 unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
 unsigned char inputs[4];
+unsigned char currentDirection = 0;
 
 unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
   return (b ? (x | (0x01 << k)) : (x & ~(0x01 << k)));
@@ -96,9 +97,9 @@ void SetLEDs(unsigned char on) {
   PORTC = SetBit(PORTC, 1, on);
 }
 
-// FIX: idk if it should be ccw or cw
-void Rotate(bool ccw) {
-  if (ccw) {
+void Rotate(bool cw, float degrees) {
+  // NOTE: Multiplying by 0.73 roughly translate to degrees
+  for (int i = 0; i < degrees * 0.73; ++i) {
     for (int i = 0; i < 8; ++i) {
       // Clears out 4 motor output pins and adds new phase
       PORTB = (PORTB & 0xC3) | phases[i] << 2;
@@ -106,13 +107,23 @@ void Rotate(bool ccw) {
       }
       TimerFlag = 0;
     }
-  } else {
-    for (int i = 7; i >= 0; --i) {
-      // Clears out 4 motor output pins and adds new phase
-      PORTB = (PORTB & 0xC3) | phases[i] << 2;
-      while (!TimerFlag) {
+
+    if (cw) {
+      for (int i = 0; i < 8; ++i) {
+        // Clears out 4 motor output pins and adds new phase
+        PORTB = (PORTB & 0xC3) | phases[i] << 2;
+        while (!TimerFlag) {
+        }
+        TimerFlag = 0;
       }
-      TimerFlag = 0;
+    } else {
+      for (int i = 7; i >= 0; --i) {
+        // Clears out 4 motor output pins and adds new phase
+        PORTB = (PORTB & 0xC3) | phases[i] << 2;
+        while (!TimerFlag) {
+        }
+        TimerFlag = 0;
+      }
     }
   }
 }
@@ -122,25 +133,29 @@ void JoystickTick() {
   float yAxis = GetAxis(3);
   if (index > 3) {
     index = 0;
+    for (int i = 0; i < 4; ++i) {
+      inputs[i] = 0;
+    }
   }
 
   if (yAxis > 0.6) {
     outDir(1); // up, 1
-    addToInputs('u');
+    currentDirection = 'u';
   } else if (yAxis < 0.4) {
     outDir(2); // down, 2
-    addToInputs('d');
+    currentDirection = 'd';
   } else if (xAxis > 0.6) {
     outDir(4); // right, 4
-    addToInputs('r');
+    currentDirection = 'r';
   } else if (xAxis < 0.4) {
     outDir(3); // left, 3
-    addToInputs('l');
+    currentDirection = 'l';
   } else {
     outDir(0); // center
   }
 }
-enum states { WAIT, PRESS } state;
+
+enum states { WAIT, PRESS, AUTH } state;
 
 void Tick() {
   JoystickTick();
@@ -164,6 +179,8 @@ void Tick() {
     }
 
     break;
+  case AUTH:
+    break;
   default:
     state = WAIT;
     break;
@@ -177,10 +194,12 @@ void Tick() {
     // NOTE: If passcode is correct
     // Maybe it should be its own state
     if (passcode == inputs) {
-      rotate();
+      Rotate(1, 90);
     }
     break;
   case PRESS:
+    break;
+  case AUTH:
     break;
   default:
     state = WAIT;
@@ -207,6 +226,7 @@ int main(void) {
 
   TimerSet(1); // period of 1 ms. good period for the stepper mottor
   TimerOn();
+  Rotate(1, 180);
 
   while (1) {
     Tick(); // Execute one synchSM tick

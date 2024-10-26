@@ -6,10 +6,10 @@
 void TimerISR() { TimerFlag = 1; }
 
 unsigned int count = 0;
-unsigned int index = 0;
 
-unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
-unsigned char inputs[4];
+// unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
+unsigned char passcode[4] = {'l', 'l', 'l', 'l'};
+unsigned char inputs[4] = {0, 0, 0, 0};
 unsigned char currentDirection = 0;
 
 unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
@@ -71,13 +71,14 @@ float GetAxis(char port) {
   return (raw / 1024.0);
 }
 
+// NOTE: Never used
 void addToInputs(char dir) {
-  if (index >= 4) {
-    index = 0;
+  if (count >= 4) {
+    count = 0;
   }
-  if (index == 0 || inputs[index - 1] != dir) {
-    inputs[index] = dir;
-    ++index;
+  if (count == 0 || inputs[count - 1] != dir) {
+    inputs[count] = dir;
+    ++count;
   }
 }
 
@@ -128,14 +129,6 @@ void Rotate(bool cw, float degrees) {
   // NOTE: Multiplying by 0.73 roughly translate to degrees
   // This does lock up the system for a bit, but it's not too bad
   for (int i = 0; i < degrees * 0.73; ++i) {
-    for (int i = 0; i < 8; ++i) {
-      // Clears out 4 motor output pins and adds new phase
-      PORTB = (PORTB & 0xC3) | phases[i] << 2;
-      while (!TimerFlag) {
-      }
-      TimerFlag = 0;
-    }
-
     if (cw) {
       for (int i = 0; i < 8; ++i) {
         // Clears out 4 motor output pins and adds new phase
@@ -159,12 +152,6 @@ void Rotate(bool cw, float degrees) {
 void JoystickTick() {
   float xAxis = GetAxis(2);
   float yAxis = GetAxis(3);
-  if (index > 3) {
-    index = 0;
-    for (int i = 0; i < 4; ++i) {
-      inputs[i] = 0;
-    }
-  }
 
   if (yAxis > 0.6) {
     outDir(1); // up, 1
@@ -196,13 +183,25 @@ void Tick() {
     }
     break;
   case PRESS:
-    if (isCenter() && count < 4) {
-      inputs[count] = currentDirection; // save input
+    if (isCenter()) {
       ++count;
+      if (count > 3) {
+        inputs[count] = currentDirection; // save input
+        count = 0;
+        if (CheckInputs()) {
+          Rotate(true, 90);
+          state = WAIT;
+        } else {
+          BlinkLEDs(4000);
+          state = WAIT;
+        }
+        return;
+      }
+      // addToInputs(currentDirection); // save input
+      inputs[count - 1] = currentDirection; // save input
       state = WAIT;
-    } else if (count >= 4) {
-      state = AUTH;
     }
+
     break;
   case AUTH:
     break;
@@ -215,11 +214,7 @@ void Tick() {
   switch (state) {
 
   case WAIT:
-    if (count < 3) {
-      outLED(count);
-    } else {
-      outLED(3);
-    }
+    outLED(count);
     break;
   case PRESS:
     break;

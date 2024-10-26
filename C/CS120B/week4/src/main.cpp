@@ -97,6 +97,20 @@ void SetLEDs(unsigned char on) {
   PORTC = SetBit(PORTC, 1, on);
 }
 
+bool isCenter() {
+  return (GetAxis(2) < 0.6 && GetAxis(2) > 0.3) &&
+         (GetAxis(3) < 0.6 && GetAxis(3) > 0.3);
+}
+
+bool CheckInputs() {
+  for (int i = 0; i < 4; ++i) {
+    if (inputs[i] != passcode[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void Rotate(bool cw, float degrees) {
   // NOTE: Multiplying by 0.73 roughly translate to degrees
   for (int i = 0; i < degrees * 0.73; ++i) {
@@ -226,6 +240,7 @@ int main(void) {
 
   TimerSet(1); // period of 1 ms. good period for the stepper mottor
   TimerOn();
+  // NOTE: Testing rotation
   Rotate(1, 180);
 
   while (1) {

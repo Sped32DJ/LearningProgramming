@@ -1,9 +1,17 @@
+#include "timerISR-Fixed.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <timerISR-Fixed.h>
 #include <util/delay.h>
 
-void TimerISR(void) { TimerFlag = 1; }
+void TimerISR() { TimerFlag = 1; }
+
+unsigned int count = 0;
+unsigned int timesUnlocked = 0;
+
+// unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
+unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
+unsigned char inputs[4] = {0, 0, 0, 0};
+unsigned char currentDirection = 0;
 
 unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
   return (b ? (x | (0x01 << k)) : (x & ~(0x01 << k)));
@@ -38,117 +46,181 @@ unsigned int ADC_read(unsigned char chnl) {
   return ((high << 8) | low);
 }
 
-long map(long x, long in_min, long in_max, long out_min, long out_max) {
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+// Order: c, r, l, d, u
+int directions[5] = {0b0000001, 0b0000101, 0b0110000, 0b0111101, 0b0011100};
+
+void outDir(int dir) {
+  PORTD = directions[dir] << 1;
+  // Bitshift twice
+  PORTB = SetBit(PORTB, 0, directions[dir] & 0x01);
+  // 8th pin is in the middle segment
+  // NOTE: 9th pin is a period
 }
 
-unsigned char Button() { return !GetBit(PINC, 5); }
-
-// 7SEG layout:   abcdefg
-int nums[16] = {
-    0b1111110, // 0
-    0b0110000, // 1
-    0b1101101, // 2
-    0b1111001, // 3
-    0b0110011, // 4
-    0b1011011, // 5
-    0b1011111, // 6
-    0b1110000, // 7
-    0b1111111, // 8
-    0b1111011, // 9
-    0b1110111, // a
-    0b0011111, // b
-    0b1001110, // c
-    0b0111101, // d
-    0b1001111, // e
-    0b1000111  // f
-};
-
-int count = 0;
-
-// TODO: complete outNum()
-void outNum(int num) {
-  PORTB = nums[num] >> 1; // assigns bits 1-7 of nums(a-f)
-  // Bitshift 1 to the right
-  PORTD = SetBit(PORTD, 7,
-                 nums[num] & 0x01); // assigns bit 0 of nums(g)
-  // 7th pin is the middle segment
+void outLED(int num) {
+  PORTC = SetBit(PORTC, 0, num & 0x01); // LED 0
+  PORTC = SetBit(PORTC, 1, num & 0x02); // LED 1
 }
 
-enum states { INIT, OFF, ON, DECREMENT } state;
+int phases[8] = {0b0001, 0b0011, 0b0010, 0b0110, 0b0100,
+                 0b1100, 0b1000, 0b1001}; // 8 phases of the stepper motor step
+
+bool Button() { return GetBit(PINC, 4); }
+
+float GetAxis(char port) {
+  float raw = ADC_read(port);
+  return (raw / 1024.0);
+}
+
+// NOTE: Never used
+void addToInputs(char dir) {
+  if (count >= 4) {
+    count = 0;
+  }
+  if (count == 0 || inputs[count - 1] != dir) {
+    inputs[count] = dir;
+    ++count;
+  }
+}
+
+// Waits n amount of ticks
+// Each tick is 1ms, 1 tick = 1 ms
+void Wait(int ticks) {
+  for (int i = 0; i < ticks; ++i) {
+    while (!TimerFlag) {
+    }
+    TimerFlag = 0;
+  }
+}
+
+// on is basically a bool that turns LEDs on or off
+void SetLEDs(unsigned char on) {
+  PORTC = SetBit(PORTC, 0, on);
+  PORTC = SetBit(PORTC, 1, on);
+}
+
+void BlinkLEDs(int ms) {
+  for (int i = 0; i < ms; ++i) {
+    if (!(i / 1000 % 2)) {
+      SetLEDs(0);
+    } else {
+      SetLEDs(1);
+    }
+    while (!TimerFlag) {
+    }
+    TimerFlag = 0;
+  }
+}
+
+bool isCenter() {
+  return (GetAxis(2) < 0.6 && GetAxis(2) > 0.3) &&
+         (GetAxis(3) < 0.6 && GetAxis(3) > 0.3);
+}
+
+bool CheckInputs() {
+  for (int i = 0; i < 4; ++i) {
+    if (inputs[i] != passcode[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void Rotate(bool cw, float quarter) {
+  // A full rotation is 512 steps
+  // quarter = 128
+  for (int i = 0; i < quarter * 128; ++i) {
+    if (cw) {
+      for (int i = 0; i < 8; ++i) {
+        // Clears out 4 motor output pins and adds new phase
+        PORTB = (PORTB & 0xC3) | phases[i] << 2;
+        while (!TimerFlag) {
+        }
+        TimerFlag = 0;
+      }
+    } else {
+      for (int i = 7; i >= 0; --i) {
+        // Clears out 4 motor output pins and adds new phase
+        PORTB = (PORTB & 0xC3) | phases[i] << 2;
+        while (!TimerFlag) {
+        }
+        TimerFlag = 0;
+      }
+    }
+  }
+}
+
+void JoystickTick() {
+  float xAxis = GetAxis(2);
+  float yAxis = GetAxis(3);
+
+  if (yAxis > 0.6) { // Actually 'r'
+    outDir(1);       // up, 1
+    currentDirection = 'r';
+  } else if (yAxis < 0.4) { // Actually 'l'
+    outDir(2);              // down, 2
+    currentDirection = 'l';
+  } else if (xAxis > 0.6) { // Actually 'u'
+    outDir(4);              // right, 4,
+    currentDirection = 'u';
+  } else if (xAxis < 0.4) { // Actually 'd'
+    outDir(3);              // left, 3
+    currentDirection = 'd';
+  } else {
+    outDir(0); // center
+  }
+}
+
+enum states { WAIT, PRESS } state;
 
 void Tick() {
+  JoystickTick();
 
   // State Transistions
-  // TODO: complete transitions
   switch (state) {
-
-  case INIT:
-    PORTD = SetBit(PORTD, 2, 1); // RGB Green (Must stay on)
-    PORTD = SetBit(PORTD, 5, 1); // Turn off 7-segment
-    state = OFF;
-    break;
-
-  case OFF:
-    if (Button()) {
-      state = ON;
+  case WAIT:
+    if (!isCenter()) {
+      state = PRESS;
     }
     break;
-
-  case ON:
-    if (Button()) {
-      // state = OFF;
-      state = DECREMENT;
-      count = map(ADC_read(0), 0, 1023, 0, 15);
+  case PRESS:
+    if (isCenter()) {
+      inputs[count] = currentDirection; // save input
+      if (count == 3) {
+        if (CheckInputs()) {
+          ++timesUnlocked;
+          if (timesUnlocked % 2 == 0) {
+            Rotate(false, 1);
+          } else {
+            Rotate(true, 1);
+          }
+        } else {
+          BlinkLEDs(4000);
+        }
+        count = 0;
+        state = WAIT;
+        return;
+      }
+      ++count;
+      state = WAIT;
     }
-    break;
-  case DECREMENT:
-    if (Button()) {
-      state = OFF; // Skips animation and straight to off
-    } else if (count >= 0) {
-      state = DECREMENT;
-    } else {
-      state = OFF;
-    }
-    break;
 
+    break;
   default:
-    state = INIT;
+    state = WAIT;
     break;
   }
 
   // State Actions
-  // TODO: complete transitions
   switch (state) {
 
-  case INIT:
+  case WAIT:
+    outLED(count);
     break;
-
-  case ON:
-    // Read Potentiometer and display
-    outNum(map(ADC_read(0), 0, 1023, 0, 15));
-    // Debuggin, if in this state, Red turns off
-    // PORTD = SetBit(PORTD, 3, 0); // RGB Red (Must stay on)
-    PORTD = SetBit(PORTD, 5, 0);
+  case PRESS:
     break;
-
-  case OFF:
-    PORTD = SetBit(PORTD, 5, 1); // turn off 7-segment
-    PORTD = SetBit(PORTD, 2, 1); // Green RGB on
-    // Making sure below are not on
-    PORTD = SetBit(PORTD, 3, 0); // Red RGB off
-    PORTD = SetBit(PORTD, 4, 0); // Red LED off
-    break;
-  case DECREMENT:
-    PORTD = SetBit(PORTD, 2, 0); // Green RGB off
-    PORTD = SetBit(PORTD, 3, 1); // Red RGB on
-    PORTD = SetBit(PORTD, 4, 1); // Red LED
-
-    outNum(count);
-    --count;
-    break;
-
   default:
+    state = WAIT;
     break;
   }
 }
@@ -156,30 +228,24 @@ void Tick() {
 int main(void) {
   ADC_init(); // initializes the analog to digital converter
 
-  // RGB LED + 7-seg's 'g' + Red LED
-  DDRD = 0xFF;  // Set all pins output
-  PORTD = 0x00; // Clear PORTD
-
-  // 7-segment + pin4 of PortD
+  // Stepper Motor + 2 pins of 7 segment
   DDRB = 0xFF; // PORTB as output
   PORTB = 0x00;
 
-  // Button + Potentiometer
-  DDRC = 0x00; // Set all PORTC to input
-  PORTC = 0xFF;
+  // Joystick + 2 LED's
+  DDRC = 0x03;   // Last two bits are output, rest input
+  PORTC = ~0x03; // All put last two pins are output
 
-  state = INIT;
+  // majority of 7 of segmenet (just bit shift later on)
+  DDRD = 0xFF;  // Set all pins output
+  PORTD = 0x00; // Clear PORTD
 
-  TimerSet(1000);
+  state = WAIT;
+
+  TimerSet(1); // period of 1 ms. good period for the stepper mottor
   TimerOn();
-  // Debuggin
-  // PORTD = SetBit(PORTD, 3, 1); // Red RGB
-  // PORTD = SetBit(PORTD, 4, 1); // Red LED
-  // PORTD = SetBit(PORTD, 5, 1); // 7-segment power; 1 = off, 0 = on
-  // outNum(8);
 
   while (1) {
-
     Tick(); // Execute one synchSM tick
     while (!TimerFlag) {
     } // Wait for SM period

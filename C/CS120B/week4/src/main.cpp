@@ -126,10 +126,10 @@ bool CheckInputs() {
   return true;
 }
 
-void Rotate(bool cw, float degrees) {
-  // NOTE: Multiplying by 0.73 roughly translate to degrees
-  // This does lock up the system for a bit, but it's not too bad
-  for (int i = 0; i < degrees * 0.703; ++i) {
+void Rotate(bool cw, float quarter) {
+  // A full rotation is 512 steps
+  // quarter = 128
+  for (int i = 0; i < quarter * 128; ++i) {
     if (cw) {
       for (int i = 0; i < 8; ++i) {
         // Clears out 4 motor output pins and adds new phase
@@ -188,7 +188,12 @@ void Tick() {
       inputs[count] = currentDirection; // save input
       if (count == 3) {
         if (CheckInputs()) {
-          Rotate(true, 90);
+          ++timesUnlocked;
+          if (timesUnlocked % 2 == 0) {
+            Rotate(false, 1);
+          } else {
+            Rotate(true, 1);
+          }
         } else {
           BlinkLEDs(4000);
         }

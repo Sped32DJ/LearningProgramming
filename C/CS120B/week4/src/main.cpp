@@ -97,6 +97,19 @@ void SetLEDs(unsigned char on) {
   PORTC = SetBit(PORTC, 1, on);
 }
 
+void BlinkLEDs(int ms) {
+  for (int i = 0; i < ms; ++i) {
+    if (!(i / 1000 % 2)) {
+      SetLEDs(0);
+    } else {
+      SetLEDs(1);
+    }
+    while (!TimerFlag) {
+    }
+    TimerFlag = 0;
+  }
+}
+
 bool isCenter() {
   return (GetAxis(2) < 0.6 && GetAxis(2) > 0.3) &&
          (GetAxis(3) < 0.6 && GetAxis(3) > 0.3);
@@ -113,6 +126,7 @@ bool CheckInputs() {
 
 void Rotate(bool cw, float degrees) {
   // NOTE: Multiplying by 0.73 roughly translate to degrees
+  // This does lock up the system for a bit, but it's not too bad
   for (int i = 0; i < degrees * 0.73; ++i) {
     for (int i = 0; i < 8; ++i) {
       // Clears out 4 motor output pins and adds new phase
@@ -177,21 +191,18 @@ void Tick() {
   // State Transistions
   switch (state) {
   case WAIT:
-    if (Button()) {
+    if (!isCenter()) {
       state = PRESS;
-      ++count;
-    } else {
-      state = WAIT;
-    }
-    if (count > 3) {
-      count = 0;
     }
     break;
   case PRESS:
-    if (!Button()) {
+    if (isCenter() && count < 4) {
+      inputs[count] = currentDirection; // save input
+      ++count;
       state = WAIT;
+    } else if (count >= 4) {
+      state = AUTH;
     }
-
     break;
   case AUTH:
     break;
@@ -204,16 +215,22 @@ void Tick() {
   switch (state) {
 
   case WAIT:
-    outLED(count);
-    // NOTE: If passcode is correct
-    // Maybe it should be its own state
-    if (passcode == inputs) {
-      Rotate(1, 90);
+    if (count < 3) {
+      outLED(count);
+    } else {
+      outLED(3);
     }
     break;
   case PRESS:
     break;
   case AUTH:
+    if (CheckInputs()) {
+      count = 0;
+    } else if (!CheckInputs()) {
+      BlinkLEDs(4000);
+      count = 0;
+      state = WAIT;
+    }
     break;
   default:
     state = WAIT;
@@ -240,8 +257,6 @@ int main(void) {
 
   TimerSet(1); // period of 1 ms. good period for the stepper mottor
   TimerOn();
-  // NOTE: Testing rotation
-  Rotate(1, 180);
 
   while (1) {
     Tick(); // Execute one synchSM tick

@@ -6,9 +6,10 @@
 void TimerISR() { TimerFlag = 1; }
 
 unsigned int count = 0;
+unsigned int timesUnlocked = 0;
 
 // unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
-unsigned char passcode[4] = {'l', 'l', 'l', 'l'};
+unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
 unsigned char inputs[4] = {0, 0, 0, 0};
 unsigned char currentDirection = 0;
 
@@ -128,7 +129,7 @@ bool CheckInputs() {
 void Rotate(bool cw, float degrees) {
   // NOTE: Multiplying by 0.73 roughly translate to degrees
   // This does lock up the system for a bit, but it's not too bad
-  for (int i = 0; i < degrees * 0.73; ++i) {
+  for (int i = 0; i < degrees * 0.703; ++i) {
     if (cw) {
       for (int i = 0; i < 8; ++i) {
         // Clears out 4 motor output pins and adds new phase
@@ -153,24 +154,24 @@ void JoystickTick() {
   float xAxis = GetAxis(2);
   float yAxis = GetAxis(3);
 
-  if (yAxis > 0.6) {
-    outDir(1); // up, 1
-    currentDirection = 'u';
-  } else if (yAxis < 0.4) {
-    outDir(2); // down, 2
-    currentDirection = 'd';
-  } else if (xAxis > 0.6) {
-    outDir(4); // right, 4
+  if (yAxis > 0.6) { // Actually 'r'
+    outDir(1);       // up, 1
     currentDirection = 'r';
-  } else if (xAxis < 0.4) {
-    outDir(3); // left, 3
+  } else if (yAxis < 0.4) { // Actually 'l'
+    outDir(2);              // down, 2
     currentDirection = 'l';
+  } else if (xAxis > 0.6) { // Actually 'u'
+    outDir(4);              // right, 4,
+    currentDirection = 'u';
+  } else if (xAxis < 0.4) { // Actually 'd'
+    outDir(3);              // left, 3
+    currentDirection = 'd';
   } else {
     outDir(0); // center
   }
 }
 
-enum states { WAIT, PRESS, AUTH } state;
+enum states { WAIT, PRESS } state;
 
 void Tick() {
   JoystickTick();
@@ -184,26 +185,21 @@ void Tick() {
     break;
   case PRESS:
     if (isCenter()) {
-      ++count;
-      if (count > 3) {
-        inputs[count] = currentDirection; // save input
-        count = 0;
+      inputs[count] = currentDirection; // save input
+      if (count == 3) {
         if (CheckInputs()) {
           Rotate(true, 90);
-          state = WAIT;
         } else {
           BlinkLEDs(4000);
-          state = WAIT;
         }
+        count = 0;
+        state = WAIT;
         return;
       }
-      // addToInputs(currentDirection); // save input
-      inputs[count - 1] = currentDirection; // save input
+      ++count;
       state = WAIT;
     }
 
-    break;
-  case AUTH:
     break;
   default:
     state = WAIT;
@@ -217,15 +213,6 @@ void Tick() {
     outLED(count);
     break;
   case PRESS:
-    break;
-  case AUTH:
-    if (CheckInputs()) {
-      count = 0;
-    } else if (!CheckInputs()) {
-      BlinkLEDs(4000);
-      count = 0;
-      state = WAIT;
-    }
     break;
   default:
     state = WAIT;

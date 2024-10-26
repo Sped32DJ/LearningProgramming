@@ -7,6 +7,7 @@ void TimerISR() { TimerFlag = 1; }
 
 unsigned int count = 0;
 unsigned int timesUnlocked = 0;
+bool overwriting = 0;
 
 // unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
 unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
@@ -70,27 +71,6 @@ bool Button() { return GetBit(PINC, 4); }
 float GetAxis(char port) {
   float raw = ADC_read(port);
   return (raw / 1024.0);
-}
-
-// NOTE: Never used
-void addToInputs(char dir) {
-  if (count >= 4) {
-    count = 0;
-  }
-  if (count == 0 || inputs[count - 1] != dir) {
-    inputs[count] = dir;
-    ++count;
-  }
-}
-
-// Waits n amount of ticks
-// Each tick is 1ms, 1 tick = 1 ms
-void Wait(int ticks) {
-  for (int i = 0; i < ticks; ++i) {
-    while (!TimerFlag) {
-    }
-    TimerFlag = 0;
-  }
 }
 
 // on is basically a bool that turns LEDs on or off
@@ -171,7 +151,7 @@ void JoystickTick() {
   }
 }
 
-enum states { WAIT, PRESS } state;
+enum states { WAIT, PRESS, OVERWRITE } state;
 
 void Tick() {
   JoystickTick();
@@ -181,14 +161,34 @@ void Tick() {
   case WAIT:
     if (!isCenter()) {
       state = PRESS;
+    } else if (!Button() && timesUnlocked % 2 != 0) {
+      state = OVERWRITE;
+    } else {
+      state = WAIT;
+    }
+
+    break;
+  case OVERWRITE:
+    if (Button()) {
+      state = WAIT;
     }
     break;
   case PRESS:
     if (isCenter()) {
       inputs[count] = currentDirection; // save input
+
+      // Overwriting mode
+      if (overwriting) {
+        passcode[count] = currentDirection;
+      }
+
       if (count == 3) {
+        count = 0;
+        outDir(count);
         if (CheckInputs()) {
           ++timesUnlocked;
+          overwriting = 0;
+          PORTB = (PORTB & 0xCD) | 0x00; // turn off decimal
           if (timesUnlocked % 2 == 0) {
             Rotate(false, 1);
           } else {
@@ -197,10 +197,10 @@ void Tick() {
         } else {
           BlinkLEDs(4000);
         }
-        count = 0;
         state = WAIT;
         return;
       }
+
       ++count;
       state = WAIT;
     }
@@ -218,6 +218,11 @@ void Tick() {
     outLED(count);
     break;
   case PRESS:
+    break;
+  case OVERWRITE:
+    count = 0;
+    overwriting = 1;
+    PORTB = (PORTB & 0xCD) | 0x02; // Turn on decimal
     break;
   default:
     state = WAIT;
@@ -251,6 +256,4 @@ int main(void) {
     } // Wait for SM period
     TimerFlag = 0; // Lower flag
   }
-
-  return 0;
 }

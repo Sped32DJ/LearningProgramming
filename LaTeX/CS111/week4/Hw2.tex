@@ -221,6 +221,19 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
 \begin{problem}
   \begin{enumerate}
     \item Compute $7^{1529}$ (mod 51)
+      \begin{itemize}
+        \item 51 = 3\cdot17
+        \item $7^{1529}$ (mod 3) (mod 17)
+        \item $7{1529}$ (mod 3) \Rightarrow 1(mod 3)
+        \item $7{1529}$ (mod 17) \Rightarrow 16(mod 17)
+        \item $7^9 \cdot 7^{1520}$(mod 17) \equiv $7^9$ (mod 17) \equiv 7 \cdot $7\cdot(7^2)^4$
+        \item \Rightarrow 49(mod 17) \Rightarrow 7$(15)^4$ (mod 17) \Rightarrow 7\cdot$(15^2)^2$(mod 17)
+        \item 7*$4^2$(mod 17) \equiv 10(mod 17)\\
+          We then result into two values of x
+        \item $x =$ 10(mod 17)
+        \item $x =$ 1(mod 3)
+        \item Final answer: 10(mod 17) \cdot  1(mod 3) \equiv 10(mod 51)
+      \end{itemize}
     \item Compute $9^{-1}$ (mod 19) by listing the multiples.
       \begin{itemize}
         \item Due to Fermat's Little Theorem:\\
@@ -237,6 +250,9 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
       \end{itemize}
     \item Compute $9{-1}$ (mod 19) using Fermat's Little Theorem
     \item Compute $9^{-11}$ (mod 19) using Fermat's Little Theorem
+      \begin{itemize}
+        \item 
+      \end{itemize}
     \item Find an integer $x, 0 \leq x \leq 18$, that satisfies
       the following congruence: $9x + 13 \equiv 10$ (mod 19). (NOTE: Don't brute force)
   \end{enumerate}

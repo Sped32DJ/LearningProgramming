@@ -222,6 +222,19 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
   \begin{enumerate}
     \item Compute $7^{1529}$ (mod 51)
     \item Compute $9^{-1}$ (mod 19) by listing the multiples.
+      \begin{itemize}
+        \item Due to Fermat's Little Theorem:\\
+          $9^{18}\cdot9^{-1} \equiv 1\cdot9^{-1}$ (mod 19)
+        \item $9^{17}$ (mod 19) \Rightarrow 9 $(9)^{16}$ (mod 19) \Rightarrow  9 $(9^{4})^{4}$ (mod 19)
+        \item $3^{2} \cdot (3^{8})^{4}$ (mod 19)
+        \item $3^3$ = 27 (mod 19) \equiv 8 (mod 19) \Rightarrow $2^3$ (mod 19)
+        \item $3^2\cdot(3^3 3^3 3^2)^8 $ (mod 19) \equiv $3^2 \cdot (2^6\cdot3^2)^8$ (mod 19)
+        \item $(3\cdot 2^3)^2$ (mod 19) \equiv $(5)^2$ (mod 19) \equiv 6 (mod 19)
+        \item $3^2 (6)^8$ (mod 19)
+        \item $3^2 (36)^4$ (mod 19) \equiv\space $3^2 (17)^4$ (mod 19)
+        \item $3^2 (17^2)^2$ (mod 19) \equiv\space $3^2 (4)^2$ (mod 19) \Rightarrow 9\cdot 16 (mod 19)
+        \item 144(mod 19) \equiv 11(mod 19)
+      \end{itemize}
     \item Compute $9{-1}$ (mod 19) using Fermat's Little Theorem
     \item Compute $9^{-11}$ (mod 19) using Fermat's Little Theorem
     \item Find an integer $x, 0 \leq x \leq 18$, that satisfies
@@ -233,7 +246,7 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
 
 \vskip 0.2in
 \paragraph{Academic integrity declaration.}
-I did this myself, trust me. To check my answers, I used a live python3 command line prompt to make check.
+I did this myself, trust me. To check my answers, I used a live python3 command line prompt to check my answers.
 \begin{verbatim}
   I used the video https://youtu.be/kYasb426Yjk?si=bs6HySLzAuPUiycR 
   to help me out in the seconid problem.

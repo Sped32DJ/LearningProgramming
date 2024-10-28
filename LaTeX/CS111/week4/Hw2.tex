@@ -176,28 +176,19 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
       \item M = 764$^{3703}$ (mod 4453) = 29
         \begin{itemize}
           \item We know that n is prime and not divisible by d
-          \item The prime factors of 764 = $2^2 * 191$
-          \item $764(764)^{1851\cdot2}$
-          \item $2^2\cdot191(2^4\cdot 191^2)^{1851}$
-          \item $191^2$ (mod 4453) = 857
-          \item $2^2\cdot191(2^4\cdot857)^{1851}$
-          \item $2^6\cdot191\cdot857(2^4\cdot857)^{1850}$
-          \item 191\cdot857 = 163687 (mod 4453) \Rightarrow 163687 - 4453*36 = 3379
-          \item $2^6\cdot3379(2^4\cdot857)^{1850}$
-          \item $2^6\cdot3379(2\cdot2^3\cdot857)^{1850}$
-          \item $2^3\cdot857$ = 6856 (mod 4453) \Rightarrow 6856 - 4453*1 = 2403
-          \item $2^6\cdot3379(2\cdot2403)^{1850}$
-          \item $2^6\cdot3379(2\cdot3^3\cdot89)^{1850}$
-          \item 2\cdot3379(mod 4453) = 2305
-          \item $2^5\cdot2305(2^2\cdot3^6\cdot89^2)^{925}$
-          \item $2^5\cdot2305(2^2\cdot3^6\cdot3468)^{925}$
-          \item $2^5\cdot5\cdot461(2^4\cdot3^7\cdot17^2)^{925}$
-          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^4\cdot3^7\cdot17^2)^{924}$
-          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^{16}\cdot3^{28}\cdot17^{4})^{231}$
-          \item $17^3$ = 4913 (mod 4453) \Rightarrow 4913 - 4453 = 460 = $2^2\cdot5\cdot23$
-          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^{18}\cdot3^{28}\cdot5\cdot17\cdot23)^{231}$
-          \item 17\cdot23\cdot5\cdot3 = 5865 (mod 4453) \Rightarrow 5865 - 4453 = 1412 = 353\cdot$2^2$
-          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^{20}\cdot3^{27}\cdot353)^{231}$
+          \item The prime factors of 764 = $2^2 * 191$\\
+          Using Eucledian's Extended Algorithm:
+          \item 3703 = 2048 + 1024 + 512 + 64 + 32 + 16 + 4 + 2 + 1
+          \item 764(mod 4453) = 764
+          \item $764^{2}$ = 583696(mod 4453) = 353
+          \item $764^{4}$ = $764^2$(mod 4453)\cdot$764^2$(mod 4453) = 353$^2$(mod 4453) = 4378
+          \item $764^{16}$ = 4378$^4$(mod 4453) = 2060
+          \item $764^{32}$ = 2060$^2$(mod 4453) = 4344
+          \item $764^{64}$ = 4344$^2$(mod 4453) = 2975
+          \item $764^{512}$ = 2975$^8$(mod 4453) = 1172
+          \item $764^{1024}$ = 1172$^2$(mod 4453) = 2060
+          \item $764^{2048}$ = 2060$^2$(mod 4453) = 4344
+          \item $353\cdot764\cdot1172\cdot2060^2\cdot2975\cdot4344^2\cdot4378\cdot$(mod 4453) = 29
         \end{itemize}
       \item 29 is mapped to (29 - 7) = 22, which is W (it is indexed at 22 in the alphabet; 29 in our mapping)
       \end{itemize}
@@ -215,5 +206,9 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
 
 \vskip 0.2in
 \paragraph{Academic integrity declaration.}
-I did this myself, trust me.
+I did this myself, trust me. To check my answers, I used a live python3 command line prompt to make check.
+\begin{verbatim}
+  I used the video https://youtu.be/kYasb426Yjk?si=bs6HySLzAuPUiycR 
+  to help me out in the seconid problem.
+\end{verbatim}
 \end{document}

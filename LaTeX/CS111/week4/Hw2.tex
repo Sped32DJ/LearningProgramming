@@ -158,15 +158,49 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
 \begin{problem} \\
   Alive's RSA public key is P = (e,n) = (7,4453). 
   Bob sends Alice the message by encoding it follows.
-  First he assigns numbers to characteres: A is 7... Z is 32, blank is 33,
+  First he assigns numbers to characters A is 7... Z is 32, blank is 33,
   quotation marks: 34, a comma: 35, a period: 36,
   an apostraphe: 37. Then uses RSA to encode each number seperately.
   \begin{enumerate}
     \item Describe step by stop how you arrived at the solution:
       show how to find p and q, \phi(n) and d.
       \begin{enumerate}
-        \item d = (e,n)
+        \item We know that e * d = 1 (mod $\phi(n)$) \Rightarrow\space d = $e^{-1}$ (mod $\phi(n)$)
+        \item $\phi(n) = (p-1)(q-1)$
       \end{enumerate}
+    \item Given (M = 764), show the expression, the decrypted integer, and the char it is mapped to.
+      \begin{itemize}
+        \item Decrypt: M = C$^d$ (mod n)
+        \item d = 3703
+        \item n = 4453
+      \item M = 764$^{3703}$ (mod 4453) = 29
+        \begin{itemize}
+          \item We know that n is prime and not divisible by d
+          \item The prime factors of 764 = $2^2 * 191$
+          \item $764(764)^{1851\cdot2}$
+          \item $2^2\cdot191(2^4\cdot 191^2)^{1851}$
+          \item $191^2$ (mod 4453) = 857
+          \item $2^2\cdot191(2^4\cdot857)^{1851}$
+          \item $2^6\cdot191\cdot857(2^4\cdot857)^{1850}$
+          \item 191\cdot857 = 163687 (mod 4453) \Rightarrow 163687 - 4453*36 = 3379
+          \item $2^6\cdot3379(2^4\cdot857)^{1850}$
+          \item $2^6\cdot3379(2\cdot2^3\cdot857)^{1850}$
+          \item $2^3\cdot857$ = 6856 (mod 4453) \Rightarrow 6856 - 4453*1 = 2403
+          \item $2^6\cdot3379(2\cdot2403)^{1850}$
+          \item $2^6\cdot3379(2\cdot3^3\cdot89)^{1850}$
+          \item 2\cdot3379(mod 4453) = 2305
+          \item $2^5\cdot2305(2^2\cdot3^6\cdot89^2)^{925}$
+          \item $2^5\cdot2305(2^2\cdot3^6\cdot3468)^{925}$
+          \item $2^5\cdot5\cdot461(2^4\cdot3^7\cdot17^2)^{925}$
+          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^4\cdot3^7\cdot17^2)^{924}$
+          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^{16}\cdot3^{28}\cdot17^{4})^{231}$
+          \item $17^3$ = 4913 (mod 4453) \Rightarrow 4913 - 4453 = 460 = $2^2\cdot5\cdot23$
+          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^{18}\cdot3^{28}\cdot5\cdot17\cdot23)^{231}$
+          \item 17\cdot23\cdot5\cdot3 = 5865 (mod 4453) \Rightarrow 5865 - 4453 = 1412 = 353\cdot$2^2$
+          \item $2^9\cdot3^7\cdot5\cdot461\cdot17^2(2^{20}\cdot3^{27}\cdot353)^{231}$
+        \end{itemize}
+      \item 29 is mapped to (29 - 7) = 22, which is W (it is indexed at 22 in the alphabet; 29 in our mapping)
+      \end{itemize}
   \end{enumerate}
 \end{problem}
 

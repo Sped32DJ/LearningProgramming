@@ -112,6 +112,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   // Find p and q
   // n = p * q
   int p, q;
+  p = q = 1;
 
   // i += 2 to skip even numbers
   for (int i = 3; i < sqrt(n); i += 2) {
@@ -123,7 +124,8 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   q = n / p; // Find q from p
   int phi_n = EulerTotient(p, q);
 
-  if (p < 1 || q < 1 || phi_n < 1 || gcd(phi_n, e) != 1) {
+  // FIX: Missing a single test case
+  if (p < 2 || q < 2 || phi_n < 2 || gcd(phi_n, e) != 1 || e < 2) {
     return "Public key is not valid!";
   }
   // Find d
@@ -134,7 +136,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   string appendMessage;
 
   // FIX:
-  if (gcd(phi_n, e) != 1 || d < 0) {
+  if (gcd(phi_n, e) != 1 || d < 1) {
     return "Public key is not valid!";
   } else {
     appendMessage = std::to_string(p) + ' ' + std::to_string(q) + ' ' +

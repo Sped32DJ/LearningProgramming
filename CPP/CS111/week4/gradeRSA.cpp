@@ -136,7 +136,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
   string appendMessage;
 
   // FIX:
-  if (gcd(phi_n, e) != 1 || d < 1) {
+  if (gcd(phi_n, e) != 1 || d < 1 || !isPrime(p) || !isPrime(q)) {
     return "Public key is not valid!";
   } else {
     appendMessage = std::to_string(p) + ' ' + std::to_string(q) + ' ' +

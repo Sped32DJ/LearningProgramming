@@ -141,6 +141,7 @@ string crack(vector<int> &message, int e, int n, const vector<char> &hmap) {
     int decryptedVal = modularExponentiation(encryptedVal, d, n);
     // debug output
     if (decryptedVal >= 0 && decryptedVal < hmap.size()) {
+      cout << decryptedVal << ' ';
       crackedMessage += hmap.at(decryptedVal);
     } else {
       crackedMessage += 'e'; // placeholder

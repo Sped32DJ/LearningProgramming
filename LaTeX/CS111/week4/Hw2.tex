@@ -236,6 +236,29 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
       \end{itemize}
     \item Compute $9^{-1}$ (mod 19) by listing the multiples.
       \begin{itemize}
+        \item 9\cdot 1 \equiv 9 (mod 19)
+        \item 9 \cdot 2 \equiv 18 (mod 19)
+        \item 9 \cdot 3 \equiv 27 (mod 19) \equiv 8 (mod 19)
+        \item 9 \cdot 4 \equiv 36 (mod 19) \equiv 17 (mod 19)
+        \item 9 \cdot 5 \equiv 45 (mod 19) \equiv 7 (mod 19)
+        \item 9 \cdot 6 \equiv 54 (mod 19) \equiv 16 (mod 19)
+        \item 9 \cdot 7 \equiv 63 (mod 19) \equiv 5 (mod 19)
+        \item 9 \cdot 8 \equiv 72 (mod 19) \equiv 15 (mod 19)
+        \item 9 \cdot 9 \equiv 81 (mod 19) \equiv 6 (mod 19)
+        \item 9 \cdot 10 \equiv 90 (mod 19) \equiv 14 (mod 19)
+        \item 9 \cdot 11 \equiv 99 (mod 19) \equiv 4 (mod 19)
+        \item 9 \cdot 12 \equiv 108 (mod 19) \equiv 13 (mod 19)
+        \item 9 \cdot 13 \equiv 117 (mod 19) \equiv 3 (mod 19)
+        \item 9 \cdot 14 \equiv 126 (mod 19) \equiv 12 (mod 19)
+        \item 9 \cdot 15 \equiv 135 (mod 19) \equiv 2 (mod 19)
+        \item 9 \cdot 16 \equiv 144 (mod 19) \equiv 11 (mod 19)
+        \item 9 \cdot 17 \equiv 153 (mod 19) \equiv 1 (mod 19)
+        \item Therefore, $9^{-1}$ (mod 19) \equiv 17(mod 19)
+      \end{itemize}
+      \pagebreak
+
+    \item Compute $9^{-1}$ (mod 19) using Fermat's Little Theorem
+      \begin{itemize}
         \item Due to Fermat's Little Theorem:\\
           $9^{18}\cdot9^{-1} \equiv 1\cdot9^{-1}$ (mod 19)
         \item $9^{17}$ (mod 19) \Rightarrow 9 $(9)^{16}$ (mod 19) \Rightarrow  9 $(9^{4})^{4}$ (mod 19)
@@ -248,13 +271,24 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
         \item $3^2 (17^2)^2$ (mod 19) \equiv\space $3^2 (4)^2$ (mod 19) \Rightarrow 9\cdot 16 (mod 19)
         \item 144(mod 19) \equiv 11(mod 19)
       \end{itemize}
-    \item Compute $9{-1}$ (mod 19) using Fermat's Little Theorem
+
     \item Compute $9^{-11}$ (mod 19) using Fermat's Little Theorem
       \begin{itemize}
-        \item 
+        \item Fermat's Little Theorem states: $9^{18}$ \equiv 1 (mod 19)
+        \item $9^{-11}$ \equiv $9^{18-11}$ (mod 19) \equiv\space $9^7$ (mod 19)
+        \item 9\cdot$(9)^6$ (mod 19) \equiv 9\cdot$(9^2)^3$ (mod 19) \Rightarrow 9\cdot$(5)^3$ (mod 19)
+        \item 9\cdot5\cdot (25)(mod 19) \equiv (9\cdot 5 )(mod 19)\cdot 6 (mod 19) 
+        \item\Rightarrow 7\cdot 6 (mod 19) \equiv 42 (mod 19) \equiv 4 (mod 19)
       \end{itemize}
     \item Find an integer $x, 0 \leq x \leq 18$, that satisfies
       the following congruence: $9x + 13 \equiv 10$ (mod 19). (NOTE: Don't brute force)
+      \begin{itemize}
+        
+        \item $9x + 13 \equiv 10$ (mod 19) \Rightarrow $9x \equiv -3$ (mod 19)
+        \item \Rightarrow\space $9x \equiv 16$ (mod 19)
+        \item $9^{-1}$\cdot 9x (mod 19)\equiv 16\cdot$9^{-1}$ (mod 19) : (Since we know $9^{-1}$(mod 19) = 17)
+        \item x \equiv 16\cdot 17 (mod 19) \equiv\space 272 (mod 19) \equiv\space 6 (mod 19): (satisfies 0 \leq x \leq 18)
+      \end{itemize}
   \end{enumerate}
 \end{problem}
 
@@ -263,9 +297,10 @@ If $p$ > 5 and $gcd(p,20)$ = 1, then $(p^2 - 21)(p^2 + 16) \equiv 0 (mod$ 20)
 \vskip 0.2in
 \paragraph{Academic integrity declaration.}
 I did this myself, trust me. To check my answers, I used a live python3 command line prompt to check my answers.
+Lecture and discussion notes were very useful for this assignment. 
 \begin{verbatim}
   I used the video https://youtu.be/kYasb426Yjk?si=bs6HySLzAuPUiycR 
-  to help me out in the seconid problem.
+  to help me out in the second problem.
   To help with the decoded message:
   https://rationalwiki.org/wiki/Holmesian_fallacy
 \end{verbatim}

@@ -36,19 +36,11 @@ int nums[16] = {0b1111110, 0b0110000, 0b1101101, 0b1111001,
                 0b1111111, 0b1111011, 0b1110111, 0b0011111,
                 0b1001110, 0b0111101, 0b1001111, 0b1000111};
 // a  b  c  d  e  f  g
-const uint8_t digitControl[4] = {0b0001, 0b0010, 0b0100, 0b1000};
+// const uint8_t digitControl[4] = {0b0001, 0b0010, 0b0100, 0b1000};
 
 void outNum(int num) {
-  for (int i = 0; i < 4; ++i) {
-    // Clear the left 4 bits of PORTB and then set them to control DP pins
-    PORTB = (PORTB & 0x0F) | (digitControl[i] << 4);
-
-    // Send the current digit's segments to PORTD
-    // Extract and display the current 4-bit hex digit
-    PORTD = nums[(num >> (i * 4)) & 0xF];
-
-    _delay_ms(1);
-  }
+  PORTD = nums[num] << 1;
+  PORTB = SetBit(PORTB, 1, nums[num] & 0x01);
 }
 
 #endif /* HEPLER_H */

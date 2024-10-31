@@ -30,9 +30,8 @@ task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 //  (1) enums and
 //  (2) tick functions
 enum SNAR_States { SonarInit, SONAR_S1, SONAR_S2 };
-double distance = 0;
-unsigned int truncateInch = 0;
-double inchDistance = 0;
+unsigned int in_distance = 0;
+unsigned int cm_distance = 0;
 enum DISP_States { displayInit, disp_S1 };
 bool isInches = false; // default metric (yucky); if false, then metric
 enum Left_States { leftInit, Left_S1, Left_S2 };
@@ -65,14 +64,14 @@ int sonar_TickFct(int state) {
   case SONAR_S2:
     break;
   }
+
   // State Actions
   switch (state) {
   case SonarInit:
     break;
   case SONAR_S1:
-    distance = sonar_read();
-    inchDistance = (distance / 2.54);
-    truncateInch = int(inchDistance);
+    in_distance = int(sonar_read() / 2.54);
+    cm_distance = int(sonar_read());
     break;
   case SONAR_S2:
     break;
@@ -96,12 +95,7 @@ int display_TickFct(int state) {
   case displayInit:
     break;
   case disp_S1:
-    if (isInches) {
-      outNum(truncateInch);
-    } else {
-      outNum(distance);
-    }
-
+    outNum((isInches) ? in_distance : cm_distance);
     break;
   }
   return state;
@@ -165,7 +159,7 @@ int main(void) {
   TimerOn();
 
   while (1) {
-    outNum(24);
+    outNum(1);
 
     for (int i = 0; i < NUM_TASKS; ++i) {
       tasks[i].elapsedTime += GCD_PERIOD;

@@ -2,8 +2,6 @@
 #include "periph.h"
 #include "timerISR.h"
 
-// TODO: declare variables for cross-task communication
-
 // TODO: Change this depending on which exercise you are doing.
 // Exercise 1: 3 tasks
 // Exercise 2: 5 tasks
@@ -32,11 +30,14 @@ task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 enum SNAR_States { SonarInit, SONAR_S1, SONAR_S2 };
 unsigned int in_distance = 0;
 unsigned int cm_distance = 0;
-enum DISP_States { displayInit, disp_S1 };
-bool isInches = false; // default metric (yucky); if false, then metric
-enum Left_States { leftInit, Left_S1, Left_S2 };
-void TimerISR() {
 
+enum DISP_States { displayInit, disp_S1, disp_S2, disp_S3, disp_S4 };
+bool isInches = false; // default metric (yucky); true = imperial
+
+enum Left_States { leftInit, Left_S1, Left_S2 };
+unsigned char LeftButton() { return !GetBit(PINC, 1); }
+
+void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
        i++) { // Iterate through each task in the task array
     if (tasks[i].elapsedTime ==
@@ -49,8 +50,6 @@ void TimerISR() {
         GCD_PERIOD; // Increment the elapsed time by GCD_PERIOD
   }
 }
-// User Functions
-unsigned char LeftButton() { return !GetBit(PINC, 1); }
 
 // Tick Functions
 int sonar_TickFct(int state) {
@@ -70,6 +69,7 @@ int sonar_TickFct(int state) {
   case SonarInit:
     break;
   case SONAR_S1:
+    // sonar_read() outputs cm by default
     in_distance = int(sonar_read() / 2.54);
     cm_distance = int(sonar_read());
     break;
@@ -88,6 +88,15 @@ int display_TickFct(int state) {
   case disp_S1:
     state = disp_S1;
     break;
+  case disp_S2:
+    state = disp_S3;
+    break;
+  case disp_S3:
+    state = disp_S4;
+    break;
+  case disp_S4:
+    state = disp_S1;
+    break;
   }
 
   // Actions
@@ -95,7 +104,41 @@ int display_TickFct(int state) {
   case displayInit:
     break;
   case disp_S1:
+    // LMB
+    if (((isInches) ? in_distance : cm_distance) > 1000.0) {
+      outNum(((((isInches) ? in_distance : cm_distance)) / 1000) % 10);
+      // D# ports are active low..
+      PORTB = (PORTB & 0xC3) | 0x1C;
+    } else {
+      PORTB = (PORTB & 0xC3) | 0x3C;
+    }
+    break;
+  case disp_S2:
+    if (((isInches) ? in_distance : cm_distance) > 100.0) {
+      outNum(((((isInches) ? in_distance : cm_distance)) / 100) % 10);
+      PORTB = (PORTB & 0xC3) | 0x2C;
+    } else {
+      PORTB = (PORTB & 0xC3) | 0x3C;
+    }
+    break;
+  case disp_S3:
+    if (((isInches) ? in_distance : cm_distance) > 10.0) {
+      outNum(((((isInches) ? in_distance : cm_distance)) / 10) % 10);
+      PORTB = (PORTB & 0xC3) | 0x34;
+    } else {
+      PORTB = (PORTB & 0xC3) | 0x3C;
+    }
     outNum((isInches) ? in_distance : cm_distance);
+    break;
+  case disp_S4:
+    if (((isInches) ? in_distance : cm_distance) > 1.0) {
+      outNum((((isInches) ? in_distance : cm_distance)) % 10);
+      PORTB = (PORTB & 0xC3) | 0x38;
+    } else {
+      PORTB = (PORTB & 0xC3) | 0x3C;
+    }
+    break;
+  default:
     break;
   }
   return state;
@@ -141,7 +184,7 @@ int main(void) {
   DDRB = 0xFF;
   PORTB = 0x00; // The one bit for input
 
-  DDRC = 0xF8; // 2 button pins + echo input, then 3 pins left for RGB
+  DDRC = 0xF8; // 2 button pins + echo input (rewired), then 3 pins left for RGB
   PORTC = 0x07;
 
   ADC_init();   // initializes ADC

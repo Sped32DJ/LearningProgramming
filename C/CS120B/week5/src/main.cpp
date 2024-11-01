@@ -66,9 +66,9 @@ int sonar_TickFct(int state) {
   // State Actions
   switch (state) {
   case SONAR_S1:
-    // sonar_read() outputs cm by default
-    in_distance = int(sonar_read() / 2.54);
-    cm_distance = int(sonar_read());
+    // sonar_read() outputs cm by default + .50 rounding
+    in_distance = int(sonar_read() / 2.54 + 0.50);
+    cm_distance = int(sonar_read() + 0.50);
     // NOTE: Hopefully this works soon
     serial_println(in_distance);
     break;
@@ -104,38 +104,21 @@ int display_TickFct(int state) {
     break;
   case disp_S1:
     // Goes left to right
-    if (((isInches) ? in_distance : cm_distance) > 1000.0) {
-      outNum(((((isInches) ? in_distance : cm_distance)) / 1000) % 10);
-      // D# ports are active low..
-      PORTB = (PORTB & 0xC3) | 0x1C;
-    } else {
-      PORTB = (PORTB & 0xC3) | 0x3C;
-    }
+    outNum(((((isInches) ? in_distance : cm_distance)) / 1000) % 10);
+    // D# ports are active low..
+    PORTB = (PORTB & 0xC3) | 0x1C; // Enable active low left most digit
     break;
   case disp_S2:
-    if (((isInches) ? in_distance : cm_distance) > 100.0) {
-      outNum(((((isInches) ? in_distance : cm_distance)) / 100) % 10);
-      PORTB = (PORTB & 0xC3) | 0x2C;
-    } else {
-      PORTB = (PORTB & 0xC3) | 0x3C;
-    }
+    outNum(((((isInches) ? in_distance : cm_distance)) / 100) % 10);
+    PORTB = (PORTB & 0xC3) | 0x2C;
     break;
   case disp_S3:
-    if (((isInches) ? in_distance : cm_distance) > 10.0) {
-      outNum(((((isInches) ? in_distance : cm_distance)) / 10) % 10);
-      PORTB = (PORTB & 0xC3) | 0x34;
-    } else {
-      PORTB = (PORTB & 0xC3) | 0x3C;
-    }
-    outNum((isInches) ? in_distance : cm_distance);
+    outNum(((((isInches) ? in_distance : cm_distance)) / 10) % 10);
+    PORTB = (PORTB & 0xC3) | 0x34;
     break;
   case disp_S4:
-    if (((isInches) ? in_distance : cm_distance) > 1.0) {
-      outNum((((isInches) ? in_distance : cm_distance)) % 10);
-      PORTB = (PORTB & 0xC3) | 0x38;
-    } else {
-      PORTB = (PORTB & 0xC3) | 0x3C;
-    }
+    outNum((((isInches) ? in_distance : cm_distance)) % 10);
+    PORTB = (PORTB & 0xC3) | 0x38; // Enable active low right most digit
     break;
   default:
     break;
@@ -181,7 +164,7 @@ int main(void) {
   PORTD = 0x00;
 
   DDRB = 0xFF;
-  PORTB = 0x00; // The one bit for input
+  PORTB = 0x00; // The one bit for input (last bit trig; rewired)
 
   DDRC = 0xF8; // 2 button pins + echo input (rewired), then 3 pins left for RGB
   PORTC = 0x07;

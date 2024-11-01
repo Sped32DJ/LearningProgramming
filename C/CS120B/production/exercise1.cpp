@@ -1,171 +1,222 @@
-#include "timerISR-Fixed.h"
-#include <avr/interrupt.h>
-#include <avr/io.h>
-#include <util/delay.h>
+#include "helper.h"
+#include "periph.h"
+#include "timerISR.h"
 
-void TimerISR() { TimerFlag = 1; }
+// TODO: Change this depending on which exercise you are doing.
+// Exercise 1: 3 tasks
+// Exercise 2: 5 tasks
+// Exercise 3: 7 tasks
+#define NUM_TASKS 3
 
-// TODO: declare your global variables here
-unsigned int count = 0;
-// TODO: for exercise 2 and 3, the initial
-// passcode should be up, down, left, right
-unsigned char passcode[4] = {'u', 'd', 'l', 'r'};
+// Task struct for concurrent synchSMs implmentations
+typedef struct _task {
+  signed char state;         // Task's current state
+  unsigned long period;      // Task period
+  unsigned long elapsedTime; // Time elapsed since last task tick
+  int (*TickFct)(int);       // Task tick function
+} task;
 
-unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
-  return (b ? (x | (0x01 << k)) : (x & ~(0x01 << k)));
-  //   Set bit to 1           Set bit to 0
-}
+// TODO: Define Periods for each task
+//  e.g. const unsined long TASK1_PERIOD = <PERIOD>
+const unsigned long GCD_PERIOD = 1;
+const unsigned long SNAR_PERIOD = 1000;
+const unsigned long DISP_PERIOD = 1;
+const unsigned long LEFT_PERIOD = 200;
+task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 
-unsigned char GetBit(unsigned char x, unsigned char k) {
-  return ((x & (0x01 << k)) != 0);
-}
+// TODO: Define, for each task:
+//  (1) enums and
+//  (2) tick functions
+enum SNAR_States { SonarInit, SONAR_S1 };
+volatile double distance = 0;
+unsigned char in_distance = 16;
+unsigned char cm_distance = 22;
 
-void ADC_init() {
-  ADMUX = (1 << REFS0);
-  ADCSRA |= (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
-  // ADEN: setting this bit enables analog-to-digital conversion.
-  // ADSC: setting this bit starts the first conversion.
-  // ADATE: setting this bit enables auto-triggering. Since we are
-  //        in Free Running Mode, a new conversion will trigger whenever
-  //        the previous conversion completes.
-}
+enum DISP_States { displayInit, disp_S1, disp_S2, disp_S3, disp_S4 };
+bool isInches = false; // default metric (yucky); true = imperial
 
-unsigned int ADC_read(unsigned char chnl) {
-  uint8_t low, high;
+enum Left_States { leftInit, Left_S1, Left_S2 };
+unsigned char LeftButton() { return !GetBit(PINC, 1); }
 
-  ADMUX = (ADMUX & 0xF8) | (chnl & 7);
-  ADCSRA |= 1 << ADSC;
-  while ((ADCSRA >> ADSC) & 0x01) {
-  }
-
-  low = ADCL;
-  high = ADCH;
-
-  return ((high << 8) | low);
-}
-
-// directions[] and outDir() replaces nums[] and outNum() from previous
-// exercise. they behave the same, the only difference is outDir() outputs 4
-// direction and a neutral
-// center, r, l, d, u
-// I can probably make this a case statement for each input "c,r,l,d,u"
-int directions[5] = {0b0000001, 0b0000101, 0b0110000, 0b0111101, 0b0011100};
-// TODO: complete the array containg the values needed
-// for the 7 segments for each of the 4 directions
-// a  b  c  d  Actions  g
-// TODO: display the direction to the 7-seg display. HINT: will be very similar
-void outDir(int dir) {
-  PORTD = directions[dir] << 1;
-  // Bitshift twice
-  PORTB = SetBit(PORTB, 0, directions[dir] & 0x01);
-  // 8th pin is in the middle segment
-  // NOTE: 9th pin is a period
-  // I think it is wired for a reason
-}
-
-void outLED(int num) {
-  PORTC = SetBit(PORTC, 0, num & 0x01); // LED 0
-  PORTC = SetBit(PORTC, 1, num & 0x02); // LED 1
-}
-
-int phases[8] = {0b0001, 0b0011, 0b0010, 0b0110, 0b0100,
-                 0b1100, 0b1000, 0b1001}; // 8 phases of the stepper motor step
-
-bool Button() { return GetBit(PINC, 4); }
-
-float GetAxis(char port) {
-  float raw = ADC_read(port);
-  return (raw / 1024.0);
-}
-
-void JoystickTick() {
-  float xAxis = GetAxis(2);
-  float yAxis = GetAxis(3);
-
-  if (yAxis > 0.6) {
-    outDir(1); // up, 1
-  } else if (yAxis < 0.4) {
-    outDir(2); // down, 2
-  } else if (xAxis > 0.6) {
-    outDir(4); // right, 4
-  } else if (xAxis < 0.4) {
-    outDir(3); // left, 3
-  } else {
-    outDir(0); // center
-  }
-}
-enum states { WAIT, PRESS } state; // TODO: finish the enum for the SM
-
-void Tick() {
-  JoystickTick();
-
-  // State Transistions
-  // TODO: complete transitions
+// Tick Functions
+int sonar_TickFct(int state) {
+  // Transitions
   switch (state) {
-  case WAIT:
-    if (Button()) {
-      state = PRESS;
-      ++count;
-    } else {
-      state = WAIT;
-    }
-    if (count > 3) {
-      count = 0;
-    }
+  case SonarInit:
+    state = SONAR_S1;
     break;
-  case PRESS:
-    if (!Button()) {
-      state = WAIT;
-    }
-
+  case SONAR_S1:
+    state = SONAR_S1;
     break;
   default:
-    state = WAIT;
+    state = SonarInit;
     break;
   }
 
   // State Actions
-  // TODO: complete Actions
   switch (state) {
-
-  case WAIT:
-    outLED(count);
+  case SONAR_S1:
+    // sonar_read() outputs cm by default + .50 rounding
+    distance = sonar_read();
+    in_distance = int(distance / 2.54);
+    cm_distance = int(distance);
+    // NOTE: Hopefully this works soon
+    // serial_println(in_distance);
     break;
-  case PRESS:
+  }
+  return state;
+}
+
+int display_TickFct(int state) {
+  // Transitions
+  switch (state) {
+  case displayInit:
+    state = disp_S1;
+    break;
+
+    // Transitions into each of the 4 digits
+  case disp_S1:
+    state = disp_S2;
+    break;
+  case disp_S2:
+    state = disp_S3;
+    break;
+  case disp_S3:
+    state = disp_S4;
+    break;
+  case disp_S4:
+    state = disp_S1;
     break;
   default:
-    state = WAIT;
+    state = displayInit;
     break;
+  }
+
+  // Actions
+  switch (state) {
+  case displayInit:
+    break;
+  case disp_S1:
+    // Goes left to right
+    outNum(((((isInches) ? in_distance : cm_distance)) / 1000) % 10);
+    // D# ports are active low..
+    PORTB = (PORTB & 0xC3) | 0x1C; // Enable active low left most digit
+    break;
+  case disp_S2:
+    outNum(((((isInches) ? in_distance : cm_distance)) / 100) % 10);
+    PORTB = (PORTB & 0xC3) | 0x2C;
+    break;
+  case disp_S3:
+    outNum(((((isInches) ? in_distance : cm_distance)) / 10) % 10);
+    PORTB = (PORTB & 0xC3) | 0x34;
+    break;
+  case disp_S4:
+    outNum((((isInches) ? in_distance : cm_distance)) % 10);
+
+    PORTB = (PORTB & 0xC3) | 0x38; // Enable active low right most digit
+    break;
+  default:
+    break;
+  }
+  return state;
+}
+
+// Only two states, should technically work perfectly
+// NOTE: If fucked, make 4 states
+int left_TckFct(int state) {
+  // Transitions
+  switch (state) {
+  case leftInit:
+    state = Left_S1;
+    break;
+  case Left_S1:
+    if (LeftButton()) {
+      state = Left_S2;
+    }
+    break;
+  case Left_S2:
+    if (!LeftButton()) {
+      state = Left_S1;
+      // During release transition, it flips the bit
+      isInches = !isInches;
+    }
+    break;
+  default:
+    state = leftInit;
+    break;
+  }
+
+  // Action States
+  switch (state) {
+  case leftInit:
+    break;
+  case Left_S1:
+    break;
+  case Left_S2:
+    break;
+  }
+  return state;
+}
+
+void TimerISR() {
+  for (unsigned int i = 0; i < NUM_TASKS; i++) {
+    // Iterate through each task in the task array
+    if (tasks[i].elapsedTime == tasks[i].period) {
+      // Check if the task is ready to tick
+      tasks[i].state = tasks[i].TickFct(tasks[i].state);
+      // Tick and set the next state for this task
+      tasks[i].elapsedTime = 0; // Reset the elapsed time for the next tick
+    }
+    tasks[i].elapsedTime += GCD_PERIOD;
+    // Increment the elapsed time by GCD_PERIOD
   }
 }
 
 int main(void) {
-  // TODO: initialize all outputs and inputs
+  DDRD = 0xFF;
+  PORTD = 0x00;
 
-  ADC_init(); // initializes the analog to digital converter
+  DDRB = 0xFE;
+  PORTB = 0x01;
 
-  // Stepper Motor + 2 pins of 7 segment
-  DDRB = 0xFF; // PORTB as output
-  PORTB = 0x00;
+  DDRC = 0xFC;
+  PORTC = 0x03;
 
-  // Joystick + 2 LED's
-  DDRC = 0x03;   // Last two bits are output, rest input
-  PORTC = ~0x03; // All put last two pins are output
+  ADC_init();   // initializes ADC
+  sonar_init(); // initializes sonar
+                // serial_init(9600); // Helps debugging
 
-  // majority of 7 of segmenet (just bit shift later on)
-  DDRD = 0xFF;  // Set all pins output
-  PORTD = 0x00; // Clear PORTD
+  // TODO: Initialize tasks here
+  //  e.g. tasks[0].period = TASK1_PERIOD
+  //  tasks[0].state = ...
+  //  tasks[0].elapsedTime = ...
+  //  tasks[0].TickFct = &task1_tick_function;
+  //    task tasks[]{{SonarInit, SNAR_PERIOD, tasks[0].period, &sonar_TickFct},
+  //               {displayInit, DISP_PERIOD, tasks[1].period,
+  //               &display_TickFct},
+  //             {leftInit, LEFT_PERIOD, tasks[2].period, &left_TckFct}};
 
-  state = WAIT;
+  tasks[0].state = SonarInit;
+  tasks[0].period = SNAR_PERIOD;
+  tasks[0].elapsedTime = tasks[0].period;
+  tasks[0].TickFct = &sonar_TickFct;
 
-  TimerSet(1); // period of 1 ms. good period for the stepper mottor
+  tasks[1].state = displayInit;
+  tasks[1].period = DISP_PERIOD;
+  tasks[1].elapsedTime = tasks[1].period;
+  tasks[1].TickFct = &display_TickFct;
+
+  tasks[2].state = leftInit;
+  tasks[2].period = LEFT_PERIOD;
+  tasks[2].elapsedTime = tasks[2].period;
+  tasks[2].TickFct = &left_TckFct;
+
+  TimerSet(GCD_PERIOD);
   TimerOn();
+  // tasks[1].TickFct(tasks[1].state);
 
+  // loop stays empty
   while (1) {
-    Tick(); // Execute one synchSM tick
-    while (!TimerFlag) {
-    } // Wait for SM period
-    TimerFlag = 0; // Lower flag
   }
 
   return 0;

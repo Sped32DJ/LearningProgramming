@@ -28,28 +28,15 @@ task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 //  (1) enums and
 //  (2) tick functions
 enum SNAR_States { SonarInit, SONAR_S1 };
-volatile unsigned int in_distance = 0;
-volatile unsigned int cm_distance = 0;
+volatile double distance = 0;
+unsigned char in_distance = 16;
+unsigned char cm_distance = 22;
 
 enum DISP_States { displayInit, disp_S1, disp_S2, disp_S3, disp_S4 };
 bool isInches = false; // default metric (yucky); true = imperial
 
 enum Left_States { leftInit, Left_S1, Left_S2 };
 unsigned char LeftButton() { return !GetBit(PINC, 1); }
-
-void TimerISR() {
-  for (unsigned int i = 0; i < NUM_TASKS;
-       i++) { // Iterate through each task in the task array
-    if (tasks[i].elapsedTime ==
-        tasks[i].period) { // Check if the task is ready to tick
-      tasks[i].state = tasks[i].TickFct(
-          tasks[i].state);      // Tick and set the next state for this task
-      tasks[i].elapsedTime = 0; // Reset the elapsed time for the next tick
-    }
-    tasks[i].elapsedTime +=
-        GCD_PERIOD; // Increment the elapsed time by GCD_PERIOD
-  }
-}
 
 // Tick Functions
 int sonar_TickFct(int state) {
@@ -61,16 +48,20 @@ int sonar_TickFct(int state) {
   case SONAR_S1:
     state = SONAR_S1;
     break;
+  default:
+    state = SonarInit;
+    break;
   }
 
   // State Actions
   switch (state) {
   case SONAR_S1:
     // sonar_read() outputs cm by default + .50 rounding
-    in_distance = int(sonar_read() / 2.54 + 0.50);
-    cm_distance = int(sonar_read() + 0.50);
+    distance = sonar_read();
+    in_distance = int(distance / 2.54);
+    cm_distance = int(distance);
     // NOTE: Hopefully this works soon
-    serial_println(in_distance);
+    // serial_println(in_distance);
     break;
   }
   return state;
@@ -96,6 +87,9 @@ int display_TickFct(int state) {
   case disp_S4:
     state = disp_S1;
     break;
+  default:
+    state = displayInit;
+    break;
   }
 
   // Actions
@@ -118,6 +112,7 @@ int display_TickFct(int state) {
     break;
   case disp_S4:
     outNum((((isInches) ? in_distance : cm_distance)) % 10);
+
     PORTB = (PORTB & 0xC3) | 0x38; // Enable active low right most digit
     break;
   default:
@@ -125,6 +120,7 @@ int display_TickFct(int state) {
   }
   return state;
 }
+
 // Only two states, should technically work perfectly
 // NOTE: If fucked, make 4 states
 int left_TckFct(int state) {
@@ -145,6 +141,9 @@ int left_TckFct(int state) {
       isInches = !isInches;
     }
     break;
+  default:
+    state = leftInit;
+    break;
   }
 
   // Action States
@@ -159,31 +158,64 @@ int left_TckFct(int state) {
   return state;
 }
 
+void TimerISR() {
+  for (unsigned int i = 0; i < NUM_TASKS; i++) {
+    // Iterate through each task in the task array
+    if (tasks[i].elapsedTime == tasks[i].period) {
+      // Check if the task is ready to tick
+      tasks[i].state = tasks[i].TickFct(tasks[i].state);
+      // Tick and set the next state for this task
+      tasks[i].elapsedTime = 0; // Reset the elapsed time for the next tick
+    }
+    tasks[i].elapsedTime += GCD_PERIOD;
+    // Increment the elapsed time by GCD_PERIOD
+  }
+}
+
 int main(void) {
   DDRD = 0xFF;
   PORTD = 0x00;
 
-  DDRB = 0xFF;
-  PORTB = 0x00; // The one bit for input (last bit trig; rewired)
+  DDRB = 0xFE;
+  PORTB = 0x01;
 
-  DDRC = 0xF8; // 2 button pins + echo input (rewired), then 3 pins left for RGB
-  PORTC = 0x07;
+  DDRC = 0xFC;
+  PORTC = 0x03;
 
-  ADC_init();        // initializes ADC
-  sonar_init();      // initializes sonar
-  serial_init(9600); // Helps debugging
+  ADC_init();   // initializes ADC
+  sonar_init(); // initializes sonar
+                // serial_init(9600); // Helps debugging
 
   // TODO: Initialize tasks here
   //  e.g. tasks[0].period = TASK1_PERIOD
   //  tasks[0].state = ...
   //  tasks[0].elapsedTime = ...
   //  tasks[0].TickFct = &task1_tick_function;
-  task tasks[]{{SonarInit, SNAR_PERIOD, tasks[0].period, &sonar_TickFct},
-               {displayInit, DISP_PERIOD, tasks[1].period, &display_TickFct},
-               {leftInit, LEFT_PERIOD, tasks[2].period, &left_TckFct}};
+  //    task tasks[]{{SonarInit, SNAR_PERIOD, tasks[0].period, &sonar_TickFct},
+  //               {displayInit, DISP_PERIOD, tasks[1].period,
+  //               &display_TickFct},
+  //             {leftInit, LEFT_PERIOD, tasks[2].period, &left_TckFct}};
+
+  tasks[0].state = SonarInit;
+  tasks[0].period = SNAR_PERIOD;
+  tasks[0].elapsedTime = tasks[0].period;
+  tasks[0].TickFct = &sonar_TickFct;
+
+  tasks[1].state = displayInit;
+  tasks[1].period = DISP_PERIOD;
+  tasks[1].elapsedTime = tasks[1].period;
+  tasks[1].TickFct = &display_TickFct;
+
+  tasks[2].state = leftInit;
+  tasks[2].period = LEFT_PERIOD;
+  tasks[2].elapsedTime = tasks[2].period;
+  tasks[2].TickFct = &left_TckFct;
+
   TimerSet(GCD_PERIOD);
   TimerOn();
+  // tasks[1].TickFct(tasks[1].state);
 
+  // loop stays empty
   while (1) {
   }
 

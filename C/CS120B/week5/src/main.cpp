@@ -27,9 +27,9 @@ task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 // TODO: Define, for each task:
 //  (1) enums and
 //  (2) tick functions
-enum SNAR_States { SonarInit, SONAR_S1, SONAR_S2 };
-unsigned int in_distance = 0;
-unsigned int cm_distance = 0;
+enum SNAR_States { SonarInit, SONAR_S1 };
+volatile unsigned int in_distance = 0;
+volatile unsigned int cm_distance = 0;
 
 enum DISP_States { displayInit, disp_S1, disp_S2, disp_S3, disp_S4 };
 bool isInches = false; // default metric (yucky); true = imperial
@@ -59,21 +59,18 @@ int sonar_TickFct(int state) {
     state = SONAR_S1;
     break;
   case SONAR_S1:
-    break;
-  case SONAR_S2:
+    state = SONAR_S1;
     break;
   }
 
   // State Actions
   switch (state) {
-  case SonarInit:
-    break;
   case SONAR_S1:
     // sonar_read() outputs cm by default
     in_distance = int(sonar_read() / 2.54);
     cm_distance = int(sonar_read());
-    break;
-  case SONAR_S2:
+    // NOTE: Hopefully this works soon
+    serial_println(in_distance);
     break;
   }
   return state;
@@ -85,8 +82,10 @@ int display_TickFct(int state) {
   case displayInit:
     state = disp_S1;
     break;
+
+    // Transitions into each of the 4 digits
   case disp_S1:
-    state = disp_S1;
+    state = disp_S2;
     break;
   case disp_S2:
     state = disp_S3;
@@ -104,7 +103,7 @@ int display_TickFct(int state) {
   case displayInit:
     break;
   case disp_S1:
-    // LMB
+    // Goes left to right
     if (((isInches) ? in_distance : cm_distance) > 1000.0) {
       outNum(((((isInches) ? in_distance : cm_distance)) / 1000) % 10);
       // D# ports are active low..
@@ -187,8 +186,9 @@ int main(void) {
   DDRC = 0xF8; // 2 button pins + echo input (rewired), then 3 pins left for RGB
   PORTC = 0x07;
 
-  ADC_init();   // initializes ADC
-  sonar_init(); // initializes sonar
+  ADC_init();        // initializes ADC
+  sonar_init();      // initializes sonar
+  serial_init(9600); // Helps debugging
 
   // TODO: Initialize tasks here
   //  e.g. tasks[0].period = TASK1_PERIOD
@@ -202,20 +202,6 @@ int main(void) {
   TimerOn();
 
   while (1) {
-    outNum(1);
-
-    for (int i = 0; i < NUM_TASKS; ++i) {
-      tasks[i].elapsedTime += GCD_PERIOD;
-      if (tasks[i].elapsedTime >= tasks[i].period) {
-        tasks[i].state = tasks[i].TickFct(tasks[i].state);
-        tasks[i].elapsedTime = 0;
-      }
-    }
-
-    // Wait for the timer flag to be set
-    while (!TimerFlag) {
-    }
-    TimerFlag = 0;
   }
 
   return 0;

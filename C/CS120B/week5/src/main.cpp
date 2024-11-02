@@ -87,7 +87,6 @@ int sonar_TickFct(int state) {
 
       GreenH = 0;
       GreenL = 10;
-
     } else if (cm_distance < threhold_far) {
       RedH = 9;
       RedL = 1;
@@ -212,6 +211,8 @@ int red_TckFct(int state) {
       RedH = 0;
       RedL = 0;
     }
+    i = 0;
+    state = RPwmH;
     break;
   case RPwmH:
     if (i < RedH) {
@@ -271,6 +272,7 @@ int green_TckFct(int state) {
       GreenL = 0;
       // 100% Duty
     }
+    state = GPwmH;
     i = 0;
     break;
   case GPwmH:
@@ -368,7 +370,6 @@ int main(void) {
 
   TimerSet(GCD_PERIOD);
   TimerOn();
-  // tasks[1].TickFct(tasks[1].state);
 
   // loop stays empty
   while (1) {

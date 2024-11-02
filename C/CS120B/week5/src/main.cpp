@@ -253,6 +253,11 @@ int red_TckFct(int state) {
     ++j;
     break;
   case RPwmH:
+    if (cm_distance < threhold_close && rightWaitThree > 15) {
+      PORTC |= 0x08; // Turn on Red LED
+    } else {
+      PORTC &= 0xF7; // Turn off Red LED
+    }
     PORTC |= 0x08; // Turn on Red LED
     ++j;
     break;
@@ -301,7 +306,7 @@ int green_TckFct(int state) {
     break;
   case GPwmH:
     // Bandaid ovver the problem
-    if (cm_distance < threhold_close) {
+    if (cm_distance < threhold_close && rightWaitThree > 15) {
       PORTC &= 0xEF; // Turn off green LED
     } else {
       PORTC |= 0x10; // Turn on Green LED
@@ -394,7 +399,11 @@ int blue_TckFct(int state) {
   case BPwmH:
     ++b;
     if (rightWaitThree < 15) {
-      PORTC |= 0x20;
+      if (rightWaitThree % 2 == 0) {
+        PORTC |= 0x20;
+      } else {
+        PORTC &= 0xC7;
+      }
     }
 
     break;

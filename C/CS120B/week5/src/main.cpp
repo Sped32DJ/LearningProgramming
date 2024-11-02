@@ -49,6 +49,7 @@ const unsigned long BLUE_PERIOD = 250;
 
 unsigned char BlueH = 0;
 unsigned char BlueL = 0;
+unsigned int rightWaitThree = 0;
 
 task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 
@@ -317,8 +318,6 @@ int green_TckFct(int state) {
   return state;
 }
 
-unsigned int rightWaitThree = 0;
-
 int right_TckFct(int state) {
   // Transitions
   switch (state) {
@@ -326,17 +325,15 @@ int right_TckFct(int state) {
     state = Right_S1;
     break;
   case Right_S1:
-    if (RightButton()) {
+    if (!RightButton()) {
       state = Right_S2;
       rightWaitThree = 0;
     }
     break;
   case Right_S2:
-    if (!RightButton()) {
-      if (cm_distance < 15) {
-        threhold_close = 12;
-        threhold_far = 18;
-      }
+    if (RightButton()) {
+      threhold_close = cm_distance * 4 / 5;
+      threhold_far = cm_distance * 6 / 5;
       state = Right_S1;
     }
     break;
@@ -349,10 +346,10 @@ int right_TckFct(int state) {
   switch (state) {
   case Right_S1:
     if (rightWaitThree < 15) {
-      ++rightWaitThree;
       BlueH = 10;
       BlueL = 0;
     } else {
+      rightWaitThree = 16;
       BlueH = 0;
       BlueL = 10;
     }
@@ -396,7 +393,10 @@ int blue_TckFct(int state) {
     break;
   case BPwmH:
     ++b;
-    PORTC |= 0x20;
+    if (rightWaitThree < 15) {
+      PORTC |= 0x20;
+    }
+
     break;
   case BPwmL:
     ++b;

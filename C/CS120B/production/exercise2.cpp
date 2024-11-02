@@ -6,7 +6,7 @@
 // Exercise 1: 3 tasks
 // Exercise 2: 5 tasks
 // Exercise 3: 7 tasks
-#define NUM_TASKS 7
+#define NUM_TASKS 5
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -29,9 +29,8 @@ const unsigned long RED_PWN = 10;
 const unsigned long GREEN_PERIOD = 1;
 const unsigned long GREEN_PWN = 10;
 
-// remove const for ex3
-unsigned int threhold_close = 8;
-unsigned int threhold_far = 12;
+const unsigned int threhold_close = 8;
+const unsigned int threhold_far = 12;
 
 // Red iterator
 int j = 0;
@@ -42,16 +41,11 @@ unsigned char RedL = 0;
 int k = 0;
 unsigned char GreenH = 0;
 unsigned char GreenL = 0;
-
-// Exercise 3
-const unsigned long RIGHT_PERIOD = 200;
-const unsigned long BLUE_PERIOD = 250;
-
-unsigned char BlueH = 0;
-unsigned char BlueL = 0;
-
 task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 
+// TODO: Define, for each task:
+//  (1) enums and
+//  (2) tick functions
 enum SNAR_States { SonarInit, SONAR_S1 };
 volatile double distance = 0;
 unsigned char in_distance = 69;
@@ -65,11 +59,6 @@ unsigned char LeftButton() { return !GetBit(PINC, 1); }
 
 enum Red_States { RedInit, RPwmH, RPwmL };
 enum Green_States { GreenInit, GPwmH, GPwmL };
-
-enum Right_States { rightInit, Right_S1, Right_S2 };
-unsigned char RightButton() { return !GetBit(PINC, 0); }
-
-enum Blue_States { BlueInit, BPwmH, BPwmL };
 
 // Tick Functions
 int sonar_TickFct(int state) {
@@ -96,8 +85,7 @@ int sonar_TickFct(int state) {
 
     // NOTE: Hopefully this works soon
     // serial_println(in_distance);
-    if (cm_distance < threhold_close && BlueH == 0) {
-
+    if (cm_distance < threhold_close) {
       RedH = 10;
       RedL = 0;
 
@@ -105,7 +93,7 @@ int sonar_TickFct(int state) {
       GreenL = 10;
       PORTC &= 0xEF; // Turn off green LED
     } else if ((cm_distance >= threhold_close) &&
-               (cm_distance <= threhold_far) && BlueH == 0) {
+               (cm_distance <= threhold_far)) {
       PORTC &= 0xF7; // Turn off Red LED
       PORTC &= 0xEF; // Turn off green LED
 
@@ -114,7 +102,7 @@ int sonar_TickFct(int state) {
 
       GreenH = 3;
       GreenL = 7;
-    } else if (cm_distance > threhold_far && BlueH == 0) {
+    } else if (cm_distance > threhold_far) {
       RedH = 0;
       RedL = 10;
 
@@ -317,94 +305,6 @@ int green_TckFct(int state) {
   return state;
 }
 
-unsigned int rightWaitThree = 0;
-
-int right_TckFct(int state) {
-  // Transitions
-  switch (state) {
-  case rightInit:
-    state = Right_S1;
-    break;
-  case Right_S1:
-    if (RightButton()) {
-      state = Right_S2;
-      rightWaitThree = 0;
-    }
-    break;
-  case Right_S2:
-    if (!RightButton()) {
-      if (cm_distance < 15) {
-        threhold_close = 12;
-        threhold_far = 18;
-      }
-      state = Right_S1;
-    }
-    break;
-  default:
-    state = rightInit;
-    break;
-  }
-
-  // State Actions
-  switch (state) {
-  case Right_S1:
-    if (rightWaitThree < 15) {
-      ++rightWaitThree;
-      BlueH = 10;
-      BlueL = 0;
-    } else {
-      BlueH = 0;
-      BlueL = 10;
-    }
-    ++rightWaitThree;
-    break;
-  }
-  return state;
-}
-
-unsigned int b = 0;
-int blue_TckFct(int state) {
-  switch (state) {
-  case BlueInit:
-    b = 0;
-    state = BPwmH;
-    break;
-  case BPwmH:
-    if (b < BlueH) {
-      state = BPwmH;
-    } else {
-      state = BPwmL;
-      b = 0;
-    }
-    break;
-
-  case BPwmL:
-    if (b < BlueL) {
-      state = BPwmL;
-    } else {
-      state = BPwmH;
-      b = 0;
-    }
-    break;
-  default:
-    state = BlueInit;
-    break;
-  }
-
-  switch (state) {
-  case BlueInit:
-    break;
-  case BPwmH:
-    ++b;
-    PORTC |= 0x20;
-    break;
-  case BPwmL:
-    ++b;
-    PORTC &= 0xDF;
-  }
-  return state;
-}
-
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS; i++) {
     // Iterate through each task in the task array
@@ -457,16 +357,6 @@ int main(void) {
   tasks[4].period = GREEN_PERIOD;
   tasks[4].elapsedTime = tasks[4].period;
   tasks[4].TickFct = &green_TckFct;
-
-  tasks[5].state = rightInit;
-  tasks[5].period = RIGHT_PERIOD;
-  tasks[5].elapsedTime = tasks[5].period;
-  tasks[5].TickFct = &right_TckFct;
-
-  tasks[6].state = BlueInit;
-  tasks[6].period = BLUE_PERIOD;
-  tasks[6].elapsedTime = tasks[6].period;
-  tasks[6].TickFct = &blue_TckFct;
 
   TimerSet(GCD_PERIOD);
   TimerOn();

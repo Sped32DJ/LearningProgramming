@@ -32,9 +32,13 @@ const unsigned long GREEN_PWN = 10;
 const unsigned int threhold_close = 8;
 const unsigned int threhold_far = 12;
 
+// Red iterator
+int j = 0;
 unsigned char RedH = 0;
 unsigned char RedL = 0;
 
+// Green iterator
+int k = 0;
 unsigned char GreenH = 0;
 unsigned char GreenL = 0;
 task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
@@ -87,7 +91,9 @@ int sonar_TickFct(int state) {
 
       GreenH = 0;
       GreenL = 10;
-    } else if ((cm_distance > threhold_close) && (cm_distance < threhold_far)) {
+      PORTC &= 0xEF; // Turn off green LED
+    } else if ((cm_distance >= threhold_close) &&
+               (cm_distance <= threhold_far)) {
       PORTC &= 0xF7; // Turn off Red LED
       PORTC &= 0xEF; // Turn off green LED
 
@@ -200,27 +206,26 @@ int left_TckFct(int state) {
 }
 
 int red_TckFct(int state) {
-  unsigned int i = 0;
   // Transitions
   switch (state) {
   case RedInit:
-    i = 0;
+    j = 0;
     state = RPwmH;
     break;
   case RPwmH:
-    if (i < RedH) {
+    if (j < RedH) {
       state = RPwmH;
     } else {
       state = RPwmL;
-      i = 0;
+      j = 0;
     }
     break;
   case RPwmL:
-    if (i < RedL) {
+    if (j < RedL) {
       state = RPwmL;
     } else {
       state = RPwmH;
-      i = 0;
+      j = 0;
     }
     break;
   default:
@@ -232,43 +237,43 @@ int red_TckFct(int state) {
   switch (state) {
   case RedInit:
     PORTC &= 0xF7; // Turn off Red LED
-    ++i;
+    ++j;
     break;
   case RPwmH:
     PORTC |= 0x08; // Turn on Red LED
-    ++i;
+    ++j;
     break;
   case RPwmL:
     PORTC &= 0xF7; // Turn off Red LED
-    ++i;
+    ++j;
     break;
   default:
     break;
   }
   return state;
 }
+
 int green_TckFct(int state) {
-  unsigned int i = 0;
   // Transitions
   switch (state) {
   case GreenInit:
     state = GPwmH;
-    i = 0;
+    k = 0;
     break;
   case GPwmH:
-    if (i < GreenH) {
+    if (k < GreenH) {
       state = GPwmH;
     } else {
       state = GPwmL;
-      i = 0;
+      k = 0;
     }
     break;
   case GPwmL:
-    if (i < GreenL) {
+    if (k < GreenL) {
       state = GPwmL;
     } else {
       state = GPwmH;
-      i = 0;
+      k = 0;
     }
     break;
   default:
@@ -281,14 +286,19 @@ int green_TckFct(int state) {
   case GreenInit:
     PORTC &= 0xEF; // Turn off green LED
     break;
+  case GPwmH:
+    // Bandaid ovver the problem
+    if (cm_distance < threhold_close) {
+      PORTC &= 0xEF; // Turn off green LED
+    } else {
+      PORTC |= 0x10; // Turn on Green LED
+    }
+    ++k;
+    break;
   case GPwmL:
     // Turn off green LED
     PORTC &= 0xEF;
-    ++i;
-    break;
-  case GPwmH:
-    PORTC |= 0x10; // Turn on Green LED
-    ++i;
+    ++k;
     break;
   }
 

@@ -87,13 +87,16 @@ int sonar_TickFct(int state) {
 
       GreenH = 0;
       GreenL = 10;
-    } else if (cm_distance < threhold_far) {
+    } else if ((cm_distance > threhold_close) && (cm_distance < threhold_far)) {
+      PORTC &= 0xF7; // Turn off Red LED
+      PORTC &= 0xEF; // Turn off green LED
+
       RedH = 9;
       RedL = 1;
 
       GreenH = 3;
       GreenL = 7;
-    } else {
+    } else if (cm_distance > threhold_far) {
       RedH = 0;
       RedL = 10;
 
@@ -201,16 +204,6 @@ int red_TckFct(int state) {
   // Transitions
   switch (state) {
   case RedInit:
-    if (cm_distance < threhold_close) {
-      RedH = 10;
-      RedL = 0;
-    } else if (cm_distance < threhold_far) {
-      RedH = 9;
-      RedL = 1;
-    } else {
-      RedH = 0;
-      RedL = 0;
-    }
     i = 0;
     state = RPwmH;
     break;
@@ -259,19 +252,6 @@ int green_TckFct(int state) {
   // Transitions
   switch (state) {
   case GreenInit:
-    if (cm_distance < threhold_close) {
-      GreenH = 0;
-      GreenL = 10;
-      // 0% Duty
-    } else if (cm_distance < threhold_far) {
-      GreenH = 3;
-      GreenL = 7;
-      // 30% Duty
-    } else {
-      GreenH = 10;
-      GreenL = 0;
-      // 100% Duty
-    }
     state = GPwmH;
     i = 0;
     break;

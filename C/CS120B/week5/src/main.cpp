@@ -49,7 +49,7 @@ const unsigned long BLUE_PERIOD = 250;
 
 unsigned char BlueH = 0;
 unsigned char BlueL = 0;
-unsigned int rightWaitThree = 0;
+unsigned int rightWaitThree = 15;
 
 task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
 
@@ -253,12 +253,11 @@ int red_TckFct(int state) {
     ++j;
     break;
   case RPwmH:
-    if (cm_distance < threhold_close && rightWaitThree > 15) {
-      PORTC |= 0x08; // Turn on Red LED
+    if (rightWaitThree < 15) {
+      PORTC &= 0xF7;
     } else {
-      PORTC &= 0xF7; // Turn off Red LED
+      PORTC |= 0x08; // Turn on Red LED
     }
-    PORTC |= 0x08; // Turn on Red LED
     ++j;
     break;
   case RPwmL:
@@ -306,7 +305,7 @@ int green_TckFct(int state) {
     break;
   case GPwmH:
     // Bandaid ovver the problem
-    if (cm_distance < threhold_close && rightWaitThree > 15) {
+    if (cm_distance < threhold_close || rightWaitThree < 15) {
       PORTC &= 0xEF; // Turn off green LED
     } else {
       PORTC |= 0x10; // Turn on Green LED

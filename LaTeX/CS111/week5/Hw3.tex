@@ -66,7 +66,7 @@
 \begin{problem}
 \begin{enumerate}[label=\alph*)]
     \item Consider the following linear homogeneous recurrence relation: $R_n = 4R_{n-1} - 3R_{n-2}.$
-      It is known that: $R_0 = 1, R_2 = 5$. Find $R_3$\\
+      It is known that: $R_0 = 1, R_2 = 5.$ Find $R_3$\\
 
       Characteristic Equation: 
       \begin{equation*}
@@ -81,12 +81,14 @@
 
       \end{itemize}
 
-        $\begin{bmatrix} 1 & 1 \\ 1 & 9 \end{bmatrix}^{-1} \begin{bmatrix} 1 \\ 5 \end{bmatrix}$ = 
-        $\begin{bmatrix} \alpha_1 = 0.5\\ \alpha_2 = 0.5 \end{bmatrix}$\\
+        $\begin{bmatrix} 1 & 1 \\ 1 & 9 \end{bmatrix}^{-1} \begin{bmatrix} 1 \\ 5 \end{bmatrix}$ \Rightarrow 
+        $\frac{1}{8} \begin{bmatrix}9 & -1 \\ -1 & 1\end{bmatrix} \begin{bmatrix}1\\5 \end{bmatrix}$
+        $\Rightarrow \frac{1}{8} \begin{bmatrix} 9 - 5 \\ -1 + 5 \end{bmatrix} \Rightarrow \frac{1}{8} \begin{bmatrix} 4 \\ 4 \end{bmatrix} $
+        \Rightarrow $\begin{bmatrix} \alpha_1 = 0.5\\ \alpha_2 = 0.5 \end{bmatrix}$\\
 
-      Characteristic Equation: 
+      Solution to recurrence: 
       \begin{equation}
-        R_n = 1/2 (1)^n + 1/2 (3)^n
+        R_n = \frac{1}{2} (1)^n + \frac{1}{2} (3)^n
       \end{equation}
 
     \item Determine the general solution of the recurrence equation if its characteristic
@@ -107,7 +109,7 @@
         \item x = \pm 4\\
          General Solution: 
          \begin{equation}
-         \alpha_1(4)^n+\alpha_2(-4)^n
+         \alpha_1(-4)^n+\alpha_2(4)^n
          \end{equation}
       \end{itemize}
 
@@ -157,14 +159,28 @@
 
         General solution of the non-homogenous recurrence:
         \begin{equation}
-          f_n = \alpha_1(-1)^n + \alpha_2(-3)^n + \alpha_3(4)^n - \frac{1}{12}n - \frac{37}{144}
+          f_n = \alpha_1(-3)^n + \alpha_2(-1)^n + \alpha_3(4)^n - \frac{1}{12}n - \frac{37}{144}
         \end{equation}
 
     \end{enumerate}
+
+    \pagebreak
   \item Find a particular solution of the recurrence
     \begin{equation*}
       t_n = 4t_{n-1} - 4t_{n-2} + 2^{n}
     \end{equation*}
+    \begin{enumerate}
+      \item Characteristic Equation: $x^2 - 4x +4 = 0$ \Rightarrow $(x-2)^2$ = 0
+      \item roots: 2, 2 (repeated root)
+      \item General solution to Homogeneous part: $t_n = \alpha_1(2)^n + \alpha_2n(2)^n$
+      \item Particular Solution: $t_n = An(2)^n$\\
+
+          Particular Solution of the recurrence:
+        \begin{equation}
+          % FIX: Check this
+          t_n = \alpha_1(2)^n + \alpha_2n(2)^n + 2^n
+        \end{equation}
+    \end{enumerate}
 \end{enumerate}
   
 \end{problem}

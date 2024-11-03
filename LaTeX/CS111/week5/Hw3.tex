@@ -66,14 +66,15 @@
 \begin{problem}
 \begin{enumerate}[label=\alph*)]
     \item Consider the following linear homogeneous recurrence relation: $R_n = 4R_{n-1} - 3R_{n-2}.$
-      It is known that: $R_0 = 1, R_2 = 5$. Find $R_3$
+      It is known that: $R_0 = 1, R_2 = 5$. Find $R_3$\\
+
       Characteristic Equation: 
       \begin{equation}
         x^2 - 4x + 3 = 0
       \end{equation}
       \begin{itemize}
         \item Roots: 1, 3
-        \item Particular Solution: \\
+        \item General Solution: \\
          Given $R_0 = 1$ \Rightarrow $\alpha_1(1)^0 + \alpha_2(3)^0$ = 1\\
          Given $R_2 = 5$ \Rightarrow $\alpha_1(1)^2 + \alpha_2(3)^2$ = 5
 
@@ -81,8 +82,9 @@
       \end{itemize}
 
         $\begin{bmatrix} 1 & 1 \\ 1 & 9 \end{bmatrix}^{-1} \begin{bmatrix} 1 \\ 5 \end{bmatrix}$ = 
-        $\begin{bmatrix} \alpha_1 = 0.5\\ \alpha_2 = 0.5 \end{bmatrix}$
-      General Solution: 
+        $\begin{bmatrix} \alpha_1 = 0.5\\ \alpha_2 = 0.5 \end{bmatrix}$\\
+
+      Characteristic Equation: 
       \begin{equation}
         R_n = 1/2 (1)^n + 1/2 (3)^n
       \end{equation}
@@ -108,6 +110,8 @@
          \alpha_1(4)^n+\alpha_2(-4)^n
          \end{equation}
       \end{itemize}
+
+      \pagebreak
     \item Solve the homogeneous recurrence question:
       \begin{itemize}
       \item $f_n = f_{n-1} + 4 f_{n-2} + 2 f_{n-3}$
@@ -116,7 +120,9 @@
         \item $f_2$ = 4
         \item Characteristic Equation: 
         \item \Rightarrow $x^3 - x^2 - 4x - 2$ = 0 
-        \item \Rightarrow Roots: $-1, 1 - \sqrt{3}, 1 + \sqrt{3}$
+        \item \Rightarrow Roots: $-1, 1 - \sqrt{3}, 1 + \sqrt{3}$\\
+
+        General Solution:
           \begin{equation}
         \alpha_{1} (-1)^{n} + \alpha_{2} (1-\sqrt{3})^{n} + \alpha_{3} (1 + \sqrt{3})^n
           \end{equation}
@@ -127,7 +133,18 @@
 
 %----------------------------------------------------------
 
-\begin{problem} \\
+\begin{problem} 
+\begin{enumerate}[label=\alph*)]
+  \item  Find the general solution of the recurrence
+    \begin{equation*}
+      f_n = 13f_{n-2} + 12f_{n-3} + 2n + 1
+    \end{equation*}
+  \item Find a particular solution of the recurrence
+    \begin{equation*}
+      t_n = 4t_{n-1} - 4t_{n-2} + 2^{n}
+    \end{equation*}
+\end{enumerate}
+  
 \end{problem}
 
 

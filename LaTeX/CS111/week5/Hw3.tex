@@ -69,9 +69,9 @@
       It is known that: $R_0 = 1, R_2 = 5$. Find $R_3$\\
 
       Characteristic Equation: 
-      \begin{equation}
+      \begin{equation*}
         x^2 - 4x + 3 = 0
-      \end{equation}
+      \end{equation*}
       \begin{itemize}
         \item Roots: 1, 3
         \item General Solution: \\
@@ -139,6 +139,28 @@
     \begin{equation*}
       f_n = 13f_{n-2} + 12f_{n-3} + 2n + 1
     \end{equation*}
+    \begin{enumerate}
+      \item $r^3 = 13r + 12 + 2n + 1$\\
+
+        Find the general solution of the recurrence
+      \item $r^3 - 13r - 12 = 0$
+      \item Solving for candidate roots: \pm 1, \pm2, \pm3, and \pm4,
+        we find Roots: -1, -3, 4
+      \item Looking for Particular Solution for the non-homogenous equation: $g(n) = 2n + 1$
+      \item $An + B$ = $13(A(n-2) + B) + 12(A(n-3) + B) + 2n + 1$
+      \item $An + B = (25A + 2)n + (25B - 62A + 1)$
+      \item \Rightarrow $An = (25A + 2)n$ \Rightarrow $A = (25A + 2)$ \Rightarrow 0 = 24A + 2
+       \Rightarrow A = $-\frac{1}{12}$
+      \item \Rightarrow B = (25B - 62A + 1); given A = $-\frac{1}{12}$ \Rightarrow B = (25B + $\frac{62}{12}$ + 1)  \\
+
+        \Rightarrow 0 = 24B + $\frac{31}{6}$ + 1 \Rightarrow 0 = 24B + $\frac{37}{6}$ \Rightarrow B = $\frac{-37}{144}$\\
+
+        General solution of the non-homogenous recurrence:
+        \begin{equation}
+          f_n = \alpha_1(-1)^n + \alpha_2(-3)^n + \alpha_3(4)^n - \frac{1}{12}n - \frac{37}{144}
+        \end{equation}
+
+    \end{enumerate}
   \item Find a particular solution of the recurrence
     \begin{equation*}
       t_n = 4t_{n-1} - 4t_{n-2} + 2^{n}
@@ -150,6 +172,14 @@
 
 %----------------------------------------------------------
 \begin{problem}
+  We want to tile a $n \times 1$ strip with $1 \times 1$ green tiles (G), and red (R), 2 \times 1 
+  purple (P) and 2 \times 1 orange (O) tiles, and 3 \times 1 lavender (L) tiles. 
+  Green, blue, and purple tiles cannot be next to each other, 
+  and there should be no two purple or three blue or green tiles in a row. 
+  To clarify, GG and BB allowed, but GGGOBR, GROPP, and PBOBR are not.
+  Give a formula for the number of such tilings. Your
+  solution must include a recurrence equation (with initial conditions!), 
+  and a full justification. You do not need to solve it.
 \end{problem}
 
 %----------------------------------------------------------

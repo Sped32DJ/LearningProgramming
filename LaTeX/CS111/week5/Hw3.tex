@@ -1,0 +1,142 @@
+% https://www.overleaf.com/learn/latex/Main_Page <-- latex resources
+% <--- percent sign starts a comment line in Latex
+
+%----------------------------------------------------------------------------------
+%
+% This is a sample assignment .tex file. Put your name, assignment number and the
+% due date below, as shown.
+% If you work with a partner, create another line with command \student{his/her name}
+%
+% Before you typeset your own assignment try to preview and print this one. If you
+% have LaTeX installed on your machine, you need to:
+%   1. Save this in a file, say hw.tex
+%   2. Run "pdflatex hw"
+%	3. LaTeX produces a pdf file that you can view with/print any pdf viewer
+%
+% Alternatively you can also compile and preview it in overleaf.com, the online
+% LaTeX editor.
+%
+
+%----------------------------------------------------------------------------------
+
+\documentclass[11pt]{article}
+
+%----------------------------------------------------------------------------------
+% this is a list of latex packages that may be useful in this document
+%----------------------------------------------------------------------------------
+
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{amsfonts,amsmath,latexsym,amssymb,amsthm,enumitem}
+\usepackage[nothing]{algorithm}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usepackage{hyperref}
+%----------------------------------------------------------------------------------
+% some macros below. don't worry about these.
+%----------------------------------------------------------------------------------
+
+
+\newcommand{\student}[1]{{\noindent\Large\em {#1} \hfill}\vskip 0.1in}
+
+\newcommand{\assignment}[1]{\centerline{\large\bf CS111 Homework {#1}}}
+
+\newcommand{\duedate}[1]{{\centerline{due {#1}}}}
+
+\newcommand{\assign}{\,\leftarrow\,}
+
+\newcounter{prnum}
+\setcounter{prnum}{0}
+\newenvironment{problem}{{\vskip 0.2in\noindent\bf Problem
+       \addtocounter{prnum}{1} \arabic{prnum}.}}{\vskip 0.1in}
+
+%----------------------------------------------------------------------------------
+% the actual source for the document starts here
+%----------------------------------------------------------------------------------
+
+\begin{document}
+
+\student{Danny Topete} % <-- Replace with your name
+\vskip 0.1in\noindent\hrule\vskip 0.2in
+\assignment{2}                           % <-- ASSIGNMENT NUMBER ******
+\duedate{Monday, Nov 4th}              % <-- DUE DATE ***************
+
+%----------------------------------------------------------
+
+\begin{problem}
+\begin{enumerate}[label=\alph*)]
+    \item Consider the following linear homogeneous recurrence relation: $R_n = 4R_{n-1} - 3R_{n-2}.$
+      It is known that: $R_0 = 1, R_2 = 5$. Find $R_3$
+      Characteristic Equation: 
+      \begin{equation}
+        x^2 - 4x + 3 = 0
+      \end{equation}
+      \begin{itemize}
+        \item Roots: 1, 3
+        \item Particular Solution: \\
+         Given $R_0 = 1$ \Rightarrow $\alpha_1(1)^0 + \alpha_2(3)^0$ = 1\\
+         Given $R_2 = 5$ \Rightarrow $\alpha_1(1)^2 + \alpha_2(3)^2$ = 5
+
+
+      \end{itemize}
+
+        $\begin{bmatrix} 1 & 1 \\ 1 & 9 \end{bmatrix}^{-1} \begin{bmatrix} 1 \\ 5 \end{bmatrix}$ = 
+        $\begin{bmatrix} \alpha_1 = 0.5\\ \alpha_2 = 0.5 \end{bmatrix}$
+      General Solution: 
+      \begin{equation}
+        R_n = 1/2 (1)^n + 1/2 (3)^n
+      \end{equation}
+
+    \item Determine the general solution of the recurrence equation if its characteristic
+      equation has the following roots: 1,1,-2,-2,7.\\
+
+
+        General Solution: 
+
+      \begin{equation}
+        \alpha_1(-2)^n+\alpha_2n(-2)^n+\alpha_3n^2(2)^n+\alpha_4(1)^n+\alpha_5n(1)^n+\alpha_6(7)^n
+      \end{equation}
+
+    \item Determine the general solution of the recurrence relation $A_n = 256A_{n-4}$
+      \begin{itemize}
+        \item $x^4 = 256$
+        \item 256 = $4^4$
+        \item \Rightarrow $\sqrt[4]{x} = \sqrt[4]{256}$
+        \item x = \pm 4\\
+         General Solution: 
+         \begin{equation}
+         \alpha_1(4)^n+\alpha_2(-4)^n
+         \end{equation}
+      \end{itemize}
+    \item Solve the homogeneous recurrence question:
+      \begin{itemize}
+      \item $f_n = f_{n-1} + 4 f_{n-2} + 2 f_{n-3}$
+        \item $f_0 = 0$
+        \item $f_1$ = 1
+        \item $f_2$ = 4
+        \item Characteristic Equation: 
+        \item \Rightarrow $x^3 - x^2 - 4x - 2$ = 0 
+        \item \Rightarrow Roots: $-1, 1 - \sqrt{3}, 1 + \sqrt{3}$
+          \begin{equation}
+        \alpha_{1} (-1)^{n} + \alpha_{2} (1-\sqrt{3})^{n} + \alpha_{3} (1 + \sqrt{3})^n
+          \end{equation}
+      \end{itemize}
+  \end{enumerate}
+\end{problem} 
+
+
+%----------------------------------------------------------
+
+\begin{problem} \\
+\end{problem}
+
+
+%----------------------------------------------------------
+\begin{problem}
+\end{problem}
+
+%----------------------------------------------------------
+
+\vskip 0.2in
+\paragraph{Academic integrity declaration.}
+\end{document}

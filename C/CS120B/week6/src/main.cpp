@@ -2,6 +2,7 @@
 #include "helper.h"
 #include "periph.h"
 #include "timerISR.h"
+#include <stdio.h>
 
 // TODO: declare variables for cross-task communication
 
@@ -21,17 +22,23 @@ typedef struct _task {
 const unsigned long GCD_PERIOD = 1; /* TODO: Calulate GCD of tasks */
 const unsigned long BUTTON_PERIOD = 500;
 const unsigned long ADC_PERIOD = 100;
-const unsigned long BUZZER_PERIOD = 100;
 const unsigned long LCD_PERIOD = 500;
 const unsigned long THERMISTER_PERIOD = 100;
+
+const unsigned long BUZZER_PERIOD = 100;
+const unsigned long BUZZER_PWM_PERIOD = 1000;
 
 const unsigned long FAN_PERIOD = 1;
 const unsigned long FAN_PWM_PERIOD = 10;
 
 // PWM Values
 // FAN PWM
-unsigned short FGPwmL = 0;
 unsigned short FPwmH = 0;
+unsigned short FPwmL = 0;
+
+// Buzzer PWM
+unsigned short BPwmH = 0;
+unsigned short BPwmL = 10;
 
 task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
@@ -75,6 +82,7 @@ int ButtonTick(int state) {
 }
 
 // ADC-Potentiometer SM
+// Display Off/on/testing states
 int ADC_Tick(int state) {
   switch (state) {
   case ADC_INIT:
@@ -91,14 +99,14 @@ int ADC_Tick(int state) {
   case ADC_READ:
     // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
     adcValue = map(ADC_read(0), 0, 1023, 0, 20);
-    if (adcValue >= 0 && adcValue <= 9) {
+    if (adcValue >= 0 && adcValue <= 9 && !forceStop) {
       // TODO: Reverse polarity + make it dynamic
       FPwmL = adcValue;
       FPwmH = 10 - adcValue;
-    } else if (adcValue == 10) {
+    } else if (adcValue == 10 || forceStop) {
       FPwmH = 0;
       FPwmL = 10;
-    } else if (adcValue >= 11 && adcValue <= 20) {
+    } else if (adcValue >= 11 && adcValue <= 20 && !forceStop) {
       FPwmH = adcValue - 10;
       FPwmL = 10 - (adcValue - 10);
     }
@@ -110,16 +118,27 @@ int ADC_Tick(int state) {
 }
 
 // Implement logic for buzzer to go off
+unsigned short buzz = 0;
 int BuzzerTick(int state) {
   switch (state) {
   case BUZZER_INIT:
     state = BUZZER_OFF;
     break;
   case BUZZER_ON:
-    state = BUZZER_OFF;
+    if (buzz < BPwmH) {
+      state = BUZZER_ON;
+    } else {
+      state = BUZZER_OFF;
+      buzz = 0;
+    }
     break;
   case BUZZER_OFF:
-    state = BUZZER_ON;
+    if (buzz < BPwmL) {
+      state = BUZZER_OFF;
+    } else {
+      state = BUZZER_ON;
+      buzz = 0;
+    }
     break;
   default:
     state = BUZZER_INIT;
@@ -141,6 +160,9 @@ int BuzzerTick(int state) {
 // Implement logic for LCD to display the ADC value
 // Implement the boolean logic for the button press
 int LCD_Tick(int state) {
+  static char buffer1[16];
+  static char buffer2[16];
+
   switch (state) {
   case LCD_INIT:
     state = LCD_WRITE;
@@ -154,7 +176,19 @@ int LCD_Tick(int state) {
   }
   switch (state) {
   case LCD_WRITE:
-    lcd_write_str("ADC: %d", adcValue);
+    if (forceStop) {
+      sprintf(buffer1, "Sys: off");
+    } else {
+      sprintf(buffer1, "Sys: Testing");
+    }
+    // Second line
+    sprintf(buffer2, "%d %% ", adcValue);
+
+    lcd_clear();
+    lcd_goto_xy(0, 0);
+    lcd_write_str(buffer1);
+    lcd_goto_xy(1, 0);
+    lcd_write_str(buffer2);
     break;
   }
   return state;
@@ -169,7 +203,7 @@ int FanTick(int state) {
     fanTime = 0;
     break;
   case FanH:
-    if (fanTime < FanH) {
+    if (fanTime < FPwmH) {
       state = FanH;
     } else {
       state = FanL;
@@ -177,7 +211,7 @@ int FanTick(int state) {
     }
     break;
   case FanL:
-    if (fanTime < FanL) {
+    if (fanTime < FPwmL) {
       state = FanL;
     } else {
       state = FanH;
@@ -261,11 +295,24 @@ int main(void) {
 
   TimerSet(GCD_PERIOD);
   TimerOn();
+  static char buffer1[16];
+  static char buffer2[16];
 
   while (1) {
+    if (forceStop) {
+      sprintf(buffer1, "Sys: off");
+    } else {
+      sprintf(buffer1, "Sys: Testing");
+    }
+    // Second line
+    sprintf(buffer2, "%d %% ", adcValue);
+
+    lcd_clear();
+    lcd_goto_xy(0, 0);
+    lcd_write_str(buffer1);
+    lcd_goto_xy(1, 0);
+    lcd_write_str(buffer2);
   }
 
   return 0;
 }
-
-// Feel free to implement your tasks' tick functions under here

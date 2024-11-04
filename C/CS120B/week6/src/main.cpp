@@ -299,19 +299,6 @@ int main(void) {
   static char buffer2[16];
 
   while (1) {
-    if (forceStop) {
-      sprintf(buffer1, "Sys: off");
-    } else {
-      sprintf(buffer1, "Sys: Testing");
-    }
-    // Second line
-    sprintf(buffer2, "%d %% ", adcValue);
-
-    lcd_clear();
-    lcd_goto_xy(0, 0);
-    lcd_write_str(buffer1);
-    lcd_goto_xy(1, 0);
-    lcd_write_str(buffer2);
   }
 
   return 0;

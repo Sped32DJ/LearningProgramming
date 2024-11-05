@@ -188,15 +188,100 @@
 
 %----------------------------------------------------------
 \begin{problem}
-  We want to tile a $n \times 1$ strip with $1 \times 1$ green tiles (G), and red (R), 2 \times 1 
-  purple (P) and 2 \times 1 orange (O) tiles, and 3 \times 1 lavender (L) tiles. 
+  We want to tile a $n \times 1$ strip with $1 \times 1$ Green tiles (G), Blue (B), and Red (R), \newline
+  2 \times\space 1 purple (P) and 2 \times\space 1 orange (O) tiles, and 3 \times\space 1 lavender (L) tiles. 
   Green, blue, and purple tiles cannot be next to each other, 
   and there should be no two purple or three blue or green tiles in a row. 
   To clarify, GG and BB allowed, but GGGOBR, GROPP, and PBOBR are not.
   Give a formula for the number of such tilings. Your
   solution must include a recurrence equation (with initial conditions!), 
   and a full justification. You do not need to solve it.
+\begin{enumerate}
+  \item What is not allowed: 
+    \begin{itemize}
+      \item Green, Blue, and Purple tiles cannot be next to each other
+      \item No two purple or three blue or green tiles in a row
+    \end{itemize}
+  \item What is allowed:
+    \begin{itemize}
+      \item GG and BB allowed
+    \end{itemize}
+  \item Defining Variables:
+    \begin{enumerate}
+      \item $T(n)$ = Number of ways to tile a $n \times 1$ strip
+      \item $G(n)$ = Number of ways to tile a $n \times 1$ strip ending in a green tile
+      \item $B(n)$ = Number of ways to tile a $n \times 1$ strip ending in a blue tile
+      \item $R(n)$ = Number of ways to tile a $n \times 1$ strip ending in a red tile
+      \item $P(n)$ = Number of ways to tile a $n \times 1$ strip ending in a purple tile
+      \item $O(n)$ = Number of ways to tile a $n \times 1$ strip ending in an orange tile
+      \item $L(n)$ = Number of ways to tile a $n \times 1$ strip ending in a lavender tile
+    \end{enumerate}
+    \pagebreak
+
+  \item Recurrence per state:
+    \begin{enumerate}
+      \item $G(n)$ = $R(n-1) + O(n-1) + L(n-1) + R(n-2) + O(n-2) + L(n-2)$
+      \item $B(n)$ = $R(n-1) + O(n-1) + L(n-1) + R(n-2) + O(n-2) + L(n-2)$\\
+        When it comes to Green and Blue, they can be next to each other, but only twice
+      \item $P(n)$ = $R(n-1) + O(n-1) + L(n-1)$\\
+        When it comes to Green, Blue, and Purple tiles
+      They can only be placed next to Red, Orange or Lavender tiles or themselves
+
+      \item $R(n)$ = $G(n-1) + R(n-1) + P(n-1) + O(n-1) + B(n-1) + L(n-1)$
+
+
+      \item $O(n)$ = $G(n-1) + R(n-1) + P(n-1) + O(n-1) + B(n-1) + L(n-1)$
+      \item $L(n)$ = $G(n-1) + R(n-1) + P(n-1) + O(n-1) + B(n-1) + L(n-1)$\\
+        When it comes to Red, Orange, and Lavender tiles, they can be placed next to any tile
+    \end{enumerate}
+  \item Combine all states:
+    \begin{itemize}
+      \item $T(n)$ = $G(n) + B(n) + R(n) + P(n) + O(n) + L(n)$
+    \end{itemize}
+  \item Initial Conditions:
+    \begin{enumerate}
+      \item $n$ = 1
+    \begin{itemize}
+      \item $G(1)$ = 1
+      \item $B(1)$ = 1
+      \item $R(1)$ = 1
+      \item $P(1)$ = 0
+      \item $O(1)$ = 0
+      \item $L(1)$ = 0
+    \end{itemize}
+  \item $n$ = 2 
+    \begin{itemize}
+      \item $G(2)$ = $R(1) + O(1) + L(1)$ = 1 OR $G(2) = 1$
+      \item $B(2)$ = $R(1) + O(1) + L(1)$ = 1 OR $B(2) = 1$
+        \begin{itemize}
+          \item GG and BB are allowed
+        \end{itemize}
+      \item $P(2)$ = 1
+      \item $R(2)$ = $G(1) + R(1) + P(1) + O(1) + B(1) + L(1)$ = 3
+      \item $O(2)$ = 1
+      \item $L(2)$ = 0 \Rightarrow\space Since Lavender is a 3x1 tile it cannot be placed in a 2x1 strip
+        \begin{itemize}
+          \item The OR is if they are next to each other
+        \end{itemize}
+        \end{itemize}
+      \item $n$ = 3
+        \begin{itemize}
+          \item $G(3)$ = $R(2) + O(2) + L(2) + R(1) + O(1) + L(1)$ = 5
+          \item $B(3)$ = $R(2) + O(2) + L(2) + R(1) + O(1) + L(1)$ = 5
+          \item $P(3)$ = $R(2) + O(2) + L(2)$ = 4
+          \item $R(3)$ = $G(2) + R(2) + P(2) + O(2) + B(2) + L(2)$ = 7
+          \item $O(3)$ = $G(2) + R(2) + P(2) + O(2) + B(2) + L(2)$ = 7
+          \item $L(3)$ = 1
+            \begin{itemize}
+              \item since Lavender is a 3x1 tile, it will be placed alone in a 3x1 strip
+            \end{itemize}
+    \end{itemize}
+      
+    \end{enumerate}
+\end{enumerate}
+
 \end{problem}
+  
 
 %----------------------------------------------------------
 

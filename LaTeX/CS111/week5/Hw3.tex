@@ -100,6 +100,7 @@
       \begin{equation}
         \alpha_1(-2)^n+\alpha_2n(-2)^n+\alpha_3n^2(2)^n+\alpha_4(1)^n+\alpha_5n(1)^n+\alpha_6(7)^n
       \end{equation}
+      \pagebreak
 
     \item Determine the general solution of the recurrence relation $A_n = 256A_{n-4}$
       \begin{itemize}
@@ -113,7 +114,6 @@
          \end{equation}
       \end{itemize}
 
-      \pagebreak
     \item Solve the homogeneous recurrence question:
       \begin{itemize}
       \item $f_n = f_{n-1} + 4 f_{n-2} + 2 f_{n-3}$
@@ -131,6 +131,7 @@
       \end{itemize}
   \end{enumerate}
 \end{problem} 
+\pagebreak
 
 
 %----------------------------------------------------------
@@ -164,7 +165,6 @@
 
     \end{enumerate}
 
-    \pagebreak
   \item Find a particular solution of the recurrence
     \begin{equation*}
       t_n = 4t_{n-1} - 4t_{n-2} + 2^{n}
@@ -184,6 +184,7 @@
 \end{enumerate}
   
 \end{problem}
+\pagebreak
 
 
 %----------------------------------------------------------
@@ -216,7 +217,6 @@
       \item $O(n)$ = Number of ways to tile a $n \times 1$ strip ending in an orange tile
       \item $L(n)$ = Number of ways to tile a $n \times 1$ strip ending in a lavender tile
     \end{enumerate}
-    \pagebreak
 
   \item Recurrence per state:
     \begin{enumerate}
@@ -238,6 +238,8 @@
     \begin{itemize}
       \item $T(n)$ = $G(n) + B(n) + R(n) + P(n) + O(n) + L(n)$
     \end{itemize}
+    \pagebreak
+
   \item Initial Conditions:
     \begin{enumerate}
       \item $n$ = 1
@@ -256,8 +258,8 @@
         \begin{itemize}
           \item GG and BB are allowed
         \end{itemize}
-      \item $P(2)$ = 1
       \item $R(2)$ = $G(1) + R(1) + P(1) + O(1) + B(1) + L(1)$ = 3
+      \item $P(2)$ = 1
       \item $O(2)$ = 1
       \item $L(2)$ = 0 \Rightarrow\space Since Lavender is a 3x1 tile it cannot be placed in a 2x1 strip
         \begin{itemize}
@@ -268,8 +270,8 @@
         \begin{itemize}
           \item $G(3)$ = $R(2) + O(2) + L(2) + R(1) + O(1) + L(1)$ = 5
           \item $B(3)$ = $R(2) + O(2) + L(2) + R(1) + O(1) + L(1)$ = 5
-          \item $P(3)$ = $R(2) + O(2) + L(2)$ = 4
           \item $R(3)$ = $G(2) + R(2) + P(2) + O(2) + B(2) + L(2)$ = 7
+          \item $P(3)$ = $R(2) + O(2) + L(2)$ = 4
           \item $O(3)$ = $G(2) + R(2) + P(2) + O(2) + B(2) + L(2)$ = 7
           \item $L(3)$ = 1
             \begin{itemize}
@@ -295,4 +297,7 @@ to help with particular and general solutions along with Characteristic Equation
 I also used MatLab to check my work for the first problem to realize I forgot how to inverse a matrix
 when I was doing the problem by hand, I had to look at my EE 020B (Applied Linear Algebra) 
 notes as a refresher on that topic.
+
+I used the lecture slides to help with the last problem to realize
+that setting up the problem was the most difficult part.
 \end{document}

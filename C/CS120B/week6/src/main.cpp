@@ -57,7 +57,7 @@ bool forceStop = false;
 
 // for ADC SM
 // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
-unsigned short adcValue = map(ADC_read(0), 0, 1023, 0, 20);
+unsigned short adcValue = 0;
 
 // Button SM
 unsigned char Button() { return !GetBit(PINC, 1); }
@@ -72,6 +72,7 @@ int ButtonTick(int state) {
     if (!Button()) {
       state = IDLE;
       forceStop = forceStop ? false : true;
+      lcd_clear();
     }
     break;
   default:
@@ -98,15 +99,15 @@ int ADC_Tick(int state) {
   switch (state) {
   case ADC_READ:
     // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
-    adcValue = map(ADC_read(0), 0, 1023, 0, 20);
-    if (adcValue >= 0 && adcValue <= 9 && !forceStop) {
+    adcValue = map(ADC_read(0), 0, 1023, 0, 21);
+    if (adcValue >= 0 && adcValue <= 9) {
       // TODO: Reverse polarity + make it dynamic
       FPwmL = adcValue;
       FPwmH = 10 - adcValue;
-    } else if (adcValue == 10 || forceStop) {
+    } else if (adcValue == 10) {
       FPwmH = 0;
       FPwmL = 10;
-    } else if (adcValue >= 11 && adcValue <= 20 && !forceStop) {
+    } else if (adcValue >= 11 && adcValue <= 20) {
       FPwmH = adcValue - 10;
       FPwmL = 10 - (adcValue - 10);
     }
@@ -159,9 +160,9 @@ int BuzzerTick(int state) {
 // This one is all new to me
 // Implement logic for LCD to display the ADC value
 // Implement the boolean logic for the button press
+static char buffer1[16];
+static char buffer2[16];
 int LCD_Tick(int state) {
-  static char buffer1[16];
-  static char buffer2[16];
 
   switch (state) {
   case LCD_INIT:
@@ -182,9 +183,10 @@ int LCD_Tick(int state) {
       sprintf(buffer1, "Sys: Testing");
     }
     // Second line
-    sprintf(buffer2, "%d %% ", adcValue);
+    sprintf(buffer2, "%d %% ", FPwmH * 10);
+    // sprintf(buffer2, "%d %% ", adcValue);
 
-    lcd_clear();
+    // lcd_clear();
     lcd_goto_xy(0, 0);
     lcd_write_str(buffer1);
     lcd_goto_xy(1, 0);
@@ -225,7 +227,11 @@ int FanTick(int state) {
 
   switch (state) {
   case FanH:
-    PORTB |= 0x06;
+    if (!forceStop) {
+      PORTB |= 0x06;
+    } else {
+      PORTB &= 0xF9;
+    }
     break;
   case FanL:
     PORTB &= 0xF9;
@@ -262,6 +268,7 @@ int main(void) {
 
   ADC_init(); // initializes ADC
   lcd_init(); // initializes LCD
+  lcd_clear();
 
   // TODO: Initialize tasks here
   //  e.g. tasks[0].period = TASK1_PERIOD

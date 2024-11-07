@@ -54,6 +54,7 @@ enum Fan_States { FAN_INIT, FanH, FanL };
 
 // For button SM
 bool forceStop = false;
+bool forward = false;
 
 // for ADC SM
 // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
@@ -104,10 +105,12 @@ int ADC_Tick(int state) {
       // TODO: Reverse polarity + make it dynamic
       FPwmL = adcValue;
       FPwmH = 10 - adcValue;
+      forward = false;
     } else if (adcValue == 10) {
       FPwmH = 0;
       FPwmL = 10;
     } else if (adcValue >= 11 && adcValue <= 20) {
+      forward = true;
       FPwmH = adcValue - 10;
       FPwmL = 10 - (adcValue - 10);
     }
@@ -228,9 +231,15 @@ int FanTick(int state) {
   switch (state) {
   case FanH:
     if (!forceStop) {
-      PORTB |= 0x06;
+      if (forward) {
+        // Blow mode
+        PORTB |= 0x04;
+      } else {
+        // Suck mode
+        PORTB |= 0x02;
+      }
     } else {
-      PORTB &= 0xF9;
+      PORTB &= 0xF9; // Both bits off
     }
     break;
   case FanL:

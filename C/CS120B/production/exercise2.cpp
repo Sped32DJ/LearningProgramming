@@ -198,9 +198,9 @@ int LCD_Tick(int state) {
   switch (state) {
   case LCD_WRITE:
     if (forceStop) {
-      sprintf(buffer1, "Sys: off");
+      sprintf(buffer1, "Sys: Off");
     } else {
-      sprintf(buffer1, "Sys: Testing");
+      sprintf(buffer1, "Sys: On");
     }
     // Second line
     // sprintf(buffer2, "%d %% ", FPwmH * 10);

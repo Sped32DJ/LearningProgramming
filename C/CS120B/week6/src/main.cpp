@@ -7,7 +7,7 @@
 // TODO: declare variables for cross-task communication
 
 /* TODO: match with how many tasks you have */
-#define NUM_TASKS 5
+#define NUM_TASKS 6
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -23,10 +23,11 @@ const unsigned long GCD_PERIOD = 10; /* TODO: Calulate GCD of tasks */
 const unsigned long BUTTON_PERIOD = 500;
 const unsigned long ADC_PERIOD = 100;
 const unsigned long LCD_PERIOD = 500;
-const unsigned long THERMISTER_PERIOD = 100;
+const unsigned long THERMISTER_PERIOD = 300;
 
 const unsigned long BUZZER_PERIOD = 100;
 const unsigned long BUZZER_PWM_PERIOD = 1000;
+unsigned int Temp = 10;
 
 const unsigned long FAN_PERIOD = 10;
 // const unsigned long FAN_PWM_PERIOD = 100;
@@ -79,6 +80,36 @@ int ButtonTick(int state) {
     break;
   default:
     state = IDLE;
+    break;
+  }
+  return state;
+}
+
+int getTemp() {
+  double tempK = log(10000.0 * ((1024.0 / ADC_read(2) - 1)));
+
+  tempK = 1.0 / (0.001129148 +
+                 (0.000234125 + (0.0000000876741 * tempK * tempK)) * tempK);
+
+  double tempF = (tempK - 273.15) * (9.0 / 5.0) + 32.0;
+  return ((tempF + 30) * 3) + 59;
+}
+
+int Thermister_Tick(int state) {
+  switch (state) {
+  case THERMISTER_INIT:
+    state = THERMISTER_READ;
+    break;
+  case THERMISTER_READ:
+    state = THERMISTER_READ;
+    break;
+  default:
+    state = THERMISTER_INIT;
+    break;
+  }
+  switch (state) {
+  case THERMISTER_READ:
+    Temp = getTemp();
     break;
   }
   return state;
@@ -144,20 +175,8 @@ int BuzzerTick(int state) {
     state = BUZZER_OFF;
     break;
   case BUZZER_ON:
-    if (buzz < BPwmH) {
-      state = BUZZER_ON;
-    } else {
-      state = BUZZER_OFF;
-      buzz = 0;
-    }
     break;
   case BUZZER_OFF:
-    if (buzz < BPwmL) {
-      state = BUZZER_OFF;
-    } else {
-      state = BUZZER_ON;
-      buzz = 0;
-    }
     break;
   default:
     state = BUZZER_INIT;
@@ -180,7 +199,6 @@ int BuzzerTick(int state) {
 // Implement the boolean logic for the button press
 static char buffer1[16];
 static char buffer2[16];
-static char compare[16];
 int LCD_Tick(int state) {
   lcd_clear();
 
@@ -205,15 +223,15 @@ int LCD_Tick(int state) {
     // Second line
     // sprintf(buffer2, "%d %% ", FPwmH * 10);
     if (adcValue < 4) {
-      sprintf(buffer2, "Rev-Hi");
+      sprintf(buffer2, "Rev-Hi       %dF", Temp);
     } else if (adcValue < 9) {
-      sprintf(buffer2, "Rev-Low");
+      sprintf(buffer2, "Rev-Low      %dF", Temp);
     } else if (adcValue < 12) {
-      sprintf(buffer2, "Neutral");
+      sprintf(buffer2, "Neutral      %dF", Temp);
     } else if (adcValue < 16) {
-      sprintf(buffer2, "Fwd-Low");
+      sprintf(buffer2, "Fwd-Low      %dF", Temp);
     } else {
-      sprintf(buffer2, "Fwd-Hi");
+      sprintf(buffer2, "Fwd-Hi       %dF", Temp);
     }
 
     // lcd_clear();
@@ -352,10 +370,15 @@ int main(void) {
   tasks[4].elapsedTime = tasks[4].period;
   tasks[4].TickFct = &FanTick;
 
+  tasks[5].period = THERMISTER_PERIOD;
+  tasks[5].state = THERMISTER_INIT;
+  tasks[5].elapsedTime = tasks[5].period;
+  tasks[5].TickFct = &Thermister_Tick;
+
   TimerSet(GCD_PERIOD);
   TimerOn();
-  static char buffer1[16];
-  static char buffer2[16];
+  // static char buffer1[16];
+  // static char buffer2[16];
 
   while (1) {
   }

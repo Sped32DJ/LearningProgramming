@@ -102,14 +102,14 @@ int ADC_Tick(int state) {
   case ADC_READ:
     // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
     adcValue = map(ADC_read(0), 0, 1023, 0, 21);
-    if (adcValue >= 0 && adcValue < 8) {
+    if (adcValue >= 0 && adcValue < 9) {
       // Exercise 2 stuff
-      if (adcValue < 5) {
-        FPwmH = 4;
-        FPwmL = 6;
-      } else {
+      if (adcValue < 4) {
         FPwmH = 9;
         FPwmL = 1;
+      } else {
+        FPwmH = 3;
+        FPwmL = 7;
       }
       // FPwmL = adcValue;
       // FPwmH = 10 - adcValue;
@@ -120,11 +120,11 @@ int ADC_Tick(int state) {
     } else {
       forward = true;
       if (adcValue < 16) {
-        FPwmH = 4;
-        FPwmL = 6;
+        FPwmH = 3;
+        FPwmL = 7;
       } else {
-        FPwmH = 9;
-        FPwmL = 1;
+        FPwmH = 10;
+        FPwmL = 0;
       }
       // FPwmH = adcValue - 10;
       // FPwmL = 10 - (adcValue - 10);
@@ -204,9 +204,9 @@ int LCD_Tick(int state) {
     }
     // Second line
     // sprintf(buffer2, "%d %% ", FPwmH * 10);
-    if (adcValue < 5) {
+    if (adcValue < 4) {
       sprintf(buffer2, "Rev-Hi");
-    } else if (adcValue < 8) {
+    } else if (adcValue < 9) {
       sprintf(buffer2, "Rev-Low");
     } else if (adcValue < 12) {
       sprintf(buffer2, "Neutral");

@@ -203,7 +203,7 @@ int LCD_Tick(int state) {
 // Fan SM
 unsigned int fanTime = 0;
 int FanTick(int state) {
-  //++fanTime;
+  ++fanTime;
 
   switch (state) {
   case FAN_INIT:

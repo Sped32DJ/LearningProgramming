@@ -241,7 +241,7 @@ int FanTick(int state) {
   case FAN_INIT:
     break;
   case FanH:
-    if (!forceStop) {
+    if (!forceStop && FPwmH > 0) {
       // May need to swap the forward and backwards
       if (forward) {
         // Blow mode

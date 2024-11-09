@@ -3,6 +3,7 @@
 #include "periph.h"
 #include "timerISR.h"
 #include <stdio.h>
+#include <string.h>
 
 // TODO: declare variables for cross-task communication
 
@@ -118,6 +119,7 @@ int Thermister_Tick(int state) {
 // ADC-Potentiometer SM
 // Display Off/on/testing states
 int ADC_Tick(int state) {
+
   switch (state) {
   case ADC_INIT:
     state = ADC_READ;
@@ -169,22 +171,55 @@ int ADC_Tick(int state) {
 
 // Implement logic for buzzer to go off
 unsigned short buzz = 0;
+unsigned short lbuzz = 0;
+unsigned short sbuzz = 0;
+unsigned int buzzTime = 0;
 int BuzzerTick(int state) {
+  ++buzzTime;
+
   switch (state) {
   case BUZZER_INIT:
     state = BUZZER_OFF;
+    buzzTime = 0;
+    sbuzz = 0;
+    lbuzz = 0;
     break;
   case BUZZER_ON:
+    if (buzzTime <= BPwmH) {
+      state = BUZZER_ON;
+    } else {
+      buzzTime = 0;
+      state = BUZZER_OFF;
+    }
     break;
   case BUZZER_OFF:
+    if (buzzTime <= BPwmL) {
+      state = BUZZER_OFF;
+    } else {
+      buzzTime = 0;
+      state = BUZZER_ON;
+    }
     break;
   default:
     state = BUZZER_INIT;
     break;
   }
+
+  //  if (sbuzz) {
+  //    BPwmH = 1;
+  //    BPwmL = 9;
+  //  } else if (lbuzz) {
+  //    BPwmH = 5;
+  //    BPwmL = 5;
+  //  } else {
+  //    BPwmH = 0;
+  //    BPwmL = 0;
+  //  }
+
   switch (state) {
   case BUZZER_ON:
-    PORTB |= 0x01;
+    // PORTB |= 0x01;
+    PORTB &= 0xFE;
     break;
   case BUZZER_OFF:
     PORTB &= 0xFE;
@@ -199,6 +234,7 @@ int BuzzerTick(int state) {
 // Implement the boolean logic for the button press
 static char buffer1[16];
 static char buffer2[16];
+static char prevBuffer2[16];
 int LCD_Tick(int state) {
   lcd_clear();
 

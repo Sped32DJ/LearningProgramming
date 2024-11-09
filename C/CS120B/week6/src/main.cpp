@@ -19,7 +19,7 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 1; /* TODO: Calulate GCD of tasks */
+const unsigned long GCD_PERIOD = 10; /* TODO: Calulate GCD of tasks */
 const unsigned long BUTTON_PERIOD = 500;
 const unsigned long ADC_PERIOD = 100;
 const unsigned long LCD_PERIOD = 500;
@@ -28,8 +28,8 @@ const unsigned long THERMISTER_PERIOD = 100;
 const unsigned long BUZZER_PERIOD = 100;
 const unsigned long BUZZER_PWM_PERIOD = 1000;
 
-const unsigned long FAN_PERIOD = 1;
-const unsigned long FAN_PWM_PERIOD = 10;
+const unsigned long FAN_PERIOD = 10;
+// const unsigned long FAN_PWM_PERIOD = 100;
 
 // PWM Values
 // FAN PWM
@@ -187,7 +187,8 @@ int LCD_Tick(int state) {
     }
     // Second line
     sprintf(buffer2, "%d %% ", FPwmH * 10);
-    // sprintf(buffer2, "%d %% ", adcValue);
+    // sprintf(buffer2, "%d %% %d ", FPwmH * 10, FPwmL * 10);
+    //  sprintf(buffer2, "%d %% ", adcValue);
 
     // lcd_clear();
     lcd_goto_xy(0, 0);
@@ -202,25 +203,33 @@ int LCD_Tick(int state) {
 // Fan SM
 unsigned int fanTime = 0;
 int FanTick(int state) {
+  //++fanTime;
+
   switch (state) {
   case FAN_INIT:
-    state = FanH;
+    state = FanL;
     fanTime = 0;
     break;
   case FanH:
-    if (fanTime < FPwmH) {
-      state = FanH;
-    } else {
-      state = FanL;
+    if (FPwmH == 0) {
       fanTime = 0;
+      state = FanL;
+    } else if (fanTime <= FPwmH) {
+      state = FanH;
+    } else if (fanTime) {
+      fanTime = 0;
+      state = FanL;
     }
     break;
   case FanL:
-    if (fanTime < FPwmL) {
+    if (FPwmL == 0) {
+      fanTime = 0;
+      state = FanH;
+    } else if (fanTime <= FPwmL) {
       state = FanL;
     } else {
-      state = FanH;
       fanTime = 0;
+      state = FanH;
     }
     break;
   default:
@@ -229,14 +238,22 @@ int FanTick(int state) {
   }
 
   switch (state) {
+  case FAN_INIT:
+    break;
   case FanH:
     if (!forceStop) {
+      // May need to swap the forward and backwards
       if (forward) {
         // Blow mode
-        PORTB |= 0x04;
-      } else {
+        PORTB |= 0b00000010;
+        PORTB &= 0b11111011;
+        break;
+      } else if (!forward) {
         // Suck mode
-        PORTB |= 0x02;
+        PORTB |= 0b00000100;
+        PORTB &= 0b11111101;
+
+        break;
       }
     } else {
       PORTB &= 0xF9; // Both bits off

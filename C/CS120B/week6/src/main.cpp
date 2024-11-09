@@ -53,7 +53,8 @@ enum Fan_States { FAN_INIT, FanH, FanL };
 // Variables
 
 // For button SM
-bool forceStop = false;
+// The system begins initially off
+bool forceStop = true;
 bool forward = false;
 
 // for ADC SM
@@ -101,18 +102,32 @@ int ADC_Tick(int state) {
   case ADC_READ:
     // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
     adcValue = map(ADC_read(0), 0, 1023, 0, 21);
-    if (adcValue >= 0 && adcValue <= 9) {
-      // TODO: Reverse polarity + make it dynamic
-      FPwmL = adcValue;
-      FPwmH = 10 - adcValue;
+    if (adcValue >= 0 && adcValue < 8) {
+      // Exercise 2 stuff
+      if (adcValue < 5) {
+        FPwmH = 4;
+        FPwmL = 6;
+      } else {
+        FPwmH = 9;
+        FPwmL = 1;
+      }
+      // FPwmL = adcValue;
+      // FPwmH = 10 - adcValue;
       forward = false;
-    } else if (adcValue == 10) {
+    } else if (adcValue < 12) {
       FPwmH = 0;
       FPwmL = 10;
-    } else if (adcValue >= 11 && adcValue <= 20) {
+    } else {
       forward = true;
-      FPwmH = adcValue - 10;
-      FPwmL = 10 - (adcValue - 10);
+      if (adcValue < 16) {
+        FPwmH = 4;
+        FPwmL = 6;
+      } else {
+        FPwmH = 9;
+        FPwmL = 1;
+      }
+      // FPwmH = adcValue - 10;
+      // FPwmL = 10 - (adcValue - 10);
     }
 
     break;
@@ -165,7 +180,9 @@ int BuzzerTick(int state) {
 // Implement the boolean logic for the button press
 static char buffer1[16];
 static char buffer2[16];
+static char compare[16];
 int LCD_Tick(int state) {
+  lcd_clear();
 
   switch (state) {
   case LCD_INIT:
@@ -186,9 +203,18 @@ int LCD_Tick(int state) {
       sprintf(buffer1, "Sys: Testing");
     }
     // Second line
-    sprintf(buffer2, "%d %% ", FPwmH * 10);
-    // sprintf(buffer2, "%d %% %d ", FPwmH * 10, FPwmL * 10);
-    //  sprintf(buffer2, "%d %% ", adcValue);
+    // sprintf(buffer2, "%d %% ", FPwmH * 10);
+    if (adcValue < 5) {
+      sprintf(buffer2, "Rev-Hi");
+    } else if (adcValue < 8) {
+      sprintf(buffer2, "Rev-Low");
+    } else if (adcValue < 12) {
+      sprintf(buffer2, "Neutral");
+    } else if (adcValue < 16) {
+      sprintf(buffer2, "Fwd-Low");
+    } else {
+      sprintf(buffer2, "Fwd-Hi");
+    }
 
     // lcd_clear();
     lcd_goto_xy(0, 0);

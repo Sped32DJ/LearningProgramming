@@ -1,12 +1,14 @@
+#include "LCD.h"
 #include "helper.h"
 #include "periph.h"
 #include "timerISR.h"
+#include <stdio.h>
+#include <string.h>
 
-// TODO: Change this depending on which exercise you are doing.
-// Exercise 1: 3 tasks
-// Exercise 2: 5 tasks
-// Exercise 3: 7 tasks
-#define NUM_TASKS 7
+// TODO: declare variables for cross-task communication
+
+/* TODO: match with how many tasks you have */
+#define NUM_TASKS 6
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -18,468 +20,441 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 1;
-const unsigned long SNAR_PERIOD = 1000;
-const unsigned long DISP_PERIOD = 1;
-const unsigned long LEFT_PERIOD = 200;
+const unsigned long GCD_PERIOD = 10; /* TODO: Calulate GCD of tasks */
+const unsigned long BUTTON_PERIOD = 500;
+const unsigned long ADC_PERIOD = 100;
+const unsigned long LCD_PERIOD = 500;
+const unsigned long THERMISTER_PERIOD = 300;
 
-const unsigned long RED_PERIOD = 1;
-const unsigned long RED_PWN = 10;
+const unsigned long BUZZER_PERIOD = 100;
 
-const unsigned long GREEN_PERIOD = 1;
-const unsigned long GREEN_PWN = 10;
+unsigned int Temp = 10;
 
-// remove const for ex3
-unsigned int threhold_close = 8;
-unsigned int threhold_far = 12;
+const unsigned long FAN_PERIOD = 10;
+// const unsigned long FAN_PWM_PERIOD = 100;
 
-// Red iterator
-int j = 0;
-unsigned char RedH = 0;
-unsigned char RedL = 0;
+// PWM Values
+// FAN PWM
+unsigned short FPwmH = 0;
+unsigned short FPwmL = 0;
 
-// Green iterator
-int k = 0;
-unsigned char GreenH = 0;
-unsigned char GreenL = 0;
+// Buzzer PWM
+unsigned short BPwmH = 0;
+unsigned short BPwmL = 10;
 
-// Exercise 3
-const unsigned long RIGHT_PERIOD = 200;
-const unsigned long BLUE_PERIOD = 250;
+bool sbuzz = 0;
 
-unsigned char BlueH = 0;
-unsigned char BlueL = 0;
-unsigned int rightWaitThree = 15;
+task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
-task tasks[NUM_TASKS]; // declared task array with NUM_TASKS amount of tasks
+// States
+enum Button_States { IDLE, HOLD };
+enum ADC_States { ADC_INIT, ADC_READ };
+enum Buzzer_States {
+  BUZZER_INIT,
+  BUZZER_IDLE,
+  BUZZER_BLIP,
+  BUZZER_OVERHEAT,
+  BUZZER_OFF
+};
+enum LCD_States { LCD_INIT, LCD_WRITE };
+enum Thermister_States { THERMISTER_INIT, THERMISTER_READ };
+enum Fan_States { FAN_INIT, FanH, FanL };
 
-enum SNAR_States { SonarInit, SONAR_S1 };
-volatile double distance = 0;
-unsigned char in_distance = 69;
-unsigned char cm_distance = 169;
+// Variables
 
-enum DISP_States { displayInit, disp_S1, disp_S2, disp_S3, disp_S4 };
-bool isInches = false; // default metric (yucky); true = imperial
+// For button SM
+// The system begins initially off
+bool forceStop = true;
+bool overHeat = false;
+bool forward = false;
 
-enum Left_States { leftInit, Left_S1, Left_S2 };
-unsigned char LeftButton() { return !GetBit(PINC, 1); }
+// for ADC SM
+// The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
+unsigned short adcValue = 0;
 
-enum Red_States { RedInit, RPwmH, RPwmL };
-enum Green_States { GreenInit, GPwmH, GPwmL };
-
-enum Right_States { rightInit, Right_S1, Right_S2 };
-unsigned char RightButton() { return !GetBit(PINC, 0); }
-
-enum Blue_States { BlueInit, BPwmH, BPwmL };
-
-// Tick Functions
-int sonar_TickFct(int state) {
-  // Transitions
+// Button SM
+unsigned char Button() { return !GetBit(PINC, 1); }
+int ButtonTick(int state) {
   switch (state) {
-  case SonarInit:
-    state = SONAR_S1;
+  case IDLE:
+    if (Button()) {
+      state = HOLD;
+    }
     break;
-  case SONAR_S1:
-    state = SONAR_S1;
+  case HOLD:
+    if (!Button()) {
+      state = IDLE;
+      forceStop = forceStop ? false : true;
+      sbuzz = true;
+      lcd_clear();
+    }
     break;
   default:
-    state = SonarInit;
-    break;
-  }
-
-  // State Actions
-  switch (state) {
-  case SONAR_S1:
-    // sonar_read() outputs cm by default + .50 rounding
-    distance = sonar_read();
-    in_distance = int(distance / 2.54);
-    cm_distance = int(distance);
-
-    // NOTE: Hopefully this works soon
-    // serial_println(in_distance);
-    if (cm_distance < threhold_close && BlueH == 0) {
-
-      RedH = 10;
-      RedL = 0;
-
-      GreenH = 0;
-      GreenL = 10;
-      PORTC &= 0xEF; // Turn off green LED
-    } else if ((cm_distance >= threhold_close) &&
-               (cm_distance <= threhold_far) && BlueH == 0) {
-      PORTC &= 0xF7; // Turn off Red LED
-      PORTC &= 0xEF; // Turn off green LED
-
-      RedH = 9;
-      RedL = 1;
-
-      GreenH = 3;
-      GreenL = 7;
-    } else if (cm_distance > threhold_far && BlueH == 0) {
-      RedH = 0;
-      RedL = 10;
-
-      GreenH = 10;
-      GreenL = 0;
-    }
-
+    state = IDLE;
     break;
   }
   return state;
 }
 
-int display_TickFct(int state) {
-  // Transitions
-  switch (state) {
-  case displayInit:
-    state = disp_S1;
-    break;
+int getTemp() {
+  double tempK = log(10000.0 * ((1024.0 / ADC_read(2) - 1)));
 
-    // Transitions into each of the 4 digits
-  case disp_S1:
-    state = disp_S2;
+  tempK = 1.0 / (0.001129148 +
+                 (0.000234125 + (0.0000000876741 * tempK * tempK)) * tempK);
+
+  double tempF = (tempK - 273.15) * (9.0 / 5.0) + 32.0;
+  return ((tempF + 30) * 3) + 59;
+}
+
+int Thermister_Tick(int state) {
+  switch (state) {
+  case THERMISTER_INIT:
+    state = THERMISTER_READ;
     break;
-  case disp_S2:
-    state = disp_S3;
-    break;
-  case disp_S3:
-    state = disp_S4;
-    break;
-  case disp_S4:
-    state = disp_S1;
+  case THERMISTER_READ:
+    state = THERMISTER_READ;
     break;
   default:
-    state = displayInit;
+    state = THERMISTER_INIT;
     break;
   }
-
-  // Actions
   switch (state) {
-  case displayInit:
-    break;
-  case disp_S1:
-    // Goes left to right
-    outNum(((((isInches) ? in_distance : cm_distance)) / 1000) % 10);
-    // D# ports are active low..
-    PORTB = (PORTB & 0xC3) | 0x1C; // Enable active low left most digit
-    break;
-  case disp_S2:
-    outNum(((((isInches) ? in_distance : cm_distance)) / 100) % 10);
-    PORTB = (PORTB & 0xC3) | 0x2C;
-    break;
-  case disp_S3:
-    outNum(((((isInches) ? in_distance : cm_distance)) / 10) % 10);
-    PORTB = (PORTB & 0xC3) | 0x34;
-    break;
-  case disp_S4:
-    outNum((((isInches) ? in_distance : cm_distance)) % 10);
-
-    PORTB = (PORTB & 0xC3) | 0x38; // Enable active low right most digit
-    break;
-  default:
+  case THERMISTER_READ:
+    Temp = getTemp();
     break;
   }
   return state;
 }
 
-// Only two states, should technically work perfectly
-int left_TckFct(int state) {
-  // Transitions
+// ADC-Potentiometer SM
+// Display Off/on/testing states
+int ADC_Tick(int state) {
+
   switch (state) {
-  case leftInit:
-    state = Left_S1;
+  case ADC_INIT:
+    state = ADC_READ;
     break;
-  case Left_S1:
-    if (LeftButton()) {
-      state = Left_S2;
-    }
-    break;
-  case Left_S2:
-    if (!LeftButton()) {
-      state = Left_S1;
-      // During release transition, it flips the bit
-      isInches = !isInches;
-    }
+  case ADC_READ:
+    state = ADC_READ;
     break;
   default:
-    state = leftInit;
+    state = ADC_INIT;
     break;
   }
-
-  // Action States
   switch (state) {
-  case leftInit:
-    break;
-  case Left_S1:
-    break;
-  case Left_S2:
-    break;
-  }
-  return state;
-}
-
-int red_TckFct(int state) {
-  // Transitions
-  switch (state) {
-  case RedInit:
-    j = 0;
-    state = RPwmH;
-    break;
-  case RPwmH:
-    if (j < RedH) {
-      state = RPwmH;
-    } else {
-      state = RPwmL;
-      j = 0;
-    }
-    break;
-  case RPwmL:
-    if (j < RedL) {
-      state = RPwmL;
-    } else {
-      state = RPwmH;
-      j = 0;
-    }
-    break;
-  default:
-    state = RedInit;
-    break;
-  }
-
-  // State Actions
-  switch (state) {
-  case RedInit:
-    PORTC &= 0xF7; // Turn off Red LED
-    ++j;
-    break;
-  case RPwmH:
-    if (rightWaitThree < 15) {
-      PORTC &= 0xF7;
-    } else {
-      PORTC |= 0x08; // Turn on Red LED
-    }
-    ++j;
-    break;
-  case RPwmL:
-    PORTC &= 0xF7; // Turn off Red LED
-    ++j;
-    break;
-  default:
-    break;
-  }
-  return state;
-}
-
-int green_TckFct(int state) {
-  // Transitions
-  switch (state) {
-  case GreenInit:
-    state = GPwmH;
-    k = 0;
-    break;
-  case GPwmH:
-    if (k < GreenH) {
-      state = GPwmH;
-    } else {
-      state = GPwmL;
-      k = 0;
-    }
-    break;
-  case GPwmL:
-    if (k < GreenL) {
-      state = GPwmL;
-    } else {
-      state = GPwmH;
-      k = 0;
-    }
-    break;
-  default:
-    state = GreenInit;
-    break;
-  }
-
-  // State Actions
-  switch (state) {
-  case GreenInit:
-    PORTC &= 0xEF; // Turn off green LED
-    break;
-  case GPwmH:
-    // Bandaid ovver the problem
-    if (cm_distance < threhold_close || rightWaitThree < 15) {
-      PORTC &= 0xEF; // Turn off green LED
-    } else {
-      PORTC |= 0x10; // Turn on Green LED
-    }
-    ++k;
-    break;
-  case GPwmL:
-    // Turn off green LED
-    PORTC &= 0xEF;
-    ++k;
-    break;
-  }
-
-  return state;
-}
-
-int right_TckFct(int state) {
-  // Transitions
-  switch (state) {
-  case rightInit:
-    state = Right_S1;
-    break;
-  case Right_S1:
-    if (!RightButton()) {
-      state = Right_S2;
-      rightWaitThree = 0;
-    }
-    break;
-  case Right_S2:
-    if (RightButton()) {
-      threhold_close = cm_distance * 4 / 5;
-      threhold_far = cm_distance * 6 / 5;
-      state = Right_S1;
-    }
-    break;
-  default:
-    state = rightInit;
-    break;
-  }
-
-  // State Actions
-  switch (state) {
-  case Right_S1:
-    if (rightWaitThree < 15) {
-      BlueH = 10;
-      BlueL = 0;
-    } else {
-      rightWaitThree = 16;
-      BlueH = 0;
-      BlueL = 10;
-    }
-    ++rightWaitThree;
-    break;
-  }
-  return state;
-}
-
-unsigned int b = 0;
-int blue_TckFct(int state) {
-  switch (state) {
-  case BlueInit:
-    b = 0;
-    state = BPwmH;
-    break;
-  case BPwmH:
-    if (b < BlueH) {
-      state = BPwmH;
-    } else {
-      state = BPwmL;
-      b = 0;
-    }
-    break;
-
-  case BPwmL:
-    if (b < BlueL) {
-      state = BPwmL;
-    } else {
-      state = BPwmH;
-      b = 0;
-    }
-    break;
-  default:
-    state = BlueInit;
-    break;
-  }
-
-  switch (state) {
-  case BlueInit:
-    break;
-  case BPwmH:
-    ++b;
-    if (rightWaitThree < 15) {
-      if (rightWaitThree % 2 == 0) {
-        PORTC |= 0x20;
+  case ADC_READ:
+    // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
+    adcValue = map(ADC_read(0), 0, 1023, 0, 21);
+    if (adcValue >= 0 && adcValue < 9) {
+      // Exercise 2 stuff
+      if (adcValue < 4) {
+        FPwmH = 9;
+        FPwmL = 1;
       } else {
-        PORTC &= 0xC7;
+        FPwmH = 3;
+        FPwmL = 7;
       }
+      // FPwmL = adcValue;
+      // FPwmH = 10 - adcValue;
+      forward = false;
+    } else if (adcValue < 12) {
+      FPwmH = 0;
+      FPwmL = 10;
+    } else {
+      forward = true;
+      if (adcValue < 16) {
+        FPwmH = 3;
+        FPwmL = 7;
+      } else {
+        FPwmH = 10;
+        FPwmL = 0;
+      }
+      // FPwmH = adcValue - 10;
+      // FPwmL = 10 - (adcValue - 10);
     }
 
     break;
-  case BPwmL:
-    ++b;
-    PORTC &= 0xDF;
+  }
+
+  return state;
+}
+
+// Implement logic for buzzer to go off
+unsigned short buzz = 0;
+bool lbuzz = 0;
+bool isOn = 0;
+unsigned int buzzTime = 0;
+unsigned int j = 0;
+// enum Buzzer_States { BUZZER_INIT, BUZZER_IDLE, BUZZER_BLIP };
+int BuzzerTick(int state) {
+  ++buzzTime;
+  // This causes crashing, I could put a break
+  // But this will keep playing until it cools down
+  while (overHeat) {
+    if (j < 500) {
+      PORTB |= 0x01;
+    } else if (j < 1000) {
+      PORTB &= 0xFE;
+    } else if (j < 1500) {
+      PORTB |= 0x01;
+    } else if (j < 2000) {
+      PORTB &= 0xFE;
+    } else if (j < 2500) {
+      PORTB |= 0x01;
+    } else {
+      PORTB &= 0xFE;
+    }
+    _delay_ms(1);
+    ++j;
+  }
+  overHeat = 0;
+  j = 0;
+
+  switch (state) {
+  case BUZZER_INIT:
+    state = BUZZER_IDLE;
+    buzzTime = 0;
+    sbuzz = 0;
+    lbuzz = 0;
+    break;
+  case BUZZER_IDLE:
+    if (sbuzz) {
+      sbuzz = 0;
+      state = BUZZER_BLIP;
+    } else {
+      state = BUZZER_IDLE;
+    }
+    if (Temp > 75 && !overHeat) {
+      j = 0;
+      overHeat = 1;
+      isOn = 0;
+      state = BUZZER_OVERHEAT;
+    }
+    break;
+  case BUZZER_BLIP:
+    if (sbuzz) {
+      state = BUZZER_BLIP;
+    } else {
+      state = BUZZER_IDLE;
+    }
+    break;
+  default:
+    state = BUZZER_INIT;
+    break;
+  }
+
+  //  if (sbuzz) {
+  //    BPwmH = 1;
+  //    BPwmL = 9;
+  //  } else if (lbuzz) {
+  //    BPwmH = 5;
+  //    BPwmL = 5;
+  //  } else {
+  //    BPwmH = 0;
+  //    BPwmL = 0;
+  //  }
+
+  switch (state) {
+  case BUZZER_BLIP:
+    PORTB |= 0x01;
+    sbuzz = 0;
+    state = BUZZER_IDLE;
+    break;
+  case BUZZER_OFF:
+    PORTB &= 0xFE;
+    break;
+  }
+  return state;
+}
+
+// TODO: Implement LCD Tick function
+// This one is all new to me
+// Implement logic for LCD to display the ADC value
+// Implement the boolean logic for the button press
+static char buffer1[16];
+static char buffer2[16];
+// static char prevBuffer2[16];
+int LCD_Tick(int state) {
+  lcd_clear();
+
+  switch (state) {
+  case LCD_INIT:
+    state = LCD_WRITE;
+    break;
+  case LCD_WRITE:
+    state = LCD_WRITE;
+    break;
+  default:
+    state = LCD_INIT;
+    break;
+  }
+  switch (state) {
+  case LCD_WRITE:
+    if (forceStop || overHeat) {
+      sprintf(buffer1, "Sys: Off");
+    } else {
+      sprintf(buffer1, "Sys: On");
+    }
+    // Second line
+    // sprintf(buffer2, "%d %% ", FPwmH * 10);
+    if (adcValue < 4) {
+      sprintf(buffer2, "Rev-Hi       %dF", Temp);
+    } else if (adcValue < 9) {
+      sprintf(buffer2, "Rev-Low      %dF", Temp);
+    } else if (adcValue < 12) {
+      sprintf(buffer2, "Neutral      %dF", Temp);
+    } else if (adcValue < 16) {
+      sprintf(buffer2, "Fwd-Low      %dF", Temp);
+    } else {
+      sprintf(buffer2, "Fwd-Hi       %dF", Temp);
+    }
+
+    // lcd_clear();
+    lcd_goto_xy(0, 0);
+    lcd_write_str(buffer1);
+    lcd_goto_xy(1, 0);
+    lcd_write_str(buffer2);
+    break;
+  }
+  return state;
+}
+
+// Fan SM
+unsigned int fanTime = 0;
+int FanTick(int state) {
+  ++fanTime;
+
+  switch (state) {
+  case FAN_INIT:
+    state = FanL;
+    fanTime = 0;
+    break;
+  case FanH:
+    if (FPwmH == 0) {
+      fanTime = 0;
+      state = FanL;
+    } else if (fanTime <= FPwmH) {
+      state = FanH;
+    } else if (fanTime) {
+      fanTime = 0;
+      state = FanL;
+    }
+    break;
+  case FanL:
+    if (FPwmL == 0) {
+      fanTime = 0;
+      state = FanH;
+    } else if (fanTime <= FPwmL) {
+      state = FanL;
+    } else {
+      fanTime = 0;
+      state = FanH;
+    }
+    break;
+  default:
+    state = FAN_INIT;
+    break;
+  }
+
+  switch (state) {
+  case FAN_INIT:
+    break;
+  case FanH:
+    if (!forceStop && !overHeat && FPwmH > 0) {
+      // May need to swap the forward and backwards
+      if (forward) {
+        // Blow mode
+        PORTB |= 0b00000010;
+        PORTB &= 0b11111011;
+        break;
+      } else if (!forward) {
+        // Suck mode
+        PORTB |= 0b00000100;
+        PORTB &= 0b11111101;
+
+        break;
+      }
+    } else {
+      PORTB &= 0xF9; // Both bits off
+    }
+    break;
+  case FanL:
+    PORTB &= 0xF9;
+    break;
   }
   return state;
 }
 
 void TimerISR() {
-  for (unsigned int i = 0; i < NUM_TASKS; i++) {
-    // Iterate through each task in the task array
-    if (tasks[i].elapsedTime == tasks[i].period) {
-      // Check if the task is ready to tick
-      tasks[i].state = tasks[i].TickFct(tasks[i].state);
-      // Tick and set the next state for this task
+  for (unsigned int i = 0; i < NUM_TASKS;
+       i++) { // Iterate through each task in the task array
+    if (tasks[i].elapsedTime ==
+        tasks[i].period) { // Check if the task is ready to tick
+      tasks[i].state = tasks[i].TickFct(
+          tasks[i].state);      // Tick and set the next state for this task
       tasks[i].elapsedTime = 0; // Reset the elapsed time for the next tick
     }
-    tasks[i].elapsedTime += GCD_PERIOD;
-    // Increment the elapsed time by GCD_PERIOD
+    tasks[i].elapsedTime +=
+        GCD_PERIOD; // Increment the elapsed time by GCD_PERIOD
   }
 }
 
 int main(void) {
+  // TODO: initialize all your inputs and ouputs
+  DDRB = 0xFF;
+  PORTB = 0x00;
+
+  // All inputs
+  DDRC = 0x00;
+  PORTC = 0xFF;
+
   DDRD = 0xFF;
   PORTD = 0x00;
 
-  DDRB = 0xFE;
-  PORTB = 0x01;
+  ADC_init(); // initializes ADC
+  lcd_init(); // initializes LCD
+  lcd_clear();
 
-  DDRC = 0xFC;
-  PORTC = 0x03;
-
-  ADC_init();   // initializes ADC
-  sonar_init(); // initializes sonar
-                // serial_init(9600); // Helps debugging
-
-  tasks[0].state = SonarInit;
-  tasks[0].period = SNAR_PERIOD;
+  // TODO: Initialize tasks here
+  //  e.g. tasks[0].period = TASK1_PERIOD
+  //  tasks[0].state = ...
+  //  tasks[0].elapsedTime = ...
+  //  tasks[0].TickFct = &task1_tick_function;
+  tasks[0].period = BUTTON_PERIOD;
+  tasks[0].state = IDLE;
   tasks[0].elapsedTime = tasks[0].period;
-  tasks[0].TickFct = &sonar_TickFct;
+  tasks[0].TickFct = &ButtonTick;
 
-  tasks[1].state = displayInit;
-  tasks[1].period = DISP_PERIOD;
+  tasks[1].period = ADC_PERIOD;
+  tasks[1].state = ADC_INIT;
   tasks[1].elapsedTime = tasks[1].period;
-  tasks[1].TickFct = &display_TickFct;
+  tasks[1].TickFct = &ADC_Tick;
 
-  tasks[2].state = leftInit;
-  tasks[2].period = LEFT_PERIOD;
+  tasks[2].period = BUZZER_PERIOD;
+  tasks[2].state = BUZZER_INIT;
   tasks[2].elapsedTime = tasks[2].period;
-  tasks[2].TickFct = &left_TckFct;
+  tasks[2].TickFct = &BuzzerTick;
 
-  tasks[3].state = RedInit;
-  tasks[3].period = RED_PERIOD;
+  tasks[3].period = LCD_PERIOD;
+  tasks[3].state = LCD_INIT;
   tasks[3].elapsedTime = tasks[3].period;
-  tasks[3].TickFct = &red_TckFct;
+  tasks[3].TickFct = &LCD_Tick;
 
-  tasks[4].state = GreenInit;
-  tasks[4].period = GREEN_PERIOD;
+  tasks[4].period = FAN_PERIOD;
+  tasks[4].state = FAN_INIT;
   tasks[4].elapsedTime = tasks[4].period;
-  tasks[4].TickFct = &green_TckFct;
+  tasks[4].TickFct = &FanTick;
 
-  tasks[5].state = rightInit;
-  tasks[5].period = RIGHT_PERIOD;
+  tasks[5].period = THERMISTER_PERIOD;
+  tasks[5].state = THERMISTER_INIT;
   tasks[5].elapsedTime = tasks[5].period;
-  tasks[5].TickFct = &right_TckFct;
-
-  tasks[6].state = BlueInit;
-  tasks[6].period = BLUE_PERIOD;
-  tasks[6].elapsedTime = tasks[6].period;
-  tasks[6].TickFct = &blue_TckFct;
+  tasks[5].TickFct = &Thermister_Tick;
 
   TimerSet(GCD_PERIOD);
   TimerOn();
+  // static char buffer1[16];
+  // static char buffer2[16];
 
-  // loop stays empty
   while (1) {
   }
 

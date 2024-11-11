@@ -27,7 +27,7 @@ const unsigned long LCD_PERIOD = 500;
 const unsigned long THERMISTER_PERIOD = 300;
 
 const unsigned long BUZZER_PERIOD = 100;
-const unsigned long BUZZER_PWM_PERIOD = 1000;
+
 unsigned int Temp = 10;
 
 const unsigned long FAN_PERIOD = 10;
@@ -42,12 +42,20 @@ unsigned short FPwmL = 0;
 unsigned short BPwmH = 0;
 unsigned short BPwmL = 10;
 
+bool sbuzz = 0;
+
 task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
 // States
 enum Button_States { IDLE, HOLD };
 enum ADC_States { ADC_INIT, ADC_READ };
-enum Buzzer_States { BUZZER_INIT, BUZZER_ON, BUZZER_OFF };
+enum Buzzer_States {
+  BUZZER_INIT,
+  BUZZER_IDLE,
+  BUZZER_BLIP,
+  BUZZER_OVERHEAT,
+  BUZZER_OFF
+};
 enum LCD_States { LCD_INIT, LCD_WRITE };
 enum Thermister_States { THERMISTER_INIT, THERMISTER_READ };
 enum Fan_States { FAN_INIT, FanH, FanL };
@@ -57,6 +65,7 @@ enum Fan_States { FAN_INIT, FanH, FanL };
 // For button SM
 // The system begins initially off
 bool forceStop = true;
+bool overHeat = false;
 bool forward = false;
 
 // for ADC SM
@@ -76,6 +85,7 @@ int ButtonTick(int state) {
     if (!Button()) {
       state = IDLE;
       forceStop = forceStop ? false : true;
+      sbuzz = true;
       lcd_clear();
     }
     break;
@@ -171,33 +181,61 @@ int ADC_Tick(int state) {
 
 // Implement logic for buzzer to go off
 unsigned short buzz = 0;
-unsigned short lbuzz = 0;
-unsigned short sbuzz = 0;
+bool lbuzz = 0;
+bool isOn = 0;
 unsigned int buzzTime = 0;
+unsigned int j = 0;
+// enum Buzzer_States { BUZZER_INIT, BUZZER_IDLE, BUZZER_BLIP };
 int BuzzerTick(int state) {
   ++buzzTime;
+  // This causes crashing, I could put a break
+  // But this will keep playing until it cools down
+  while (overHeat) {
+    if (j < 500) {
+      PORTB |= 0x01;
+    } else if (j < 1000) {
+      PORTB &= 0xFE;
+    } else if (j < 1500) {
+      PORTB |= 0x01;
+    } else if (j < 2000) {
+      PORTB &= 0xFE;
+    } else if (j < 2500) {
+      PORTB |= 0x01;
+    } else {
+      PORTB &= 0xFE;
+    }
+    _delay_ms(1);
+    ++j;
+  }
+  overHeat = 0;
+  j = 0;
 
   switch (state) {
   case BUZZER_INIT:
-    state = BUZZER_OFF;
+    state = BUZZER_IDLE;
     buzzTime = 0;
     sbuzz = 0;
     lbuzz = 0;
     break;
-  case BUZZER_ON:
-    if (buzzTime <= BPwmH) {
-      state = BUZZER_ON;
+  case BUZZER_IDLE:
+    if (sbuzz) {
+      sbuzz = 0;
+      state = BUZZER_BLIP;
     } else {
-      buzzTime = 0;
-      state = BUZZER_OFF;
+      state = BUZZER_IDLE;
+    }
+    if (Temp > 75 && !overHeat) {
+      j = 0;
+      overHeat = 1;
+      isOn = 0;
+      state = BUZZER_OVERHEAT;
     }
     break;
-  case BUZZER_OFF:
-    if (buzzTime <= BPwmL) {
-      state = BUZZER_OFF;
+  case BUZZER_BLIP:
+    if (sbuzz) {
+      state = BUZZER_BLIP;
     } else {
-      buzzTime = 0;
-      state = BUZZER_ON;
+      state = BUZZER_IDLE;
     }
     break;
   default:
@@ -217,9 +255,10 @@ int BuzzerTick(int state) {
   //  }
 
   switch (state) {
-  case BUZZER_ON:
-    // PORTB |= 0x01;
-    PORTB &= 0xFE;
+  case BUZZER_BLIP:
+    PORTB |= 0x01;
+    sbuzz = 0;
+    state = BUZZER_IDLE;
     break;
   case BUZZER_OFF:
     PORTB &= 0xFE;
@@ -234,7 +273,7 @@ int BuzzerTick(int state) {
 // Implement the boolean logic for the button press
 static char buffer1[16];
 static char buffer2[16];
-static char prevBuffer2[16];
+// static char prevBuffer2[16];
 int LCD_Tick(int state) {
   lcd_clear();
 
@@ -251,7 +290,7 @@ int LCD_Tick(int state) {
   }
   switch (state) {
   case LCD_WRITE:
-    if (forceStop) {
+    if (forceStop || overHeat) {
       sprintf(buffer1, "Sys: Off");
     } else {
       sprintf(buffer1, "Sys: On");
@@ -321,7 +360,7 @@ int FanTick(int state) {
   case FAN_INIT:
     break;
   case FanH:
-    if (!forceStop && FPwmH > 0) {
+    if (!forceStop && !overHeat && FPwmH > 0) {
       // May need to swap the forward and backwards
       if (forward) {
         // Blow mode

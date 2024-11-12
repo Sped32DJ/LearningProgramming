@@ -1,0 +1,195 @@
+% https://www.overleaf.com/learn/latex/Main_Page <-- latex resources
+% <--- percent sign starts a comment line in Latex
+
+%----------------------------------------------------------------------------------
+%
+% This is a sample assignment .tex file. Put your name, assignment number and the
+% due date below, as shown.
+% If you work with a partner, create another line with command \student{his/her name}
+%
+% Before you typeset your own assignment try to preview and print this one. If you
+% have LaTeX installed on your machine, you need to:
+%   1. Save this in a file, say hw.tex
+%   2. Run "pdflatex hw"
+%	3. LaTeX produces a pdf file that you can view with/print any pdf viewer
+%
+% Alternatively you can also compile and preview it in overleaf.com, the online
+% LaTeX editor.
+%
+
+%----------------------------------------------------------------------------------
+
+\documentclass[11pt]{article}
+
+%----------------------------------------------------------------------------------
+% this is a list of latex packages that may be useful in this document
+%----------------------------------------------------------------------------------
+
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{amsfonts,amsmath,latexsym,amssymb,amsthm,enumitem}
+\usepackage[nothing]{algorithm}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usepackage{hyperref}
+%----------------------------------------------------------------------------------
+% some macros below. don't worry about these.
+%----------------------------------------------------------------------------------
+
+
+\newcommand{\student}[1]{{\noindent\Large\em {#1} \hfill}\vskip 0.1in}
+
+\newcommand{\assignment}[1]{\centerline{\large\bf CS111 Homework {#1}}}
+
+\newcommand{\duedate}[1]{{\centerline{due {#1}}}}
+
+\newcommand{\assign}{\,\leftarrow\,}
+
+\newcounter{prnum}
+\setcounter{prnum}{0}
+\newenvironment{problem}{{\vskip 0.2in\noindent\bf Problem
+       \addtocounter{prnum}{1} \arabic{prnum}.}}{\vskip 0.1in}
+
+%----------------------------------------------------------------------------------
+% the actual source for the document starts here
+%----------------------------------------------------------------------------------
+
+\begin{document}
+
+\student{Danny Topete} % <-- Replace with your name
+\vskip 0.1in\noindent\hrule\vskip 0.2in
+\assignment{4}                           % <-- ASSIGNMENT NUMBER ******
+\duedate{Monday, Nov 11th}              % <-- DUE DATE ***************
+
+%----------------------------------------------------------
+
+\begin{problem}
+Give an asymptotic estimate, using the $\theta$-notation, of the number of letters printed by the
+algorithms given below. give a complete justification for your answer, by providing an appropriate recurrence
+equation and its solution.
+
+\begin{enumerate}[label=\alph*)]
+  \item Algorithm $PrintAs(n)$ 
+    \begin{itemize}
+      \item The first part is \Theta(1) it prints A for $n \leq\space 1$ letters 
+      \item The else statement is composed of two parts
+        \begin{enumerate}[label=\alph*)]
+          \item First for loop that goes for $\Theta(n^3)$ times
+          \item Second loop happens 8 times and calls $PrintAs(n/2)$
+        \end{enumerate}
+      \item Recurrence equation: $T(n) = n^3 + 8T(\frac{n}{2})$
+      \item Applying Master's Theorem
+        \begin{itemize}
+          \item $a = 8, b = 2, d = 3, f(n) = n^3$
+          \item $a = b^d \implies 8 = 2^3 \implies f(n) = \Theta(n^3logn)$
+        \end{itemize}
+    \end{itemize}
+  \item Algorithm $PrintBs(n)$
+    \begin{itemize}
+      \item The algorithm begins when $n \geq 4$ Then it branches into 3 for loops
+      \item The first loop prints B $\Theta(n^2)$ times
+      \item The second loop calls $PrintBs(n/2)$ 4 times
+      \item The third loop calls $PrintBs(n/2)$ 8 times
+      \item This forms the recurrence equation $T(n) = n^2 + 4T(\frac{n}{2}) + 8T(\frac{n}{2})$
+      \item Applying Master's Theorem
+        \begin{itemize}
+          \item $a = 4, b = 2, d = 2, f(n) = n^2$
+          \item $a = b^d \implies 12 > 2^2$ so $f(n) = \Theta(n^{log_2(12)})$ \Rightarrow $f(n) = \Theta(n^{3.58})$
+        \end{itemize}
+    \end{itemize}
+  \item Algorithm PrintCs
+    \begin{itemize}
+      \item For the first $n \leq 2$ it prints C once \Rightarrow $\Theta(1)$
+      \item A for loop runs 10 times and prints C \Rightarrow $\Theta(1)$
+      \item Then it calls $PrintCs(n/2)$ 3 times \Rightarrow $3T(\frac{n}{3})$
+      \item Making the recurrence equation $T(n) = 3T(\frac{n}{3}) + 10$
+      \item Applying Master's Theorem
+        \begin{itemize}
+          \item $a = 3, b = 3, d = 0 \implies$ $3 > 3^0$ so $f(n) = \Theta(n^{log_3(3)})$ \Rightarrow $f(n) = \Theta(n)$
+        \end{itemize}
+    \end{itemize}
+    \pagebreak
+
+  \item Algorithm PrintDs
+    \begin{itemize}
+      \item This algorithm only runs $n \geq 5$
+      \item It will always print D twice $\implies \Theta(1)$
+      \item $x$ begins as 1, and it has two options, to either be even or odd.
+      \item If $x$ is \textbf{even}, it will call $PrintDs(n/5)$ 3 times $\implies 3T(\frac{n}{5})$; (then iterate $x += 3$)
+      \item If $x$ is \textbf{odd}, it will call $PrintDs(n/5)$ 3 times $\implies 3T(\frac{n}{5})$; (then iterate $x = 5x + 3$)
+      \item Therefore, the recurrence will always be $3T(\frac{n}{5}) + 2$
+      \item Applying Master's Theorem
+        \begin{itemize}
+          \item $a = 3, b = 5, d = 0 \implies 3 > 5^0$ so $f(n) = \Theta(n^{log_3(5)})$ \Rightarrow $f(n) = \Theta(n^{1.46})$
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+\end{problem}
+
+
+%----------------------------------------------------------
+
+\begin{problem} 
+A school has three clubs: the Art Club, the Band, and the Computer Science Club, with a total of 129 members across all clubs. The following information is known about the memberships of these clubs:
+\\ 
+
+  From the prompt we can imply the following:
+\begin{enumerate}
+  \item Declaring variables for cardinality: Art Club = A; Band = B; Computer Science Club = C
+  \item From the prompt, we can imply $129 = |A \cup B \cup C|$
+  \item |B| = 2|A|, |C| = 3|A|; (and obviously |A| = |A|)
+  \item 18 = $|A \cap B|$; 20 = $|A \cap C|$; 24 = $|B \cap C|$; (members that belong to two clubs)
+  \item 11 = $|A \cap B \cap C|$; (belong to all three clubs)
+\end{enumerate}
+\begin{itemize}
+  \item With the given information, we know $|A \cup B \cup C|$ = $|A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$
+  \item Given the above information and substituting for |A|
+    \Rightarrow 129 = |A| + 2|A| + 3|A| - 18 - 20 - 24 + 11 
+  \item \Rightarrow 129 = 6|A| - 62 + 11 \Rightarrow 180 = 6|A| \Rightarrow |A| = 30
+  \item Given: |B| = 2|A|, |C| = 3|A| \Rightarrow |B| = 60, |C| = 90
+\end{itemize}
+
+\textbf{Conclusion}: The Art Club has 30 members, the Band has 60 members, and the Computer Science Club has 90 members.
+\end{problem}
+\pagebreak
+
+
+%----------------------------------------------------------
+\begin{problem}
+A pet daycare center is planning a playdate for 50 house dogs from four breeds: Labradors, Cocker Spaniels, Golden Retrievers, and Australian Shepherds. They want to include at least 10 Labradors and no more than 15 Cocker Spaniels. Additionally, the number of Golden Retrievers and Australian Shepherds should each be between 8 and 17.
+
+\noindent How many possible ways are there to select the dogs for the playdate to meet these breed requirements?
+
+\noindent You need to give a complete derivation for the final answer, using the method developed in class. 
+(Brute force listing of all lists will not be accepted.)
+\begin{enumerate}
+  \item \textbf{Declaring Variables}: Labradors = L; Cocker Spaniels = C; Golden Retrievers = G; Australian Shepherds = A
+  \item \textbf{Breed Total}: L + C + G + A = 50
+  \item \textbf{Constraints}: 10 $\leq$ L ; C \leq 15 ; 8 $\leq$ G $\leq$ 17; 8 $\leq$ A $\leq$ 17
+  \item \textbf{Range per Breed}:
+    \begin{itemize}
+      \item L' = L - 10;\quad 0 \leq\space L'
+      \item C' = C;\quad     0 \leq\space C' \leq\space 15
+      \item G' = G - 8;\quad 0 \leq\space G' \leq\space 9
+      \item A' = A - 8;\quad 0 \leq\space A' \leq\space 9
+      \item L' + C' + G' + A' + 8 + 8 + 10 = 50 \Rightarrow L' + C + G' + A' = 24
+    \end{itemize}
+  \item \textbf{Integer Solution using Integer Partition}:
+    \begin{itemize}
+      \item Using the integer partition formula: $m + k - 1 \choose k - 1$
+      \item $24 + 4 - 1 \choose 4 - 1$ = $27 \choose 3$ = $\frac{27!}{24!3!}$ = 2925
+    \end{itemize}
+  \item Therefore, there are \textbf{2925} possible ways to select the dogs for the playdate.
+
+\end{enumerate}
+\end{problem}
+  
+
+%----------------------------------------------------------
+
+\vskip 0.2in
+\paragraph{Academic integrity declaration.}
+  The homework is my own work. I was able to complete it with the help of the discussion slides along with lecture notes.
+  The content was easy to understand after solving the examples that were given in the discussion slides.
+
+\end{document}

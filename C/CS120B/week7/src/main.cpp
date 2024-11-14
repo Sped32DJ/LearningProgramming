@@ -78,10 +78,10 @@ int LButton_Tick(int state) {
       // Only gos into pursuitMode after 1 second
       if (LBcount >= 10) {
         pursuitMode = !pursuitMode;
-        amberMode = false;
+        amberMode = !pursuitMode;
       } else {
         amberMode = !amberMode;
-        pursuitMode = false;
+        pursuitMode = !amberMode;
       }
       state = LB_IDLE;
     } else {

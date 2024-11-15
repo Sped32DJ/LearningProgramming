@@ -30,7 +30,7 @@ enum JOY_STATES { JOY_READ };
 
 // Helper Functions
 bool JButton() { return !GetBit(PINC, 2); }
-bool LButton() { return !GetBit(PINC, 3); }
+bool LButton() { return GetBit(PINC, 3); }
 bool RButton() { return !GetBit(PINC, 4); }
 
 // Helper variables
@@ -84,7 +84,7 @@ int LButton_Tick(int state) {
         pursuitMode = !amberMode;
       }
       state = LB_IDLE;
-    } else {
+    } else if (LButton()) {
       state = LB_HOLD;
     }
     break;
@@ -129,16 +129,33 @@ int RGBTick(int state) {
     }
     break;
   }
+
   switch (state) {
   case RGB_IDLE:
     PORTD &= 0xE3; // 0's out RGB
     break;
   case AMBER:
     // TODO: Use PWM to amber color
-    PORTD = (PORTD & 0b11100111) | 0b00011000;
+    // PORTD = (PORTD & ~0x1C) | 0x18;
+    PORTD = (PORTD & ~0x1C);
+    PORTD |= (1 << PD4);
+    // Configure PWM for PD3 (Green)
+    TCCR2A |= (1 << COM2B1) |
+              (1 << WGM20); // Fast PWM on OCR2A (Red) and OCR2B (Green)
+    TCCR2B |= (1 << CS21);  // Set prescaler to 8 for smooth PWM
+
+    // Set duty cycles to mix red and green for amber color
+    OCR2B = 40; // Set Green brightness (0-255)
     break;
   case PURSUIT:
-    PORTD &= 0xE3; // 0's out RGB
+    // TODO: Actually does the two flashes
+    // This actually enabled on a single press
+    // PORTD &= 0xE3; // 0's out RGB
+    //
+    // Disable PWM on PD3 by clearing the COM2B1 and COM2B0 bits
+    TCCR2A &= ~((1 << COM2B1) | (1 << COM2B0));
+
+    // NOTE: Turns purple sometimes
     if (RGBcount & 0x01) {
       PORTD &= 0xE3; // 0's out RGB
     } else if (RGBcount <= 6) {
@@ -202,6 +219,7 @@ int main(void) {
 
   DDRD = 0xFF;
   PORTD = 0x00;
+
   ADC_init(); // initializes ADC
 
   // TODO: Initialize the buzzer timer/pwm(timer0)
@@ -233,6 +251,10 @@ int main(void) {
   TimerOn();
 
   while (1) {
+    // PORTD |= 0x10; // RED
+    // PORTD |= 0x08; // GREEN
+    // PORTD |= 0x04; // BLUE
+    // PORTD |= 0x20; // Right RED
   }
 
   return 0;

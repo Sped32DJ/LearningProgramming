@@ -30,7 +30,7 @@ enum JOY_STATES { JOY_READ };
 
 // Helper Functions
 bool JButton() { return !GetBit(PINC, 2); }
-bool LButton() { return GetBit(PINC, 3); }
+bool LButton() { return !GetBit(PINC, 3); }
 bool RButton() { return !GetBit(PINC, 4); }
 
 // Helper variables
@@ -159,10 +159,10 @@ int RGBTick(int state) {
     if (RGBcount & 0x01) {
       PORTD &= 0xE3; // 0's out RGB
     } else if (RGBcount <= 6) {
-      PORTD &= 0xF3; // 0-out G&B
+      PORTD &= 0xE3; // 0's out RGB
       PORTD |= 0x04;
     } else if (RGBcount <= 12) {
-      PORTD &= 0xE7; // 0-Out R&G
+      PORTD &= 0xE3; // 0's out RGB
       PORTD |= 0x10; // Blue
     } else {
       RGBcount = 0;

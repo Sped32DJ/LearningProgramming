@@ -30,7 +30,7 @@ enum JOY_STATES { JOY_READ };
 
 // Helper Functions
 bool JButton() { return !GetBit(PINC, 2); }
-bool LButton() { return !GetBit(PINC, 3); }
+bool LButton() { return GetBit(PINC, 3); }
 bool RButton() { return !GetBit(PINC, 4); }
 
 // Helper variables
@@ -77,10 +77,10 @@ int LButton_Tick(int state) {
     if (!LButton()) {
       // Only gos into pursuitMode after 1 second
       if (LBcount >= 10) {
-        pursuitMode = !pursuitMode;
+        pursuitMode = 1;
         amberMode = !pursuitMode;
       } else {
-        amberMode = !amberMode;
+        amberMode = 1;
         pursuitMode = !amberMode;
       }
       state = LB_IDLE;
@@ -90,7 +90,14 @@ int LButton_Tick(int state) {
     break;
   }
   switch (state) {
+  case LB_IDLE:
+    // DEBUGGING:
+    // PORTD &= 0xDF; // 0's out Right RED
+    LBcount = 0;
+    break;
   case LB_HOLD:
+    // DEBUGGING:
+    // PORTD |= 0x20; // Right RED
     ++LBcount;
     break;
   }

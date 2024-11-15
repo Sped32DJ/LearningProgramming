@@ -215,12 +215,8 @@ int JOYTick(int state) {
   }
   switch (state) {
   case JOY_IDLE:
-    // DEBUGGING:
-    PORTD &= 0xDF; // 0's out Right RED
     break;
   case JOY_HOLD:
-    // DEBUGGING:
-    PORTD |= 0x20; // Right RED
     break;
   }
   return state;

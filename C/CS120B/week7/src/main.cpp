@@ -2,7 +2,7 @@
 #include "periph.h"
 #include "timerISR.h"
 
-#define NUM_TASKS 3 // TODO: Change to the number of tasks being used
+#define NUM_TASKS 4 // TODO: Change to the number of tasks being used
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -19,7 +19,7 @@ const unsigned long GCD_PERIOD = 100; // TODO:Set the GCD Period
 const unsigned long LBUTTON_PERIOD = 100;
 const unsigned long RGB_PERIOD = 100;
 const unsigned long JOY_PERIOD = 100;
-const unsigned long BZR_PERIOD = 100;
+const unsigned long BZR_PERIOD = 200;
 
 task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
@@ -251,9 +251,9 @@ int BuzzerTick(int state) {
 
     // Alternate between high and low notes
     if (highBuzz) {
-      OCR0A = 200; // High Note
+      OCR0A = 120; // High Note
     } else {
-      OCR0A = 100; // Low note
+      OCR0A = 40; // Low note
     }
     highBuzz = !highBuzz;
     break;
@@ -295,8 +295,16 @@ int main(void) {
   ADC_init(); // initializes ADC
 
   // TODO: Initialize the buzzer timer/pwm(timer0)
+  TCCR0A =
+      (1 << WGM00) | (1 << WGM01) | (1 << COM0A1); // Fast PWM, non-inverting
+  TCCR0B = (1 << CS01);                            // Prescaler = 8
+  OCR0A = 0; // Start with 0 duty cycle (off)
 
   // TODO: Initialize the servo timer/pwm(timer1)
+  TCCR1A = (1 << WGM11) | (1 << COM1A1);              // Fast PWM, non-inverting
+  TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11); // Mode 14, Prescaler = 8
+  ICR1 = 39999;                                       // TOP value for 50 Hz
+  OCR1A = 2999; // Neutral position (1.5 ms pulse width)
 
   // TODO: Initialize tasks here
   //  e.g.

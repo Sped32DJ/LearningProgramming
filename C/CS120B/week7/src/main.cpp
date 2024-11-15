@@ -137,6 +137,7 @@ int RGBTick(int state) {
     break;
   }
 
+  unsigned char flash = 0;
   switch (state) {
   case RGB_IDLE:
     PORTD &= 0xE3; // 0's out RGB
@@ -144,15 +145,26 @@ int RGBTick(int state) {
   case AMBER:
     // TODO: Use PWM to amber color
     // PORTD = (PORTD & ~0x1C) | 0x18;
-    PORTD = (PORTD & ~0x1C);
-    PORTD |= (1 << PD4);
-    // Configure PWM for PD3 (Green)
-    TCCR2A |= (1 << COM2B1) |
-              (1 << WGM20); // Fast PWM on OCR2A (Red) and OCR2B (Green)
-    TCCR2B |= (1 << CS21);  // Set prescaler to 8 for smooth PWM
+    flash = !flash;
+    if (RGBcount & 0x01) {
+      TCCR2A &= ~((1 << COM2B1) | (1 << COM2B0));
+      PORTD &= 0xE3; // 0's out RGB
+    } else if (RGBcount <= 5) {
+      PORTD = (PORTD & ~0x1C);
+      PORTD |= (1 << PD4);
+      // Configure PWM for PD3 (Green)
+      TCCR2A |= (1 << COM2B1) |
+                (1 << WGM20); // Fast PWM on OCR2A (Red) and OCR2B (Green)
+      TCCR2B |= (1 << CS21);  // Set prescaler to 8 for smooth PWM
 
-    // Set duty cycles to mix red and green for amber color
-    OCR2B = 40; // Set Green brightness (0-255)
+      // Set duty cycles to mix red and green for amber color
+      OCR2B = 40; // Set Green brightness (0-255)
+                  //
+    } else {
+      RGBcount = 0;
+    }
+    ++RGBcount;
+
     break;
   case PURSUIT:
     // TODO: Actually does the two flashes
@@ -165,10 +177,10 @@ int RGBTick(int state) {
     // NOTE: Turns purple sometimes
     if (RGBcount & 0x01) {
       PORTD &= 0xE3; // 0's out RGB
-    } else if (RGBcount <= 6) {
+    } else if (RGBcount <= 3) {
       PORTD &= 0xE3; // 0's out RGB
       PORTD |= 0x04;
-    } else if (RGBcount <= 12) {
+    } else if (RGBcount <= 7) {
       PORTD &= 0xE3; // 0's out RGB
       PORTD |= 0x10; // Blue
     } else {

@@ -26,7 +26,8 @@ task tasks[NUM_TASKS]; // declared task array with 5 tasks
 // TODO: Declare your tasks' function and their states here
 enum LBUTTON_STATES { LB_IDLE, LB_HOLD };
 enum RGB_STATES { RGB_IDLE, AMBER, PURSUIT };
-enum JOY_STATES { JOY_READ };
+enum JOY_STATES { JOY_IDLE, JOY_HOLD };
+enum BZR_STATES { BZR_IDLE, BZR_ON };
 
 // Helper Functions
 bool JButton() { return !GetBit(PINC, 2); }
@@ -194,15 +195,71 @@ int RGBTick(int state) {
 
 // NOTE: Not sure what to do with this
 // Maybe do modifications based upon the inputs
+unsigned char buzzMode = 0; // BuzzMode toggle
+
 int JOYTick(int state) {
   JoystickTick(); // This does all the reading
 
   switch (state) {
-  case JOY_READ:
+  case JOY_IDLE:
+    if (JButton()) {
+      state = JOY_HOLD;
+    }
+    break;
+  case JOY_HOLD:
+    if (!JButton()) {
+      state = JOY_IDLE;
+      buzzMode = !buzzMode;
+    }
     break;
   }
   switch (state) {
-  case JOY_READ:
+  case JOY_IDLE:
+    // DEBUGGING:
+    PORTD &= 0xDF; // 0's out Right RED
+    break;
+  case JOY_HOLD:
+    // DEBUGGING:
+    PORTD |= 0x20; // Right RED
+    break;
+  }
+  return state;
+}
+
+unsigned char highBuzz = 0;
+int BuzzerTick(int state) {
+  switch (state) {
+  case BZR_IDLE:
+    if (buzzMode && pursuitMode) {
+      state = BZR_ON;
+    }
+    break;
+  case BZR_ON:
+    if (!buzzMode || !pursuitMode) {
+      state = BZR_IDLE;
+    } else {
+      state = BZR_ON;
+    }
+    break;
+  }
+  switch (state) {
+  case BZR_IDLE:
+    // Turn off PWM and clear PD6
+    TCCR0A &= ~((1 << COM0A1) | (1 << COM0A0));
+    PORTD &= ~(1 << PD6);
+
+    break;
+  case BZR_ON:
+    TCCR0A |= (1 << COM0A1) | (1 << WGM00); // Fast PWM, non-inverting mode
+    TCCR0B |= (1 << CS01);                  // Set prescaler to 8
+
+    // Alternate between high and low notes
+    if (highBuzz) {
+      OCR0A = 200; // High Note
+    } else {
+      OCR0A = 100; // Low note
+    }
+    highBuzz = !highBuzz;
     break;
   }
   return state;
@@ -262,9 +319,14 @@ int main(void) {
   tasks[1].TickFct = &RGBTick;
 
   tasks[2].period = JOY_PERIOD;
-  tasks[2].state = JOY_READ;
+  tasks[2].state = JOY_IDLE;
   tasks[2].elapsedTime = tasks[2].period;
   tasks[2].TickFct = &JOYTick;
+
+  tasks[3].period = BZR_PERIOD;
+  tasks[3].state = BZR_IDLE;
+  tasks[3].elapsedTime = tasks[3].period;
+  tasks[3].TickFct = &BuzzerTick;
 
   TimerSet(GCD_PERIOD);
   TimerOn();

@@ -1,13 +1,8 @@
-#include "LCD.h"
 #include "helper.h"
 #include "periph.h"
 #include "timerISR.h"
-#include <stdio.h>
 
-// TODO: declare variables for cross-task communication
-
-/* TODO: match with how many tasks you have */
-#define NUM_TASKS 5
+#define NUM_TASKS 4 // TODO: Change to the number of tasks being used
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -19,248 +14,256 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 10; /* TODO: Calulate GCD of tasks */
-const unsigned long BUTTON_PERIOD = 500;
-const unsigned long ADC_PERIOD = 100;
-const unsigned long LCD_PERIOD = 500;
-const unsigned long THERMISTER_PERIOD = 100;
+const unsigned long GCD_PERIOD = 50; // TODO:Set the GCD Period
 
-const unsigned long BUZZER_PERIOD = 100;
-const unsigned long BUZZER_PWM_PERIOD = 1000;
-
-const unsigned long FAN_PERIOD = 10;
-// const unsigned long FAN_PWM_PERIOD = 100;
-
-// PWM Values
-// FAN PWM
-unsigned short FPwmH = 0;
-unsigned short FPwmL = 0;
-
-// Buzzer PWM
-unsigned short BPwmH = 0;
-unsigned short BPwmL = 10;
+const unsigned long LBUTTON_PERIOD = 100;
+const unsigned long RGB_PERIOD = 50;
+const unsigned long JOY_PERIOD = 100;
+const unsigned long BZR_PERIOD = 100;
 
 task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
-// States
-enum Button_States { IDLE, HOLD };
-enum ADC_States { ADC_INIT, ADC_READ };
-enum Buzzer_States { BUZZER_INIT, BUZZER_ON, BUZZER_OFF };
-enum LCD_States { LCD_INIT, LCD_WRITE };
-enum Thermister_States { THERMISTER_INIT, THERMISTER_READ };
-enum Fan_States { FAN_INIT, FanH, FanL };
+// TODO: Declare your tasks' function and their states here
+enum LBUTTON_STATES { LB_IDLE, LB_HOLD };
+enum RGB_STATES { RGB_IDLE, AMBER, PURSUIT };
+enum JOY_STATES { JOY_IDLE, JOY_HOLD };
+enum BZR_STATES { BZR_IDLE, BZR_ON };
 
-// Variables
+// Helper Functions
+bool JButton() { return !GetBit(PINC, 2); }
+bool LButton() { return GetBit(PINC, 3); }
+bool RButton() { return !GetBit(PINC, 4); }
 
-// For button SM
-bool forceStop = true; // System is initially off
-bool forward = false;
+// Helper variables
+bool pursuitMode = false;
+bool amberMode = false;
 
-// for ADC SM
-// The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
-unsigned short adcValue = 0;
+unsigned char buzzMode = 0; // BuzzMode toggle
+unsigned char highBuzz = 0;
 
-// Button SM
-unsigned char Button() { return !GetBit(PINC, 1); }
-int ButtonTick(int state) {
+unsigned int LBcount = 0;
+
+// Joystick helper functions
+float GetAxis(char port) {
+  float raw = ADC_read(port);
+  return (raw / 1024.0);
+}
+
+unsigned char currentDirection = 0;
+void JoystickTick() {
+  float xAxis = GetAxis(0);
+  float yAxis = GetAxis(1);
+
+  // Do upper case for extended
+  if (xAxis > 0.6) {
+    currentDirection = 'r';
+  } else if (xAxis < 0.4) {
+    currentDirection = 'l';
+  } else if (yAxis > 0.6) {
+    currentDirection = 'u';
+  } else if (yAxis < 0.4) {
+    currentDirection = 'd';
+  } else {
+    // NOTE: Remove if you want to save last
+    currentDirection = 'c';
+  }
+}
+
+// TODO: Implement PWM
+int LButton_Tick(int state) {
   switch (state) {
-  case IDLE:
-    if (Button()) {
-      state = HOLD;
+  case LB_IDLE:
+    if (LButton()) {
+      state = LB_HOLD;
     }
     break;
-  case HOLD:
-    if (!Button()) {
-      state = IDLE;
-      forceStop = forceStop ? false : true;
-      lcd_clear();
+  case LB_HOLD:
+    if (!LButton()) {
+      // Only gos into pursuitMode after 1 second (3 ticks;
+      // NOTE: 10 ticks are not 1 second... idk why)
+      if (LBcount >= 3) {
+        pursuitMode = 1;
+        amberMode = !pursuitMode;
+      } else {
+        amberMode = 1;
+        pursuitMode = !amberMode;
+      }
+      state = LB_IDLE;
+    } else if (LButton()) {
+      state = LB_HOLD;
     }
     break;
-  default:
-    state = IDLE;
+  }
+  switch (state) {
+  case LB_IDLE:
+    // DEBUGGING:
+    // PORTD &= 0xDF; // 0's out Right RED
+    LBcount = 0;
+    break;
+  case LB_HOLD:
+    // DEBUGGING:
+    // PORTD |= 0x20; // Right RED
+    ++LBcount;
+    break;
+  }
+
+  return state;
+}
+
+unsigned int RGBcount = 0;
+int RGBTick(int state) {
+  switch (state) {
+  case RGB_IDLE:
+    if (pursuitMode) {
+      state = PURSUIT;
+    } else if (amberMode) {
+      state = AMBER;
+    } else {
+      state = RGB_IDLE;
+    }
+    break;
+  case AMBER:
+    if (pursuitMode) {
+      buzzMode = 0;
+      state = PURSUIT;
+    } else if (amberMode) {
+      state = AMBER;
+    } else {
+      state = RGB_IDLE;
+    }
+    break;
+  case PURSUIT:
+    if (pursuitMode) {
+      state = PURSUIT;
+    } else if (amberMode) {
+      state = AMBER;
+    } else {
+      state = RGB_IDLE;
+    }
+    break;
+  }
+
+  unsigned char flash = 0;
+  switch (state) {
+  case RGB_IDLE:
+    PORTD &= 0xE3; // 0's out RGB
+    break;
+  case AMBER:
+    // TODO: Use PWM to amber color
+    // PORTD = (PORTD & ~0x1C) | 0x18;
+    flash = !flash;
+    if (RGBcount & 0x01) {
+      TCCR2A &= ~((1 << COM2B1) | (1 << COM2B0));
+      PORTD &= 0xE3; // 0's out RGB
+    } else if (RGBcount <= 5) {
+      PORTD = (PORTD & ~0x1C);
+      PORTD |= (1 << PD4);
+      // Configure PWM for PD3 (Green)
+      TCCR2A |= (1 << COM2B1) |
+                (1 << WGM20); // Fast PWM on OCR2A (Red) and OCR2B (Green)
+      TCCR2B |= (1 << CS21);  // Set prescaler to 8 for smooth PWM
+
+      // Set duty cycles to mix red and green for amber color
+      OCR2B = 40; // Set Green brightness (0-255)
+                  //
+    } else {
+      RGBcount = 0;
+    }
+    ++RGBcount;
+
+    break;
+  case PURSUIT:
+    // TODO: Actually does the two flashes
+    // This actually enabled on a single press
+    // PORTD &= 0xE3; // 0's out RGB
+    //
+    // Disable PWM on PD3 by clearing the COM2B1 and COM2B0 bits
+    TCCR2A &= ~((1 << COM2B1) | (1 << COM2B0));
+
+    // NOTE: Turns purple sometimes
+    if (RGBcount & 0x01) {
+      PORTD &= 0xE3; // 0's out RGB
+    } else if (RGBcount <= 5) {
+      PORTD &= 0xE3; // 0's out RGB
+      PORTD |= 0x04; // Blue
+    } else if (RGBcount <= 9) {
+      PORTD &= 0xE3; // 0's out RGB
+      PORTD |= 0x10; // Red
+    } else {
+      RGBcount = 0;
+    }
+    ++RGBcount;
     break;
   }
   return state;
 }
 
-// ADC-Potentiometer SM
-// Display Off/on/testing states
-int ADC_Tick(int state) {
+// NOTE: Not sure what to do with this
+// Maybe do modifications based upon the inputs
+
+int JOYTick(int state) {
+  JoystickTick(); // This does all the reading
+
   switch (state) {
-  case ADC_INIT:
-    state = ADC_READ;
-    break;
-  case ADC_READ:
-    state = ADC_READ;
-    break;
-  default:
-    state = ADC_INIT;
-    break;
-  }
-  switch (state) {
-  case ADC_READ:
-    // The range is 0-20 (21 unique vals), 0-9 rev, 10 idle, 11-20 forward
-    adcValue = map(ADC_read(0), 0, 1023, 0, 21);
-    if (adcValue >= 0 && adcValue <= 9) {
-      // TODO: Reverse polarity + make it dynamic
-      FPwmL = adcValue;
-      FPwmH = 10 - adcValue;
-      forward = false;
-    } else if (adcValue == 10) {
-      FPwmH = 0;
-      FPwmL = 10;
-    } else if (adcValue >= 11 && adcValue <= 20) {
-      forward = true;
-      FPwmH = adcValue - 10;
-      FPwmL = 10 - (adcValue - 10);
+  case JOY_IDLE:
+    if (JButton()) {
+      state = JOY_HOLD;
     }
-
+    break;
+  case JOY_HOLD:
+    if (!JButton()) {
+      state = JOY_IDLE;
+      if (pursuitMode) {
+        buzzMode = !buzzMode;
+      }
+      highBuzz = 1;
+    }
     break;
   }
-
+  switch (state) {
+  case JOY_IDLE:
+    break;
+  case JOY_HOLD:
+    break;
+  }
   return state;
 }
 
-// Implement logic for buzzer to go off
-unsigned short buzz = 0;
 int BuzzerTick(int state) {
   switch (state) {
-  case BUZZER_INIT:
-    state = BUZZER_OFF;
-    break;
-  case BUZZER_ON:
-    if (buzz < BPwmH) {
-      state = BUZZER_ON;
-    } else {
-      state = BUZZER_OFF;
-      buzz = 0;
+  case BZR_IDLE:
+    if (buzzMode && pursuitMode) {
+      state = BZR_ON;
     }
     break;
-  case BUZZER_OFF:
-    if (buzz < BPwmL) {
-      state = BUZZER_OFF;
+  case BZR_ON:
+    if (!buzzMode || !pursuitMode) {
+      state = BZR_IDLE;
     } else {
-      state = BUZZER_ON;
-      buzz = 0;
+      OCR0A = 128; // Turn on buzzer
+      state = BZR_ON;
     }
-    break;
-  default:
-    state = BUZZER_INIT;
     break;
   }
   switch (state) {
-  case BUZZER_ON:
-    PORTB |= 0x01;
-    break;
-  case BUZZER_OFF:
-    PORTB &= 0xFE;
-    break;
-  }
-  return state;
-}
+  case BZR_IDLE:
+    // Turn off PWM and clear PD6
+    TCCR0A &= ~((1 << COM0A1) | (1 << COM0A0));
+    PORTD &= ~(1 << PD6);
+    OCR0A = 255; // Turn off buzzer
 
-// TODO: Implement LCD Tick function
-// This one is all new to me
-// Implement logic for LCD to display the ADC value
-// Implement the boolean logic for the button press
-static char buffer1[16];
-static char buffer2[16];
-int LCD_Tick(int state) {
+    break;
+  case BZR_ON:
+    TCCR0A |= (1 << COM0A1) | (1 << WGM00); // Fast PWM, non-inverting mode
+    TCCR0B |= (1 << CS01);                  // Set prescaler to 8
 
-  switch (state) {
-  case LCD_INIT:
-    state = LCD_WRITE;
-    break;
-  case LCD_WRITE:
-    state = LCD_WRITE;
-    break;
-  default:
-    state = LCD_INIT;
-    break;
-  }
-  switch (state) {
-  case LCD_WRITE:
-    if (forceStop) {
-      sprintf(buffer1, "Sys: off");
+    // Alternate between high and low notes
+    if (highBuzz) {
+      TCCR0B = (TCCR0B & 0xF8) | 0x05; // Prescaler to 1024
     } else {
-      sprintf(buffer1, "Sys: Testing");
+      TCCR0B = (TCCR0B & 0xF8) | 0x03; // prescaler to 8
     }
-    // Second line
-    sprintf(buffer2, "%d %% ", FPwmH * 10);
-    // sprintf(buffer2, "%d %% %d ", FPwmH * 10, FPwmL * 10);
-    //  sprintf(buffer2, "%d %% ", adcValue);
-
-    // lcd_clear();
-    lcd_goto_xy(0, 0);
-    lcd_write_str(buffer1);
-    lcd_goto_xy(1, 0);
-    lcd_write_str(buffer2);
-    break;
-  }
-  return state;
-}
-
-// Fan SM
-unsigned int fanTime = 0;
-int FanTick(int state) {
-  ++fanTime;
-
-  switch (state) {
-  case FAN_INIT:
-    state = FanL;
-    fanTime = 0;
-    break;
-  case FanH:
-    if (FPwmH == 0) {
-      fanTime = 0;
-      state = FanL;
-    } else if (fanTime <= FPwmH) {
-      state = FanH;
-    } else if (fanTime) {
-      fanTime = 0;
-      state = FanL;
-    }
-    break;
-  case FanL:
-    if (FPwmL == 0) {
-      fanTime = 0;
-      state = FanH;
-    } else if (fanTime <= FPwmL) {
-      state = FanL;
-    } else {
-      fanTime = 0;
-      state = FanH;
-    }
-    break;
-  default:
-    state = FAN_INIT;
-    break;
-  }
-
-  switch (state) {
-  case FAN_INIT:
-    break;
-  case FanH:
-    if (!forceStop && FPwmH > 0) {
-      // May need to swap the forward and backwards
-      if (forward) {
-        // Blow mode
-        PORTB |= 0b00000010;
-        PORTB &= 0b11111011;
-        break;
-      } else if (!forward) {
-        // Suck mode
-        PORTB |= 0b00000100;
-        PORTB &= 0b11111101;
-
-        break;
-      }
-    } else {
-      PORTB &= 0xF9; // Both bits off
-    }
-    break;
-  case FanL:
-    PORTB &= 0xF9;
+    highBuzz = !highBuzz;
     break;
   }
   return state;
@@ -280,12 +283,17 @@ void TimerISR() {
   }
 }
 
+int stages[8] = {0b0001, 0b0011, 0b0010, 0b0110,
+                 0b0100, 0b1100, 0b1000, 0b1001}; // Stepper motor phases
+
+// TODO: Create your tick functions for each task
+
 int main(void) {
   // TODO: initialize all your inputs and ouputs
   DDRB = 0xFF;
   PORTB = 0x00;
 
-  // All inputs
+  // All inputs PORTC
   DDRC = 0x00;
   PORTC = 0xFF;
 
@@ -293,45 +301,53 @@ int main(void) {
   PORTD = 0x00;
 
   ADC_init(); // initializes ADC
-  lcd_init(); // initializes LCD
-  lcd_clear();
+
+  // TODO: Initialize the buzzer timer/pwm(timer0)
+  TCCR0A =
+      (1 << WGM00) | (1 << WGM01) | (1 << COM0A1); // Fast PWM, non-inverting
+  TCCR0B = (1 << CS01);                            // Prescaler = 8
+  OCR0A = 0; // Start with 0 duty cycle (off)
+
+  // TODO: Initialize the servo timer/pwm(timer1)
+  TCCR1A = (1 << WGM11) | (1 << COM1A1);              // Fast PWM, non-inverting
+  TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11); // Mode 14, Prescaler = 8
+  ICR1 = 39999;                                       // TOP value for 50 Hz
+  OCR1A = 2999; // Neutral position (1.5 ms pulse width)
 
   // TODO: Initialize tasks here
-  //  e.g. tasks[0].period = TASK1_PERIOD
-  //  tasks[0].state = ...
-  //  tasks[0].elapsedTime = ...
-  //  tasks[0].TickFct = &task1_tick_function;
-  tasks[0].period = BUTTON_PERIOD;
-  tasks[0].state = IDLE;
+  //  e.g.
+  //  tasks[0].period = ;
+  //  tasks[0].state = ;
+  //  tasks[0].elapsedTime = ;
+  //  tasks[0].TickFct = ;
+  tasks[0].period = LBUTTON_PERIOD;
+  tasks[0].state = LB_IDLE;
   tasks[0].elapsedTime = tasks[0].period;
-  tasks[0].TickFct = &ButtonTick;
+  tasks[0].TickFct = &LButton_Tick;
 
-  tasks[1].period = ADC_PERIOD;
-  tasks[1].state = ADC_INIT;
+  tasks[1].period = RGB_PERIOD;
+  tasks[1].state = RGB_IDLE;
   tasks[1].elapsedTime = tasks[1].period;
-  tasks[1].TickFct = &ADC_Tick;
+  tasks[1].TickFct = &RGBTick;
 
-  tasks[2].period = BUZZER_PERIOD;
-  tasks[2].state = BUZZER_INIT;
+  tasks[2].period = JOY_PERIOD;
+  tasks[2].state = JOY_IDLE;
   tasks[2].elapsedTime = tasks[2].period;
-  tasks[2].TickFct = &BuzzerTick;
+  tasks[2].TickFct = &JOYTick;
 
-  tasks[3].period = LCD_PERIOD;
-  tasks[3].state = LCD_INIT;
+  tasks[3].period = BZR_PERIOD;
+  tasks[3].state = BZR_IDLE;
   tasks[3].elapsedTime = tasks[3].period;
-  tasks[3].TickFct = &LCD_Tick;
-
-  tasks[4].period = FAN_PERIOD;
-  tasks[4].state = FAN_INIT;
-  tasks[4].elapsedTime = tasks[4].period;
-  tasks[4].TickFct = &FanTick;
+  tasks[3].TickFct = &BuzzerTick;
 
   TimerSet(GCD_PERIOD);
   TimerOn();
-  static char buffer1[16];
-  static char buffer2[16];
 
   while (1) {
+    // PORTD |= 0x10; // RED
+    // PORTD |= 0x08; // GREEN
+    // PORTD |= 0x04; // BLUE
+    // PORTD |= 0x20; // Right RED
   }
 
   return 0;

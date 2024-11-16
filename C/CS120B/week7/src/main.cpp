@@ -14,12 +14,12 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 100; // TODO:Set the GCD Period
+const unsigned long GCD_PERIOD = 50; // TODO:Set the GCD Period
 
 const unsigned long LBUTTON_PERIOD = 100;
-const unsigned long RGB_PERIOD = 100;
+const unsigned long RGB_PERIOD = 50;
 const unsigned long JOY_PERIOD = 100;
-const unsigned long BZR_PERIOD = 200;
+const unsigned long BZR_PERIOD = 100;
 
 task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
@@ -37,6 +37,9 @@ bool RButton() { return !GetBit(PINC, 4); }
 // Helper variables
 bool pursuitMode = false;
 bool amberMode = false;
+
+unsigned char buzzMode = 0; // BuzzMode toggle
+unsigned char highBuzz = 0;
 
 unsigned int LBcount = 0;
 
@@ -121,6 +124,7 @@ int RGBTick(int state) {
     break;
   case AMBER:
     if (pursuitMode) {
+      buzzMode = 0;
       state = PURSUIT;
     } else if (amberMode) {
       state = AMBER;
@@ -179,12 +183,12 @@ int RGBTick(int state) {
     // NOTE: Turns purple sometimes
     if (RGBcount & 0x01) {
       PORTD &= 0xE3; // 0's out RGB
-    } else if (RGBcount <= 3) {
+    } else if (RGBcount <= 5) {
       PORTD &= 0xE3; // 0's out RGB
-      PORTD |= 0x04;
-    } else if (RGBcount <= 7) {
+      PORTD |= 0x04; // Blue
+    } else if (RGBcount <= 9) {
       PORTD &= 0xE3; // 0's out RGB
-      PORTD |= 0x10; // Blue
+      PORTD |= 0x10; // Red
     } else {
       RGBcount = 0;
     }
@@ -196,8 +200,6 @@ int RGBTick(int state) {
 
 // NOTE: Not sure what to do with this
 // Maybe do modifications based upon the inputs
-unsigned char buzzMode = 0; // BuzzMode toggle
-unsigned char highBuzz = 0;
 
 int JOYTick(int state) {
   JoystickTick(); // This does all the reading
@@ -211,7 +213,9 @@ int JOYTick(int state) {
   case JOY_HOLD:
     if (!JButton()) {
       state = JOY_IDLE;
-      buzzMode = !buzzMode;
+      if (pursuitMode) {
+        buzzMode = !buzzMode;
+      }
       highBuzz = 1;
     }
     break;

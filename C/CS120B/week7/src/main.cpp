@@ -17,9 +17,9 @@ typedef struct _task {
 const unsigned long GCD_PERIOD = 1; // TODO:Set the GCD Period
 
 const unsigned long LBUTTON_PERIOD = 100;
-const unsigned long RGB_PERIOD = 50;
+const unsigned long RGB_PERIOD = 150;
 const unsigned long JOY_PERIOD = 100;
-const unsigned long BZR_PERIOD = 100;
+const unsigned long BZR_PERIOD = 400;
 const unsigned long RBUTTON_PERIOD = 100;
 const unsigned long STEPPER_PERIOD = 1;
 const unsigned long SERVO_PERIOD = 1;
@@ -148,14 +148,8 @@ int RGBTick(int state) {
     } else if (RGBcount <= 5) {
       PORTD = (PORTD & ~0x1C);
       PORTD |= (1 << PD4);
+      PORTD |= (1 << PD3);
       // Configure PWM for PD3 (Green)
-      TCCR2A |= (1 << COM2B1) |
-                (1 << WGM20); // Fast PWM on OCR2A (Red) and OCR2B (Green)
-      TCCR2B |= (1 << CS21);  // Set prescaler to 8 for smooth PWM
-
-      // Set duty cycles to mix red and green for amber color
-      OCR2B = 40; // Set Green brightness (0-255)
-                  //
     } else {
       RGBcount = 0;
     }

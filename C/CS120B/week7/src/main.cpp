@@ -2,7 +2,7 @@
 #include "periph.h"
 #include "timerISR.h"
 
-#define NUM_TASKS 4 // TODO: Change to the number of tasks being used
+#define NUM_TASKS 6 // TODO: Change to the number of tasks being used
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -14,12 +14,14 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 50; // TODO:Set the GCD Period
+const unsigned long GCD_PERIOD = 1; // TODO:Set the GCD Period
 
 const unsigned long LBUTTON_PERIOD = 100;
 const unsigned long RGB_PERIOD = 50;
 const unsigned long JOY_PERIOD = 100;
 const unsigned long BZR_PERIOD = 100;
+const unsigned long RBUTTON_PERIOD = 100;
+const unsigned long STEPPER_PERIOD = 1;
 
 task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
@@ -28,6 +30,8 @@ enum LBUTTON_STATES { LB_IDLE, LB_HOLD };
 enum RGB_STATES { RGB_IDLE, AMBER, PURSUIT };
 enum JOY_STATES { JOY_IDLE, JOY_HOLD };
 enum BZR_STATES { BZR_IDLE, BZR_ON };
+enum RBUTTON_STATES { RB_IDLE, RB_HOLD };
+enum STEPPER_STATES { STEPPER_IDLE };
 
 // Helper Functions
 bool JButton() { return !GetBit(PINC, 2); }
@@ -43,29 +47,33 @@ unsigned char highBuzz = 0;
 
 unsigned int LBcount = 0;
 
+int stages[8] = {0b0001, 0b0011, 0b0010, 0b0110,
+                 0b0100, 0b1100, 0b1000, 0b1001}; // Stepper motor phases
+
 // Joystick helper functions
 float GetAxis(char port) {
   float raw = ADC_read(port);
   return (raw / 1024.0);
 }
 
-unsigned char currentDirection = 0;
+float xAxis = 0.0;
+float stepperSpeed = 0.0;
 void JoystickTick() {
-  float xAxis = GetAxis(0);
-  float yAxis = GetAxis(1);
+  float raw_xAxis = GetAxis(0);
+  // float yAxis = GetAxis(1);
+  int yAxis = ADC_read(0);
 
-  // Do upper case for extended
-  if (xAxis > 0.6) {
-    currentDirection = 'r';
-  } else if (xAxis < 0.4) {
-    currentDirection = 'l';
-  } else if (yAxis > 0.6) {
-    currentDirection = 'u';
-  } else if (yAxis < 0.4) {
-    currentDirection = 'd';
-  } else {
-    // NOTE: Remove if you want to save last
-    currentDirection = 'c';
+  // TODO: Servo motor control
+  if (raw_xAxis > 0.6) {    // Right
+  } else if (xAxis < 0.4) { // Left
+  }
+
+  // Stepper motor control
+  // Gives a number between 0.0 and 1.0 to modulate speed
+  if (yAxis > 0.50) { // Up
+    stepperSpeed = (yAxis - 0.5) * 2.0 * 100;
+  } else if (yAxis > 0.95) {
+    stepperSpeed = 100;
   }
 }
 
@@ -200,7 +208,6 @@ int RGBTick(int state) {
 
 // NOTE: Not sure what to do with this
 // Maybe do modifications based upon the inputs
-
 int JOYTick(int state) {
   JoystickTick(); // This does all the reading
 
@@ -269,6 +276,69 @@ int BuzzerTick(int state) {
   return state;
 }
 
+unsigned char reverse = 0;
+int RB_Tick(int state) {
+  switch (state) {
+  case RB_IDLE:
+    if (RButton()) {
+      state = RB_HOLD;
+    }
+    break;
+  case RB_HOLD:
+    if (!RButton()) {
+      reverse = !reverse;
+      if (reverse) {
+        PORTD |= 0x20; // Right RED
+      } else {
+        PORTD &= 0xDF; // 0's out Right RED
+      }
+      state = RB_IDLE;
+    }
+    break;
+  }
+  switch (state) {
+  case RB_IDLE:
+    break;
+  case RB_HOLD:
+    break;
+  }
+  return state;
+}
+
+// bool reverse
+// float stepperSpeed - ->> 0.0 - 100.0
+uint16_t stepCount = 0;
+uint8_t currPhase = 0;
+int StepperTick(int state) {
+  switch (state) {
+  case STEPPER_IDLE:
+    // Calc speed from 0.0 to 100.0
+    // uint16_t stepDelay = (uint16_t)(100 - stepperSpeed) * 10;
+    uint16_t stepDelay = (uint16_t)(10 - (stepperSpeed / 10.0));
+
+    if (stepperSpeed > 0.0) {
+      ++stepCount;
+
+      if (stepCount >= stepDelay) {
+        stepCount = 0;
+        if (reverse) {
+          currPhase = (currPhase == 0) ? 7 : currPhase - 1;
+        } else {
+          currPhase = (currPhase + 1) % 8; // Forward
+        }
+        PORTB = (PORTB & 0xC3) | (stages[currPhase] << 2);
+      }
+    }
+    break;
+  }
+  switch (state) {
+  case STEPPER_IDLE:
+    state = STEPPER_IDLE;
+    break;
+  }
+  return state;
+}
+
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
        i++) { // Iterate through each task in the task array
@@ -282,9 +352,6 @@ void TimerISR() {
         GCD_PERIOD; // Increment the elapsed time by GCD_PERIOD
   }
 }
-
-int stages[8] = {0b0001, 0b0011, 0b0010, 0b0110,
-                 0b0100, 0b1100, 0b1000, 0b1001}; // Stepper motor phases
 
 // TODO: Create your tick functions for each task
 
@@ -339,6 +406,16 @@ int main(void) {
   tasks[3].state = BZR_IDLE;
   tasks[3].elapsedTime = tasks[3].period;
   tasks[3].TickFct = &BuzzerTick;
+
+  tasks[4].period = RBUTTON_PERIOD;
+  tasks[4].state = RB_IDLE;
+  tasks[4].elapsedTime = tasks[4].period;
+  tasks[4].TickFct = &RB_Tick;
+
+  tasks[5].period = STEPPER_PERIOD;
+  tasks[5].state = STEPPER_IDLE;
+  tasks[5].elapsedTime = tasks[5].period;
+  tasks[5].TickFct = &StepperTick;
 
   TimerSet(GCD_PERIOD);
   TimerOn();

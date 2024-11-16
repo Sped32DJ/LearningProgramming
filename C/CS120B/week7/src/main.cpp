@@ -2,7 +2,7 @@
 #include "periph.h"
 #include "timerISR.h"
 
-#define NUM_TASKS 6 // TODO: Change to the number of tasks being used
+#define NUM_TASKS 7 // TODO: Change to the number of tasks being used
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -22,6 +22,7 @@ const unsigned long JOY_PERIOD = 100;
 const unsigned long BZR_PERIOD = 100;
 const unsigned long RBUTTON_PERIOD = 100;
 const unsigned long STEPPER_PERIOD = 1;
+const unsigned long SERVO_PERIOD = 1;
 
 task tasks[NUM_TASKS]; // declared task array with 5 tasks
 
@@ -32,6 +33,7 @@ enum JOY_STATES { JOY_IDLE, JOY_HOLD };
 enum BZR_STATES { BZR_IDLE, BZR_ON };
 enum RBUTTON_STATES { RB_IDLE, RB_HOLD };
 enum STEPPER_STATES { STEPPER_IDLE };
+enum SERVO_STATES { SERVO_IDLE };
 
 // Helper Functions
 bool JButton() { return !GetBit(PINC, 2); }
@@ -50,32 +52,11 @@ unsigned int LBcount = 0;
 int stages[8] = {0b0001, 0b0011, 0b0010, 0b0110,
                  0b0100, 0b1100, 0b1000, 0b1001}; // Stepper motor phases
 
-// Joystick helper functions
-float GetAxis(char port) {
-  float raw = ADC_read(port);
-  return (raw / 1024.0);
-}
-
-float xAxis = 0.0;
+int xAxis = 0.0;
 int yAxis = 0;
-float stepperSpeed = 0.0;
 void JoystickTick() {
-  float raw_xAxis = GetAxis(0);
-  // float yAxis = GetAxis(1);
   yAxis = ADC_read(0);
-
-  // TODO: Servo motor control
-  if (raw_xAxis > 0.6) {    // Right
-  } else if (xAxis < 0.4) { // Left
-  }
-
-  // Stepper motor control
-  // Gives a number between 0.0 and 1.0 to modulate speed
-  if (yAxis > 0.50) { // Up
-    stepperSpeed = (yAxis - 0.5) * 2.0 * 100;
-  } else if (yAxis > 0.95) {
-    stepperSpeed = 100;
-  }
+  xAxis = ADC_read(1);
 }
 
 // TODO: Implement PWM
@@ -338,6 +319,21 @@ int StepperTick(int state) {
   return state;
 }
 
+int ServoTick(int state) {
+  switch (state) {
+  case SERVO_IDLE:
+    int servoPos = map(xAxis, 0, 1023, 5000, 1000);
+    OCR1A = servoPos;
+    break;
+  }
+  switch (state) {
+  case SERVO_IDLE:
+    state = SERVO_IDLE;
+    break;
+  }
+  return state;
+}
+
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
        i++) { // Iterate through each task in the task array
@@ -415,6 +411,11 @@ int main(void) {
   tasks[5].state = STEPPER_IDLE;
   tasks[5].elapsedTime = tasks[5].period;
   tasks[5].TickFct = &StepperTick;
+
+  tasks[6].period = SERVO_PERIOD;
+  tasks[6].state = SERVO_IDLE;
+  tasks[6].elapsedTime = tasks[6].period;
+  tasks[6].TickFct = &ServoTick;
 
   TimerSet(GCD_PERIOD);
   TimerOn();

@@ -57,11 +57,12 @@ float GetAxis(char port) {
 }
 
 float xAxis = 0.0;
+int yAxis = 0;
 float stepperSpeed = 0.0;
 void JoystickTick() {
   float raw_xAxis = GetAxis(0);
   // float yAxis = GetAxis(1);
-  int yAxis = ADC_read(0);
+  yAxis = ADC_read(0);
 
   // TODO: Servo motor control
   if (raw_xAxis > 0.6) {    // Right
@@ -307,30 +308,28 @@ int RB_Tick(int state) {
 
 // bool reverse
 // float stepperSpeed - ->> 0.0 - 100.0
-uint16_t stepCount = 0;
-uint8_t currPhase = 0;
+int stepCount = 0;
+int phase = 0;
+int period = 0;
 int StepperTick(int state) {
   switch (state) {
   case STEPPER_IDLE:
-    // Calc speed from 0.0 to 100.0
-    // uint16_t stepDelay = (uint16_t)(100 - stepperSpeed) * 10;
-    uint16_t stepDelay = (uint16_t)(10 - (stepperSpeed / 10.0));
-
-    if (stepperSpeed > 0.0) {
-      ++stepCount;
-
-      if (stepCount >= stepDelay) {
-        stepCount = 0;
+    if (yAxis > 570) {
+      period = map(yAxis, 570, 1023, 1, 5);
+      if (stepCount % (6 - period) == 0) {
+        PORTB = (PORTB & 0x03) | stages[phase] << 2;
         if (reverse) {
-          currPhase = (currPhase == 0) ? 7 : currPhase - 1;
+          phase = (phase < 0) ? 7 : --phase;
         } else {
-          currPhase = (currPhase + 1) % 8; // Forward
+          phase = (phase > 7) ? 0 : ++phase;
         }
-        PORTB = (PORTB & 0xC3) | (stages[currPhase] << 2);
       }
+      // Iterates counter and prevents overflow
+      stepCount = (stepCount > 500) ? 0 : ++stepCount;
     }
     break;
   }
+
   switch (state) {
   case STEPPER_IDLE:
     state = STEPPER_IDLE;

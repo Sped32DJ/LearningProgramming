@@ -76,8 +76,9 @@ int LButton_Tick(int state) {
     break;
   case LB_HOLD:
     if (!LButton()) {
-      // Only gos into pursuitMode after 1 second
-      if (LBcount >= 10) {
+      // Only gos into pursuitMode after 1 second (3 ticks;
+      // NOTE: 10 ticks are not 1 second... idk why)
+      if (LBcount >= 3) {
         pursuitMode = 1;
         amberMode = !pursuitMode;
       } else {
@@ -196,6 +197,7 @@ int RGBTick(int state) {
 // NOTE: Not sure what to do with this
 // Maybe do modifications based upon the inputs
 unsigned char buzzMode = 0; // BuzzMode toggle
+unsigned char highBuzz = 0;
 
 int JOYTick(int state) {
   JoystickTick(); // This does all the reading
@@ -210,6 +212,7 @@ int JOYTick(int state) {
     if (!JButton()) {
       state = JOY_IDLE;
       buzzMode = !buzzMode;
+      highBuzz = 1;
     }
     break;
   }
@@ -222,7 +225,6 @@ int JOYTick(int state) {
   return state;
 }
 
-unsigned char highBuzz = 0;
 int BuzzerTick(int state) {
   switch (state) {
   case BZR_IDLE:
@@ -234,6 +236,7 @@ int BuzzerTick(int state) {
     if (!buzzMode || !pursuitMode) {
       state = BZR_IDLE;
     } else {
+      OCR0A = 128; // Turn on buzzer
       state = BZR_ON;
     }
     break;
@@ -243,6 +246,7 @@ int BuzzerTick(int state) {
     // Turn off PWM and clear PD6
     TCCR0A &= ~((1 << COM0A1) | (1 << COM0A0));
     PORTD &= ~(1 << PD6);
+    OCR0A = 255; // Turn off buzzer
 
     break;
   case BZR_ON:
@@ -251,9 +255,9 @@ int BuzzerTick(int state) {
 
     // Alternate between high and low notes
     if (highBuzz) {
-      OCR0A = 120; // High Note
+      TCCR0B = (TCCR0B & 0xF8) | 0x05; // Prescaler to 1024
     } else {
-      OCR0A = 40; // Low note
+      TCCR0B = (TCCR0B & 0xF8) | 0x03; // prescaler to 8
     }
     highBuzz = !highBuzz;
     break;

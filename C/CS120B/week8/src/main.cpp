@@ -1,5 +1,7 @@
 #include "helper.h"
+#include "irAVR.h"
 #include "periph.h"
+#include "spiAVR.h"
 #include "timerISR.h"
 #include <avr/io.h>
 #include <stdlib.h>
@@ -30,9 +32,7 @@ enum DISPLAY_States { DISPLAY_INIT, DISPLAY_ON, DISPLAY_OFF };
 enum BUZZER_States { BUZZER_INIT, BUZZER_IDLE };
 enum IR_States { IR_INIT, IR_IDLE };
 
-// NOTE: IR Helpers
-volatile uint8_t ir_flag = 0;   // Flag indicating an IR signal was received
-volatile uint32_t ir_data = 0;  // Variable to store the decoded IR data
+// NOTE: IR Variables
 unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
 
 // TEST: Everything until decodeNEC
@@ -43,80 +43,6 @@ void setupTimer1() {
 
   // Enable input capture interrupt
   TIMSK1 |= (1 << ICIE1);
-}
-
-// TEST: This may get the boot
-ISR(TIMER1_CAPT_vect) {
-  static uint8_t bit_count = 0;
-  static uint32_t data = 0;
-
-  uint16_t pulse_width = ICR1; // Capture pulse width
-  TCNT1 = 0;                   // Reset timer for next measurement
-
-  // Decode the pulse based on NEC timing
-  if (pulse_width > 10000) {
-    // Leader pulse detected, reset for new frame
-    bit_count = 0;
-    data = 0;
-  } else if (pulse_width > 2000) {
-    // Invalid timing, ignore
-  } else if (pulse_width > 1125) {
-    // Logical 1 detected
-    data = (data << 1) | 1;
-    bit_count++;
-  } else if (pulse_width > 562) {
-    // Logical 0 detected
-    data = (data << 1);
-    bit_count++;
-  }
-
-  // Check if 32 bits received
-  if (bit_count == 32) {
-    ir_raw_data = data;
-    ir_flag = 1; // Signal that a frame is ready
-  }
-}
-
-// TEST: idk about this
-void setupIR() {
-  // Set PD2 (INT0) as input for IR receiver
-  DDRD &= ~(1 << PD2);
-
-  // Configure Timer1 for pulse measurement
-  setupTimer1();
-
-  // Enable global interrupts
-  sei();
-}
-
-void decodeNEC(uint32_t raw_data) {
-  uint8_t address = (raw_data >> 24) & 0xFF;
-  uint8_t inverted_address = (raw_data >> 16) & 0xFF;
-  uint8_t command = (raw_data >> 8) & 0xFF;
-  uint8_t inverted_command = raw_data & 0xFF;
-
-  // Validate the inverted bits
-  if ((address ^ inverted_address) == 0xFF &&
-      (command ^ inverted_command) == 0xFF) {
-    // Map the command to a direction
-    switch (command) {
-    case 0x46: // Up button
-      direction = 'u';
-      break;
-    case 0x15: // Down button
-      direction = 'd';
-      break;
-    case 0x44: // Left button
-      direction = 'l';
-      break;
-    case 0x43: // Right button
-      direction = 'r';
-      break;
-    default:
-      direction = '\0'; // Invalid or unhandled command
-      break;
-    }
-  }
 }
 
 void TimerISR() {
@@ -290,9 +216,10 @@ int main(void) {
 
   // Sets the timer to normal mode
   TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
-  setupIR();            // initializes IR
-  setupTimer();         // initializes timer
-  setupPWM();           // initializes PWM
+  IRinit(PORTC, 0, 2);  // initializes IR
+  SPI_INIT();
+  setupTimer(); // initializes timer
+  setupPWM();   // initializes PWM
   // srand(getRandomSeed()); // TODO: sync to the crystal or something
 
   srand(TCNT1); // Seed the random number generator with the current time

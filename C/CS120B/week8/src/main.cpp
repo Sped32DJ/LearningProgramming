@@ -1,3 +1,4 @@
+#include "ST7735_Text.h"
 #include "helper.h"
 #include "irAVR.h"
 #include "periph.h"
@@ -175,17 +176,20 @@ int BUZZER_TICK(int state) {
   return state;
 }
 
+// TEST: Not sure if this works
+decode_results results; // Global or static variable for storing decode results
 int IR_TICK(int state) {
   switch (state) {
   case IR_INIT:
+    IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
     state = IR_IDLE;
     break;
   case IR_IDLE:
-    state = IR_IDLE;
-    if (ir_flag) {
-      decodeNEC(ir_data);
-      ir_flag = 0;
+    if (IRdecode(&results)) {
+      unsigned long decodeVal = results.value;
+      IRresume();
     }
+    state = IR_IDLE;
     break;
   default:
     state = IR_INIT;
@@ -195,6 +199,26 @@ int IR_TICK(int state) {
   case IR_INIT:
     break;
   case IR_IDLE:
+    // Map the command to a direction
+    // NOTE: Make this somehow work and do single button presses
+    // Make it only happen upon lift off
+    switch (results) {
+    case 0x46: // Up button
+      direction = 'u';
+      break;
+    case 0x15: // Down button
+      direction = 'd';
+      break;
+    case 0x44: // Left button
+      direction = 'l';
+      break;
+    case 0x43: // Right button
+      direction = 'r';
+      break;
+    default:
+      direction = '\0'; // Invalid or unhandled command
+      break;
+    }
     break;
   default:
     break;
@@ -216,10 +240,10 @@ int main(void) {
 
   // Sets the timer to normal mode
   TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
-  IRinit(PORTC, 0, 2);  // initializes IR
   SPI_INIT();
-  setupTimer(); // initializes timer
-  setupPWM();   // initializes PWM
+  ST7735_init(); // Initialize display
+  setupTimer();  // initializes timer
+  setupPWM();    // initializes PWM
   // srand(getRandomSeed()); // TODO: sync to the crystal or something
 
   srand(TCNT1); // Seed the random number generator with the current time
@@ -256,9 +280,18 @@ int main(void) {
   TimerSet(GCD_PERIOD);
   TimerOn();
 
+  // NOTE: Clear below
+  // Clear the screen with black
+  Clear_Screen_With_Color(0x0000);
+
+  // Draw "Hello!" in white on a black background at (10, 10)
+  textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);
+
+  // Draw "World!" scaled 2x at (10, 30)
+  textHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
+
   while (1) {
   }
-
   return 0;
 }
 //

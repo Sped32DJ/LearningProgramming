@@ -53,7 +53,7 @@ public:
   int rawlen;                    // Number of records in rawbuf.
 };
 
-enum IRsates { STATE_IDLE, STATE_MARK, STATE_SPACE, STATE_STOP };
+enum IRstates { STATE_IDLE, STATE_MARK, STATE_SPACE, STATE_STOP };
 
 volatile irparams_t irparams;
 

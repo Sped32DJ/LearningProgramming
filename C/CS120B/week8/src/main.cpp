@@ -76,13 +76,15 @@ void setColor(unsigned char redVal, unsigned char greenVal,
 // }
 
 unsigned char red, green, blue;
+uint16_t target = 0x000;
 int RGB_TICK(int state) {
   switch (state) {
   case RGB_INIT:
-    // TODO: Properly reset colors
-    red = rand();
-    green = rand();
-    blue = rand();
+    // TODO: Not sure if this works
+    target = rand() & 0xFFF;
+    red = (target & 0xF00) >> 8;
+    green = (target & 0x0F0) >> 4;
+    blue = target & 0x00F;
 
     state = RGB_ON;
     break;

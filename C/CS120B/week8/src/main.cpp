@@ -129,15 +129,26 @@ int DISPLAY_TICK(int state) {
     state = DISPLAY_ON;
     break;
   case DISPLAY_ON:
-    state = DISPLAY_OFF;
+    // NOTE: Make an else that loops into itself?
+    if (direction == 'o') {
+      direction == '\0';
+      HardwareReset();
+      state = DISPLAY_OFF;
+    }
     break;
   case DISPLAY_OFF:
-    state = DISPLAY_ON;
+    // NOTE: Make an else that loops into itself?
+    if (direction == 'o') {
+      direction == '\0';
+      HardwareReset();
+      state = DISPLAY_ON;
+    }
     break;
   default:
     state = DISPLAY_INIT;
     break;
   }
+  // NOTE: Furbish these commands
   switch (state) {
   case DISPLAY_INIT:
     break;
@@ -177,16 +188,18 @@ int BUZZER_TICK(int state) {
 }
 
 // TEST: Not sure if this works
-decode_results results; // Global or static variable for storing decode results
+decode_results results; // Stores decoded results
+unsigned long decodeVal = 0;
 int IR_TICK(int state) {
   switch (state) {
   case IR_INIT:
+    // Should this be in IDLE?
     IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
     state = IR_IDLE;
     break;
   case IR_IDLE:
     if (IRdecode(&results)) {
-      unsigned long decodeVal = results.value;
+      decodeVal = results.value;
       IRresume();
     }
     state = IR_IDLE;
@@ -200,9 +213,10 @@ int IR_TICK(int state) {
     break;
   case IR_IDLE:
     // Map the command to a direction
-    // NOTE: Make this somehow work and do single button presses
-    // Make it only happen upon lift off
-    switch (results) {
+    // This assigns the direction once
+    // Once an action is done with the variable,
+    // It gets sent to '\0'
+    switch (decodeVal) {
     case 0x46: // Up button
       direction = 'u';
       break;
@@ -214,6 +228,13 @@ int IR_TICK(int state) {
       break;
     case 0x43: // Right button
       direction = 'r';
+      break;
+    case 0x40: // Center button
+      direction = 'c';
+      break;
+
+    case 0x45: // ON/OFF Button
+      direction = 'o';
       break;
     default:
       direction = '\0'; // Invalid or unhandled command
@@ -294,4 +315,3 @@ int main(void) {
   }
   return 0;
 }
-//

@@ -1,4 +1,5 @@
 #include "main.cpp"
+// NOTE: DEPRECATED!!
 
 #ifndef IR_H
 #define IR_H

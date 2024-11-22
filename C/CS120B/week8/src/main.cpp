@@ -175,6 +175,7 @@ int BUZZER_TICK(int state) {
 
 // TEST: Not sure if this works
 decode_results results; // Stores decoded results
+bool on = 1;
 unsigned long decodeVal = 0;
 int IR_TICK(int state) {
   switch (state) {
@@ -186,9 +187,15 @@ int IR_TICK(int state) {
   case IR_IDLE:
     if (IRdecode(&results)) {
       decodeVal = results.value;
-      IRresume();
+      if (on) {
+        PORTD |= 0x02; // LED to confirm this line runs
+      } else {
+        PORTD &= ~0x02;
+      }
+      on = !on;
     }
-    state = IR_IDLE;
+    IRresume();
+    state = IR_INIT;
     break;
   default:
     state = IR_INIT;
@@ -202,6 +209,7 @@ int IR_TICK(int state) {
     // This assigns the direction once
     // Once an action is done with the variable,
     // It gets sent to '\0'
+    // DEBUGGIN: The PORTD stuff is to debug it works
     switch (decodeVal) {
     case 0x46: // Up button
       direction = 'u';

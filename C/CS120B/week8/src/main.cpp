@@ -1,16 +1,11 @@
 // #include "ST7735_Text.h"
 #include "helper.h"
-// #include "irAVR.h"
+#include "irAVR.h"
 #include "spiAVR.h"
-// #include "timerISR.h"
+#include "timerISR.h"
 #include <avr/io.h>
-// #include <stdlib.h>
+#include <stdlib.h>
 #include <util/delay.h>
-
-extern "C" {
-    #include <avr/io.h>
-    #include <avr/interrupt.h>
-}
 
 #define NUM_TASKS 4
 
@@ -122,7 +117,7 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction == '\0';
-      HardwareReset();
+      // ST7735_init(); // Initialize display
       state = DISPLAY_OFF;
     }
     break;
@@ -130,7 +125,7 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction == '\0';
-      HardwareReset();
+      // ST7735_init(); // Initialize display
       state = DISPLAY_ON;
     }
     break;
@@ -251,9 +246,9 @@ int main(void) {
   // Sets the timer to normal mode
   TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
   SPI_INIT();
-  ST7735_init(); // Initialize display
-  setupTimer();  // initializes timer
-  setupPWM();    // initializes PWM
+  //  ST7735_init(); // Initialize display
+  //  setupTimer();  // initializes timer
+  //  setupPWM();    // initializes PWM
   // srand(getRandomSeed()); // TODO: sync to the crystal or something
 
   srand(TCNT1); // Seed the random number generator with the current time
@@ -290,15 +285,15 @@ int main(void) {
   TimerSet(GCD_PERIOD);
   TimerOn();
 
-  // NOTE: Clear below
-  // Clear the screen with black
-  Clear_Screen_With_Color(0x0000);
-
-  // Draw "Hello!" in white on a black background at (10, 10)
-  textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);
-
-  // Draw "World!" scaled 2x at (10, 30)
-  textHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
+  //  // NOTE: Clear below
+  //  // Clear the screen with black
+  //  Clear_Screen_With_Color(0x0000);
+  //
+  //  // Draw "Hello!" in white on a black background at (10, 10)
+  //  textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);
+  //
+  //  // Draw "World!" scaled 2x at (10, 30)
+  //  extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
 
   while (1) {
   }

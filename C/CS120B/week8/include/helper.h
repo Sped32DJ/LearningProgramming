@@ -67,5 +67,6 @@ void Send_Command(unsigned char cmd) {
 void Send_Data(unsigned char cmd) {
   PORTB = SetBit(PORTB, 0, 1); // Data mode
   SPI_SEND(cmd);
+}
 
 #endif /* HEPLER_H */

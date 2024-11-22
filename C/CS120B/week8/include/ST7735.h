@@ -12,7 +12,7 @@ const unsigned int MAX_Y = 129; // Screen height
 
 // Hardware Reset
 void HardwareReset() {
-  PORT &= 0xFE; // setResetPinToLow
+  PORTD &= 0xFE; // setResetPinToLow
   _delay_ms(200);
   PORTD |= 0x01; // setResetPinToHigh
   _delay_ms(200);

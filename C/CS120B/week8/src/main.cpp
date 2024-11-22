@@ -1,4 +1,5 @@
 // #include "ST7735_Text.h"
+#include "ST7735.h"
 #include "helper.h"
 #include "irAVR.h"
 #include "spiAVR.h"
@@ -19,7 +20,7 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 50; // TODO:Set the GCD Period
+const unsigned long GCD_PERIOD = 50;
 const unsigned long RGB_PERIOD = 500;
 const unsigned long DISPLAY_PERIOD = 50;
 const unsigned long BUZZER_PERIOD = 50;
@@ -116,16 +117,16 @@ int DISPLAY_TICK(int state) {
   case DISPLAY_ON:
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
-      direction == '\0';
-      // ST7735_init(); // Initialize display
+      direction = '\0';
+      HardwareReset();
       state = DISPLAY_OFF;
     }
     break;
   case DISPLAY_OFF:
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
-      direction == '\0';
-      // ST7735_init(); // Initialize display
+      direction = '\0';
+      HardwareReset();
       state = DISPLAY_ON;
     }
     break;
@@ -246,7 +247,7 @@ int main(void) {
   // Sets the timer to normal mode
   TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
   SPI_INIT();
-  //  ST7735_init(); // Initialize display
+  ST7735_init(); // Initialize display
   //  setupTimer();  // initializes timer
   //  setupPWM();    // initializes PWM
   // srand(getRandomSeed()); // TODO: sync to the crystal or something
@@ -287,7 +288,7 @@ int main(void) {
 
   //  // NOTE: Clear below
   //  // Clear the screen with black
-  //  Clear_Screen_With_Color(0x0000);
+  // Clear_Screen_With_Color(0x0F00);
   //
   //  // Draw "Hello!" in white on a black background at (10, 10)
   //  textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);

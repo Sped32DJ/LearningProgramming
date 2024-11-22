@@ -2,6 +2,7 @@
 #include "ST7735.h"
 #include "helper.h"
 #include "irAVR.h"
+#include "serialATmega.h"
 #include "spiAVR.h"
 #include "timerISR.h"
 #include <avr/io.h>
@@ -20,11 +21,11 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 50;
+const unsigned long GCD_PERIOD = 20;
 const unsigned long RGB_PERIOD = 500;
-const unsigned long DISPLAY_PERIOD = 50;
-const unsigned long BUZZER_PERIOD = 50;
-const unsigned long IR_PERIOD = 50;
+const unsigned long DISPLAY_PERIOD = 40;
+const unsigned long BUZZER_PERIOD = 40;
+const unsigned long IR_PERIOD = 60;
 
 task tasks[NUM_TASKS];
 
@@ -175,27 +176,20 @@ int BUZZER_TICK(int state) {
 
 // TEST: Not sure if this works
 decode_results results; // Stores decoded results
-bool on = 1;
-unsigned long decodeVal = 0;
+uint32_t decodeVal = 0;
 int IR_TICK(int state) {
   switch (state) {
   case IR_INIT:
-    // Should this be in IDLE?
     IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
     state = IR_IDLE;
     break;
   case IR_IDLE:
     if (IRdecode(&results)) {
       decodeVal = results.value;
-      if (on) {
-        PORTD |= 0x02; // LED to confirm this line runs
-      } else {
-        PORTD &= ~0x02;
-      }
-      on = !on;
+      serial_println(results.value);
     }
     IRresume();
-    state = IR_INIT;
+    IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
     break;
   default:
     state = IR_INIT;
@@ -211,23 +205,28 @@ int IR_TICK(int state) {
     // It gets sent to '\0'
     // DEBUGGIN: The PORTD stuff is to debug it works
     switch (decodeVal) {
-    case 0x46: // Up button
+    case 16736925: // Up button
       direction = 'u';
+      // PORTD |= 0x02; // LED to confirm this line runs
       break;
-    case 0x15: // Down button
+    case 16754775: // Down button
       direction = 'd';
+      // PORTD |= 0x02; // LED to confirm this line runs
       break;
-    case 0x44: // Left button
+    case 16720605: // Left button
       direction = 'l';
+      // PORTD |= 0x02; // LED to confirm this line runs
       break;
-    case 0x43: // Right button
+    case 16761405: // Right button
       direction = 'r';
       break;
-    case 0x40: // Center button
+    case 16712445: // Center button
       direction = 'c';
+      // PORTD &= ~0x02;
       break;
-    case 0x45: // ON/OFF Button
+    case 16753245: // ON/OFF Button
       direction = 'o';
+      // PORTD &= ~0x02;
       break;
     default:
       direction = '\0'; // Invalid or unhandled command
@@ -256,6 +255,7 @@ int main(void) {
   TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
   SPI_INIT();
   ST7735_init(); // Initialize display
+  serial_init(9600);
   //  setupTimer();  // initializes timer
   //  setupPWM();    // initializes PWM
   // srand(getRandomSeed()); // TODO: sync to the crystal or something

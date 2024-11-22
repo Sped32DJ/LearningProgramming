@@ -1,6 +1,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 // #include <avr/signal.h>
+#include "spiAVR.h"
 #include <util/delay.h>
 
 #ifndef HELPER_H

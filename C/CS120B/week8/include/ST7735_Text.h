@@ -2,6 +2,7 @@
 #define ST7735_TEXT_H
 
 #include "ST7735.h"
+#include <avr/interrupt.h>
 
 // Define font dimensions
 #define CHAR_WIDTH 5

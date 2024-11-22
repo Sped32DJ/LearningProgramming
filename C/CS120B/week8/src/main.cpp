@@ -1,12 +1,16 @@
-#include "ST7735_Text.h"
+// #include "ST7735_Text.h"
 #include "helper.h"
-#include "irAVR.h"
-#include "periph.h"
+// #include "irAVR.h"
 #include "spiAVR.h"
-#include "timerISR.h"
+// #include "timerISR.h"
 #include <avr/io.h>
-#include <stdlib.h>
+// #include <stdlib.h>
 #include <util/delay.h>
+
+extern "C" {
+    #include <avr/io.h>
+    #include <avr/interrupt.h>
+}
 
 #define NUM_TASKS 4
 
@@ -36,16 +40,6 @@ enum IR_States { IR_INIT, IR_IDLE };
 // NOTE: IR Variables
 unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
 
-// TEST: Everything until decodeNEC
-void setupTimer1() {
-  // Configure Timer1 in normal mode
-  TCCR1A = 0;
-  TCCR1B = (1 << CS11); // Prescaler 8 for microsecond timing
-
-  // Enable input capture interrupt
-  TIMSK1 |= (1 << ICIE1);
-}
-
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
        i++) { // Iterate through each task in the task array
@@ -62,6 +56,8 @@ void TimerISR() {
 
 // NOTE: RGB Helpers
 // Sets the color of the RGB LED
+unsigned char red, green, blue;
+uint16_t target = 0x000;
 void setColor(unsigned char redVal, unsigned char greenVal,
               unsigned char blueVal) {
   OCR2B = redVal;   // Set RED brightness
@@ -69,14 +65,6 @@ void setColor(unsigned char redVal, unsigned char greenVal,
   OCR0A = blueVal;  // Set BLUE brightness
 }
 
-// uint16_t getRandomSeed() {
-//   uint16_t noise = readAnalogNoise();
-//   uint16_t time = TCNT1;
-//   return noise ^ time; // XOR for combined randomness
-// }
-
-unsigned char red, green, blue;
-uint16_t target = 0x000;
 int RGB_TICK(int state) {
   switch (state) {
   case RGB_INIT:
@@ -234,7 +222,6 @@ int IR_TICK(int state) {
     case 0x40: // Center button
       direction = 'c';
       break;
-
     case 0x45: // ON/OFF Button
       direction = 'o';
       break;
@@ -271,7 +258,7 @@ int main(void) {
 
   srand(TCNT1); // Seed the random number generator with the current time
 
-  ADC_init(); // initializes ADC
+  // ADC_init(); // initializes ADC
 
   // TODO: Initialize tasks here
   //  e.g.
@@ -315,5 +302,6 @@ int main(void) {
 
   while (1) {
   }
+
   return 0;
 }

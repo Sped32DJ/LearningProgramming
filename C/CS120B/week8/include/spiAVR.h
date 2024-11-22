@@ -29,8 +29,8 @@ void SPI_INIT() {
 
 void SPI_SEND(char data) {
   SPDR = data; // set data that you want to transmit
-  while (!(SPSR & (1 << SPIF)))
-    ; // wait until done transmitting
+  while (!(SPSR & (1 << SPIF))) {
+  }; // wait until done transmitting
 }
 
 #endif /* SPIAVR_H */

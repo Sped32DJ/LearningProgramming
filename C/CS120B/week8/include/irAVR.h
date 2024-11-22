@@ -26,9 +26,11 @@ or failed decode, you will need to run IRresume().*/
 int MATCH(int measured, int desired) {
   return measured >= TICKS_LOW(desired) && measured <= TICKS_HIGH(desired);
 }
+
 int MATCH_MARK(int measured_ticks, int desired_us) {
   return MATCH(measured_ticks, (desired_us + 100));
 }
+
 int MATCH_SPACE(int measured_ticks, int desired_us) {
   return MATCH(measured_ticks, (desired_us - 100));
 }

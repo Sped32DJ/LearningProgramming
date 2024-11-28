@@ -51,6 +51,18 @@ void TimerISR() {
   }
 }
 
+void shiftOut(char row) {
+  for (int i = 0; i < 8; i++) {
+    // Set the data pin to the correct bit
+    PORTD = SetBit(PORTD, 2, GetBit(row, i)); // DS
+
+    PORTD = SetBit(PORTD, 1, 1); // SH
+    PORTD = SetBit(PORTD, 1, 0); // SH
+  }
+  PORTD = SetBit(PORTD, 0, 1); // ST
+  PORTD = SetBit(PORTD, 0, 0); // ST
+}
+
 // NOTE: RGB Helpers
 // Sets the color of the RGB LED
 unsigned char red, green, blue;
@@ -74,7 +86,10 @@ int RGB_TICK(int state) {
     state = RGB_ON;
     break;
   case RGB_ON:
-    state = RGB_ON;
+    if (direction == 'o') {
+      state = RGB_INIT;
+      direction = '\0';
+    }
     break;
   default:
     state = RGB_INIT;
@@ -213,13 +228,16 @@ int IR_TICK(int state) {
       break;
     case 16720605: // Left button
       direction = 'l';
+      shiftOut(0x04);
       // PORTD |= 0x02; // LED to confirm this line runs
       break;
     case 16761405: // Right button
       direction = 'r';
+      shiftOut(0x01);
       break;
     case 16712445: // Center button
       direction = 'c';
+      shiftOut(0x02);
       // PORTD &= ~0x02;
       break;
     case 16753245: // ON/OFF Button
@@ -250,7 +268,7 @@ int main(void) {
   PORTD = 0x00;
 
   // Sets the timer to normal mode
-  TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
+  // TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
   SPI_INIT();
   ST7735_init(); // Initialize display
   serial_init(9600);
@@ -288,6 +306,7 @@ int main(void) {
   tasks[3].state = IR_INIT;
   tasks[3].elapsedTime = tasks[3].period;
   tasks[3].TickFct = &IR_TICK;
+  PORTD = SetBit(PORTD, 4, 1); // MR (unlock)
 
   TimerSet(GCD_PERIOD);
   TimerOn();
@@ -303,6 +322,7 @@ int main(void) {
   //  extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
 
   while (1) {
+    shiftOut(0xF);
   }
 
   return 0;

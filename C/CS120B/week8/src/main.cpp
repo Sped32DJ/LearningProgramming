@@ -31,7 +31,7 @@ task tasks[NUM_TASKS];
 
 enum RGB_States { RGB_INIT, RGB_ON };
 enum DISPLAY_States { DISPLAY_INIT, DISPLAY_ON, DISPLAY_OFF };
-enum BUZZER_States { BUZZER_INIT, BUZZER_IDLE };
+enum BUZZER_States { BUZZER_INIT, BUZZER_IDLE, BUZZER_GOOD, BUZZER_BAD };
 enum IR_States { IR_INIT, IR_IDLE };
 
 // NOTE: IR Variables
@@ -51,6 +51,7 @@ void TimerISR() {
   }
 }
 
+// TODO: Shift register not working yet
 void shiftOut(char row) {
   for (int i = 0; i < 8; i++) {
     // Set the data pin to the correct bit
@@ -102,22 +103,24 @@ int RGB_TICK(int state) {
     // TEST: IF RGB is working
     // Configure PWM for pins 3 (OC2B), 5 (OC0B), and 6 (OC0A)
     // Pin 3 (OC2B) for RED
-
     DDRD |= (1 << DDD3);                    // Set PD3 as output
     TCCR2A |= (1 << COM2B1) | (1 << WGM20); // Fast PWM, non-inverting mode
     TCCR2B |= (1 << CS21);                  // Prescaler 8
+    OCR2B = red << 4;
 
     // Pin 5 (OC0B) for GREEN
     DDRD |= (1 << DDD5);                    // Set PD5 as output
     TCCR0A |= (1 << COM0B1) | (1 << WGM00); // Fast PWM, non-inverting mode
     TCCR0B |= (1 << CS01);                  // Prescaler 8
+    OCR0B = green << 4;
 
     // Pin 6 (OC0A) for BLUE
     DDRD |= (1 << DDD6);                    // Set PD6 as output
     TCCR0A |= (1 << COM0A1) | (1 << WGM00); // Fast PWM, non-inverting mode
+    OCR0A = blue << 4;
 
     // Sets the brightness of each prime color
-    setColor(red, green, blue);
+    // setColor(red, green, blue);
     break;
   default:
     break;
@@ -164,22 +167,82 @@ int DISPLAY_TICK(int state) {
   return state;
 }
 
+static uint8_t noteIndex = 0;
+int timer, freq;
+
+// Define notes for good and fail sounds
+const uint16_t goodSound[] = {262, 330, 392, 523}; // C4, E4, G4, C5
+const uint16_t failSound[] = {392, 330, 262};      // G4, E4, C4
+const uint8_t goodSoundLength = 4;
+const uint8_t failSoundLength = 3;
+
+unsigned char triggerGood, triggerBad;
+
+void setBuzzerFreq(uint8_t freq) {
+  if (!freq) {
+    TCCR1A = 0; // stop buzzer
+    return;
+  }
+
+  // Configure Timer1 for frequency generation
+  DDRB |= (1 << DDB1);                 // Set PB1 (OC1A) as output
+  TCCR1A = (1 << COM1A0);              // Toggle OC1A on compare match
+  TCCR1B = (1 << WGM12) | (1 << CS10); // CTC mode, no prescaling
+  OCR1A = F_CPU / (2 * freq) - 1;      // Set compare match value
+}
+
 int BUZZER_TICK(int state) {
   switch (state) {
   case BUZZER_INIT:
     state = BUZZER_IDLE;
     break;
   case BUZZER_IDLE:
-    state = BUZZER_IDLE;
+    noteIndex = timer = 0;
+    if (triggerGood) {
+      triggerGood = 0;
+      state = BUZZER_GOOD;
+    } else if (triggerBad) {
+      triggerBad = 0;
+      state = BUZZER_BAD;
+    }
+    break;
+  case BUZZER_GOOD:
+    if (noteIndex >= goodSoundLength) {
+      state = BUZZER_IDLE;
+    }
+    break;
+  case BUZZER_BAD:
+    if (noteIndex >= failSoundLength) {
+      state = BUZZER_IDLE;
+    }
     break;
   default:
     state = BUZZER_INIT;
     break;
   }
+
   switch (state) {
   case BUZZER_INIT:
+    triggerBad = triggerGood = 0;
     break;
   case BUZZER_IDLE:
+    TCCR1A = 0; // Turn off Buzzer
+    break;
+  case BUZZER_GOOD:
+    if (!timer) {
+      setBuzzerFreq(goodSound[noteIndex]);
+      timer = 500;
+      ++noteIndex;
+    }
+    --timer;
+    break;
+  case BUZZER_BAD:
+    if (!timer) {
+      setBuzzerFreq(failSound[noteIndex]);
+      timer = 500;
+      ++noteIndex;
+    }
+    --timer;
     break;
   default:
     break;
@@ -322,7 +385,7 @@ int main(void) {
   //  extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
 
   while (1) {
-    shiftOut(0xF);
+    shiftOut(0x01);
   }
 
   return 0;

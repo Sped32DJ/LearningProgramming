@@ -385,7 +385,7 @@ int main(void) {
   //  extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
 
   while (1) {
-    shiftOut(0x01);
+    shiftOut(0xFF);
   }
 
   return 0;

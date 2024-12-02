@@ -281,27 +281,37 @@ int IR_TICK(int state) {
     // Once an action is done with the variable,
     // It gets sent to '\0'
     // DEBUGGIN: The PORTD stuff is to debug it works
-    if (decodeVal == 16736925) {
+    switch (decodeVal) {
+    case 16736925: // Up button
       direction = 'u';
-    } else if (decodeVal == 16754775) {
+      // PORTD |= 0x02; // LED to confirm this line runs
+      break;
+    case 16754775: // Down button
       direction = 'd';
-    } else if (decodeVal == 16720605) {
+      // PORTD |= 0x02; // LED to confirm this line runs
+      break;
+    case 16720605: // Left button
       direction = 'l';
       shiftOut(0x04);
-    } else if (decodeVal == 16761405) {
+      // PORTD |= 0x02; // LED to confirm this line runs
+      break;
+    case 16761405: // Right button
       direction = 'r';
       shiftOut(0x01);
-    } else if (decodeVal == 16712445) {
+      break;
+    case 16712445: // Center button
       direction = 'c';
       shiftOut(0x02);
-    } else if (decodeVal == 16753245) {
+      // PORTD &= ~0x02;
+      break;
+    case 16753245: // ON/OFF Button
       direction = 'o';
-      shiftOut(0x00);
-    } else {
-      direction = '\0';
-      shiftOut(0x00);
+      // PORTD &= ~0x02;
+      break;
+    default:
+      direction = '\0'; // Invalid or unhandled command
+      break;
     }
-    decodeVal = 0;
     break;
   default:
     break;
@@ -382,6 +392,7 @@ int main(void) {
   //  extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
 
   while (1) {
+    shiftOut(0xF9);
   }
 
   return 0;

@@ -7,6 +7,15 @@
 #include <avr/io.h>
 #include <util/delay.h> // Include delay header
 
+#define SWRESET 0x01 // Software reset
+#define SLPOUT 0x11  // Sleep out & booster on
+#define INVON 0x21
+#define DISPON 0x29 // Display On
+#define CASET 0x2A  // Column address set
+#define RASET 0x2B  // Row address set
+#define RAMWR 0x2C  // Memory write
+#define COLMOD 0x3A // Interface pixel format
+
 const unsigned int MAX_X = 129; // Screen width
 const unsigned int MAX_Y = 129; // Screen height
 
@@ -77,6 +86,29 @@ void Clear_Screen_With_Color(int color) {
   for (unsigned int i = 0; i < MAX_X * MAX_Y; i++) {
     Send_Data(color >> 8);   // Send high byte
     Send_Data(color & 0xFF); // Send low byte
+  }
+}
+
+void AddressBox(short Xi, short Yi, short Xf, short Yf) {
+  Send_Command(CASET);
+  Send_Data(Xi >> 8);   // High 8 bits of initial X
+  Send_Data(Xi & 0xFF); // Low 8 bits of initial X
+  Send_Data(Xf >> 8);   // High 8 bits of ending X
+  Send_Data(Xf & 0xFF); // Low 8 bits of ending X
+  Send_Command(RASET);
+  Send_Data(Yi >> 8);   // High 8 bits of initial Y
+  Send_Data(Yi & 0xFF); // Low 8 bits of initial Y
+  Send_Data(Yf >> 8);   // High 8 bits of ending Y
+  Send_Data(Yf & 0xFF); // Low 8 bits of ending Y
+  Send_Command(RAMWR);
+}
+
+// Personally written functions
+void Screen(short color) {
+  AddressBox(0, 0, 127, 127);
+  for (int i = 0; i < 128 * 128; i++) {
+    Send_Data(color >> 8);
+    Send_Data(color & 0xFF);
   }
 }
 

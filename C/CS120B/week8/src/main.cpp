@@ -76,11 +76,13 @@ void setColor(unsigned char redVal, unsigned char greenVal,
   OCR0A = blueVal;  // Set BLUE brightness
 }
 
+// TODO: Not working, give up and do software PWM
 int RGB_TICK(int state) {
   switch (state) {
   case RGB_INIT:
     // TODO: Not sure if this works
-    target = rand() & 0xFFF;
+    // target = rand() & 0xFFF;
+    target = 0x0FF;
     red = (target & 0xF00) >> 8;
     green = (target & 0x0F0) >> 4;
     blue = target & 0x00F;
@@ -331,6 +333,7 @@ int main(void) {
   // TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
   SPI_INIT();
   ST7735_init(); // Initialize display
+  Screen(0x0000);
   serial_init(9600);
   //  setupTimer();  // initializes timer
   //  setupPWM();    // initializes PWM

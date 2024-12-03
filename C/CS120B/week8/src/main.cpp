@@ -134,6 +134,7 @@ int RGB_TICK(int state) {
     if (currentBlue == blue) {
       progress |= 0x04;
     }
+    shiftOut(progress);
     break;
   default:
     break;

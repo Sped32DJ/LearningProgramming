@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <util/delay.h>
 
-#define NUM_TASKS 8
+#define NUM_TASKS 9
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -23,13 +23,14 @@ typedef struct _task {
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
 const unsigned long GCD_PERIOD = 1;
 const unsigned long RGB_PERIOD = 20;
-const unsigned long DISPLAY_PERIOD = 17;
+const unsigned long DISPLAY_PERIOD = 17; // ~59 updates per second
 const unsigned long BUZZER_PERIOD = 40;
-const unsigned long IR_PERIOD = 60;
-const unsigned long RED_PERIOD = 1;
-const unsigned long GREEN_PERIOD = 1;
-const unsigned long BLUE_PERIOD = 1;
-const unsigned long SHIFT_PERIOD = 1;
+const unsigned long IR_PERIOD = 60;   // Enough to capture the input
+const unsigned long RED_PERIOD = 1;   // RedPWM
+const unsigned long GREEN_PERIOD = 1; // GreenPWM
+const unsigned long BLUE_PERIOD = 1;  // BluePWM
+const unsigned long SHIFT_PERIOD = 1; // Still causes Jitters
+const unsigned long TIME_PERIOD = 1000;
 
 task tasks[NUM_TASKS];
 
@@ -41,6 +42,7 @@ enum RED_TICK { RHigh, RLow };
 enum GREEN_TICK { GHigh, GLow };
 enum BLUE_TICK { BHigh, BLow };
 enum SHIFT_States { SHIFT_INIT };
+enum TIME_states { CALC };
 
 // NOTE: IR Variables
 unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
@@ -246,6 +248,8 @@ int BLUE_TICK(int state) {
   return state;
 }
 
+int progressPer = 0;
+int rawSeconds = 0;
 int DISPLAY_TICK(int state) {
   switch (state) {
   case DISPLAY_INIT:
@@ -257,11 +261,8 @@ int DISPLAY_TICK(int state) {
       direction = '\0';
       HardwareReset();
       state = DISPLAY_OFF;
-    } else {
-      // NOTE: This should draw a box
-      Box(0, 0, 128, 128, 0xFFFF);
-      Pixel(15, 25, 0xFFF0);
     }
+
     break;
   case DISPLAY_OFF:
     // NOTE: Make an else that loops into itself?
@@ -270,6 +271,18 @@ int DISPLAY_TICK(int state) {
       HardwareReset();
       state = DISPLAY_ON;
     }
+    break;
+  case DISPLAY_ON:
+    Box(0, 0, 128, 128, 0xFFFF);
+    Pixel(15, 25, 0xFFF0);
+
+    if (target == currVal) {
+      progressPer = 100;
+    } else {
+      // FIX: Check up on this calculation
+      progressPer = (100 * target) / (100 * currVal);
+    }
+
     break;
   default:
     state = DISPLAY_INIT;
@@ -445,6 +458,20 @@ int Shift_Tick(int state) {
   return state;
 }
 
+int ELAPSED_Tick(int state) {
+  switch (state) {
+  case CALC:
+    state = CALC;
+    break;
+  }
+  switch (state) {
+  case CALC:
+    ++rawSeconds;
+    break;
+  }
+  return state;
+}
+
 int main(void) {
   // TODO: initialize all your inputs and ouputs
   DDRB = 0xFF;
@@ -524,6 +551,11 @@ int main(void) {
   tasks[7].state = SHIFT_INIT;
   tasks[7].elapsedTime = tasks[7].period;
   tasks[7].TickFct = &Shift_Tick;
+
+  tasks[8].period = TIME_PERIOD;
+  tasks[8].state = CALC;
+  tasks[8].elapsedTime = tasks[8].period;
+  tasks[8].TickFct = &ELAPSED_Tick;
 
   // MR (unlock) FIX: I think this should be deprecated
   PORTD = SetBit(PORTD, 4, 1);

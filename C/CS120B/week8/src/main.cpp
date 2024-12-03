@@ -23,7 +23,7 @@ typedef struct _task {
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
 const unsigned long GCD_PERIOD = 1;
 const unsigned long RGB_PERIOD = 20;
-const unsigned long DISPLAY_PERIOD = 40;
+const unsigned long DISPLAY_PERIOD = 17;
 const unsigned long BUZZER_PERIOD = 40;
 const unsigned long IR_PERIOD = 60;
 const unsigned long RED_PERIOD = 1;
@@ -257,6 +257,10 @@ int DISPLAY_TICK(int state) {
       direction = '\0';
       HardwareReset();
       state = DISPLAY_OFF;
+    } else {
+      // NOTE: This should draw a box
+      Box(0, 0, 128, 128, 0xFFFF);
+      Pixel(15, 25, 0xFFF0);
     }
     break;
   case DISPLAY_OFF:
@@ -521,7 +525,8 @@ int main(void) {
   tasks[7].elapsedTime = tasks[7].period;
   tasks[7].TickFct = &Shift_Tick;
 
-  PORTD = SetBit(PORTD, 4, 1); // MR (unlock)
+  // MR (unlock) FIX: I think this should be deprecated
+  PORTD = SetBit(PORTD, 4, 1);
 
   TimerSet(GCD_PERIOD);
   TimerOn();

@@ -250,6 +250,7 @@ int BLUE_TICK(int state) {
 
 int progressPer = 0;
 int rawSeconds = 0;
+int timeMin, timeSec;
 int DISPLAY_TICK(int state) {
   switch (state) {
   case DISPLAY_INIT:
@@ -263,6 +264,16 @@ int DISPLAY_TICK(int state) {
       state = DISPLAY_OFF;
     }
 
+    // Transition calculates parameters
+    if (target == currVal) {
+      progressPer = 100;
+    } else {
+      // FIX: Check up on this calculation
+      progressPer = (100 * target) / (100 * currVal);
+    }
+    timeMin = (rawSeconds / 60);
+    timeSec = (rawSeconds % 60);
+
     break;
   case DISPLAY_OFF:
     // NOTE: Make an else that loops into itself?
@@ -275,13 +286,6 @@ int DISPLAY_TICK(int state) {
   case DISPLAY_ON:
     Box(0, 0, 128, 128, 0xFFFF);
     Pixel(15, 25, 0xFFF0);
-
-    if (target == currVal) {
-      progressPer = 100;
-    } else {
-      // FIX: Check up on this calculation
-      progressPer = (100 * target) / (100 * currVal);
-    }
 
     break;
   default:

@@ -22,7 +22,7 @@ typedef struct _task {
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
 const unsigned long GCD_PERIOD = 1;
-const unsigned long RGB_PERIOD = 500;
+const unsigned long RGB_PERIOD = 20;
 const unsigned long DISPLAY_PERIOD = 40;
 const unsigned long BUZZER_PERIOD = 40;
 const unsigned long IR_PERIOD = 60;
@@ -84,8 +84,8 @@ int RGB_TICK(int state) {
   switch (state) {
   case RGB_INIT:
     // TODO: Not sure if this works
-    // target = rnd() & 0xFFF;
-    target = 0xF00;
+    target = rand() & 0xFFF;
+    // target = 0xF00;
     red = (target & 0xF00) >> 8;
     green = (target & 0x0F0) >> 4;
     blue = target & 0x00F;
@@ -104,6 +104,9 @@ int RGB_TICK(int state) {
     if (direction == 'o') {
       state = RGB_INIT;
       direction = '\0';
+    }
+    if (GetBit(PINC, 1)) {
+      state = RGB_INIT;
     }
     break;
   default:

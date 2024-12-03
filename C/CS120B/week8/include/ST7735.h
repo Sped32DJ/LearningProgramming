@@ -7,6 +7,7 @@
 #include <avr/io.h>
 #include <util/delay.h> // Include delay header
 
+// TODO: Fix these definitions to be accurate
 #define SWRESET 0x01 // Software reset
 #define SLPOUT 0x11  // Sleep out & booster on
 #define INVON 0x21

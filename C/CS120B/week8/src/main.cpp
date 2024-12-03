@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <util/delay.h>
 
-#define NUM_TASKS 4
+#define NUM_TASKS 7
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -21,11 +21,14 @@ typedef struct _task {
 
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
-const unsigned long GCD_PERIOD = 20;
+const unsigned long GCD_PERIOD = 1;
 const unsigned long RGB_PERIOD = 500;
 const unsigned long DISPLAY_PERIOD = 40;
 const unsigned long BUZZER_PERIOD = 40;
 const unsigned long IR_PERIOD = 60;
+const unsigned long RED_PERIOD = 1;
+const unsigned long GREEN_PERIOD = 1;
+const unsigned long BLUE_PERIOD = 1;
 
 task tasks[NUM_TASKS];
 
@@ -33,6 +36,9 @@ enum RGB_States { RGB_INIT, RGB_ON };
 enum DISPLAY_States { DISPLAY_INIT, DISPLAY_ON, DISPLAY_OFF };
 enum BUZZER_States { BUZZER_INIT, BUZZER_IDLE, BUZZER_GOOD, BUZZER_BAD };
 enum IR_States { IR_INIT, IR_IDLE };
+enum RED_TICK { RHigh, RLow };
+enum GREEN_TICK { GHigh, GLow };
+enum BLUE_TICK { BHigh, BLow };
 
 // NOTE: IR Variables
 unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
@@ -69,12 +75,6 @@ void shiftOut(char row) {
 // Sets the color of the RGB LED
 unsigned char red, green, blue;
 uint16_t target = 0x000;
-void setColor(unsigned char redVal, unsigned char greenVal,
-              unsigned char blueVal) {
-  OCR2B = redVal;   // Set RED brightness
-  OCR0B = greenVal; // Set GREEN brightness
-  OCR0A = blueVal;  // Set BLUE brightness
-}
 
 // TODO: Not working, give up and do software PWM
 int RGB_TICK(int state) {
@@ -126,6 +126,60 @@ int RGB_TICK(int state) {
     // setColor(red, green, blue);
     break;
   default:
+    break;
+  }
+  return state;
+}
+
+// Iterator
+int r;
+int RED_TICK(int state) {
+  switch (state) {
+  case RHigh:
+    break;
+  case RLow:
+    break;
+  default:
+    break;
+  }
+  switch (state) {
+  case RHigh:
+    PORTD = SetBit(PORTD, 3, 1);
+    break;
+  case RLow:
+    PORTD = SetBit(PORTD, 3, 0);
+    break;
+  default:
+    break;
+  }
+  return state;
+}
+
+int g;
+int GREEN_TICK(int state) {
+  switch (state) {
+  case GHigh:
+    break;
+  case GLow:
+    break;
+  }
+  switch (state) {
+  case GHigh:
+    PORTD = SetBit(PORTD, 5, 1);
+    break;
+  case GLow:
+    PORTD = SetBit(PORTD, 5, 0);
+    break;
+  }
+  return state;
+}
+
+int b;
+int BLUE_TICK(int state) {
+  switch (state) {
+  case BHigh:
+    break;
+  case BLow:
     break;
   }
   return state;
@@ -369,6 +423,12 @@ int main(void) {
   tasks[3].state = IR_INIT;
   tasks[3].elapsedTime = tasks[3].period;
   tasks[3].TickFct = &IR_TICK;
+
+  tasks[4].period = RED_PERIOD;
+  tasks[4].state = RHigh;
+  tasks[4].elapsedTime = tasks[4].period;
+  tasks[4].TickFct = &RED_TICK;
+
   PORTD = SetBit(PORTD, 4, 1); // MR (unlock)
 
   TimerSet(GCD_PERIOD);

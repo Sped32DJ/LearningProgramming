@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <util/delay.h>
 
-#define NUM_TASKS 7
+#define NUM_TASKS 8
 
 // Task struct for concurrent synchSMs implmentations
 typedef struct _task {
@@ -29,6 +29,7 @@ const unsigned long IR_PERIOD = 60;
 const unsigned long RED_PERIOD = 1;
 const unsigned long GREEN_PERIOD = 1;
 const unsigned long BLUE_PERIOD = 1;
+const unsigned long SHIFT_PERIOD = 1;
 
 task tasks[NUM_TASKS];
 
@@ -39,6 +40,7 @@ enum IR_States { IR_INIT, IR_IDLE };
 enum RED_TICK { RHigh, RLow };
 enum GREEN_TICK { GHigh, GLow };
 enum BLUE_TICK { BHigh, BLow };
+enum SHIFT_States { SHIFT_INIT };
 
 // NOTE: IR Variables
 unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
@@ -76,7 +78,7 @@ void shiftOut(char row) {
 unsigned char red, green, blue = 0x0;
 unsigned char currentRed, currentGreen, currentBlue = 0x0;
 unsigned char progress = 0;
-uint16_t currVal = 0x0;
+uint16_t currVal = 0x000;
 uint16_t target = 0x000;
 
 // TODO: Not working, give up and do software PWM
@@ -134,7 +136,6 @@ int RGB_TICK(int state) {
     if (currentBlue == blue) {
       progress |= 0x04;
     }
-    shiftOut(progress);
     break;
   default:
     break;
@@ -426,6 +427,20 @@ int IR_TICK(int state) {
   return state;
 }
 
+// NOTE: Still flickers, maybe I need a capacitor
+int Shift_Tick(int state) {
+  switch (state) {
+  case SHIFT_INIT:
+    break;
+  }
+  switch (state) {
+  case SHIFT_INIT:
+    shiftOut(progress);
+    break;
+  }
+  return state;
+}
+
 int main(void) {
   // TODO: initialize all your inputs and ouputs
   DDRB = 0xFF;
@@ -499,6 +514,11 @@ int main(void) {
   tasks[6].state = BHigh;
   tasks[6].elapsedTime = tasks[6].period;
   tasks[6].TickFct = &BLUE_TICK;
+
+  tasks[7].period = SHIFT_PERIOD;
+  tasks[7].state = SHIFT_INIT;
+  tasks[7].elapsedTime = tasks[7].period;
+  tasks[7].TickFct = &Shift_Tick;
 
   PORTD = SetBit(PORTD, 4, 1); // MR (unlock)
 

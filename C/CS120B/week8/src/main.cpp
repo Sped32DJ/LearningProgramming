@@ -77,16 +77,27 @@ unsigned char red, green, blue;
 uint16_t target = 0x000;
 
 // TODO: Not working, give up and do software PWM
+int r, RH, RL;
+int g, GH, GL;
+int b, BH, BL;
 int RGB_TICK(int state) {
   switch (state) {
   case RGB_INIT:
     // TODO: Not sure if this works
-    // target = rand() & 0xFFF;
-    target = 0x0FF;
+    // target = rnd() & 0xFFF;
+    target = 0xF00;
     red = (target & 0xF00) >> 8;
     green = (target & 0x0F0) >> 4;
     blue = target & 0x00F;
 
+    // Setting up PWM periods
+    RH = red;
+    GH = green;
+    BH = blue;
+
+    RL = RH > 0 ? 16 - RH : 16;
+    GL = GH > 0 ? 16 - GH : 16;
+    BL = BH > 0 ? 16 - BH : 16;
     state = RGB_ON;
     break;
   case RGB_ON:
@@ -103,27 +114,6 @@ int RGB_TICK(int state) {
   case RGB_INIT:
     break;
   case RGB_ON:
-    // TEST: IF RGB is working
-    // Configure PWM for pins 3 (OC2B), 5 (OC0B), and 6 (OC0A)
-    // Pin 3 (OC2B) for RED
-    DDRD |= (1 << DDD3);                    // Set PD3 as output
-    TCCR2A |= (1 << COM2B1) | (1 << WGM20); // Fast PWM, non-inverting mode
-    TCCR2B |= (1 << CS21);                  // Prescaler 8
-    OCR2B = red << 4;
-
-    // Pin 5 (OC0B) for GREEN
-    DDRD |= (1 << DDD5);                    // Set PD5 as output
-    TCCR0A |= (1 << COM0B1) | (1 << WGM00); // Fast PWM, non-inverting mode
-    TCCR0B |= (1 << CS01);                  // Prescaler 8
-    OCR0B = green << 4;
-
-    // Pin 6 (OC0A) for BLUE
-    DDRD |= (1 << DDD6);                    // Set PD6 as output
-    TCCR0A |= (1 << COM0A1) | (1 << WGM00); // Fast PWM, non-inverting mode
-    OCR0A = blue << 4;
-
-    // Sets the brightness of each prime color
-    // setColor(red, green, blue);
     break;
   default:
     break;
@@ -131,22 +121,37 @@ int RGB_TICK(int state) {
   return state;
 }
 
-// Iterator
-int r;
+// Below are the three RGB tasks (software PWM)
 int RED_TICK(int state) {
   switch (state) {
   case RHigh:
+    if (r > RH) {
+      r = 0;
+      state = RLow;
+    } else if (r > 13) {
+      r = 0;
+    }
+
     break;
   case RLow:
+    if (r > RL) {
+      r = 0;
+      state = RHigh;
+    } else if (r > 13) {
+      r = 0;
+    }
     break;
   default:
     break;
   }
   switch (state) {
   case RHigh:
+    ++r;
     PORTD = SetBit(PORTD, 3, 1);
+    // r = (r > 12) ? 0 : r + 1;
     break;
   case RLow:
+    ++r;
     PORTD = SetBit(PORTD, 3, 0);
     break;
   default:
@@ -155,33 +160,68 @@ int RED_TICK(int state) {
   return state;
 }
 
-int g;
 int GREEN_TICK(int state) {
   switch (state) {
   case GHigh:
+    if (g > GH) {
+      g = 0;
+      state = GLow;
+    } else if (g > 13) {
+      g = 0;
+    }
     break;
   case GLow:
+    if (g > GL) {
+      g = 0;
+      state = GHigh;
+    } else if (g > 13) {
+      g = 0;
+    }
     break;
   }
   switch (state) {
   case GHigh:
+    ++g;
     PORTD = SetBit(PORTD, 5, 1);
     break;
   case GLow:
+    ++g;
     PORTD = SetBit(PORTD, 5, 0);
     break;
   }
   return state;
 }
 
-int b;
 int BLUE_TICK(int state) {
   switch (state) {
   case BHigh:
+    if (b > BH) {
+      b = 0;
+      state = BLow;
+    } else if (b > 13) {
+      b = 0;
+    }
     break;
   case BLow:
+    if (b > BL) {
+      b = 0;
+      state = BHigh;
+    } else if (b > 13) {
+      b = 0;
+    }
     break;
   }
+  switch (state) {
+  case BHigh:
+    ++b;
+    PORTD = SetBit(PORTD, 6, 1);
+    break;
+  case BLow:
+    ++b;
+    PORTD = SetBit(PORTD, 6, 0);
+    break;
+  }
+
   return state;
 }
 
@@ -428,6 +468,16 @@ int main(void) {
   tasks[4].state = RHigh;
   tasks[4].elapsedTime = tasks[4].period;
   tasks[4].TickFct = &RED_TICK;
+
+  tasks[5].period = GREEN_PERIOD;
+  tasks[5].state = GHigh;
+  tasks[5].elapsedTime = tasks[5].period;
+  tasks[5].TickFct = &GREEN_TICK;
+
+  tasks[6].period = BLUE_PERIOD;
+  tasks[6].state = BHigh;
+  tasks[6].elapsedTime = tasks[6].period;
+  tasks[6].TickFct = &BLUE_TICK;
 
   PORTD = SetBit(PORTD, 4, 1); // MR (unlock)
 

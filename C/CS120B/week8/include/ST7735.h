@@ -19,6 +19,18 @@
 
 const unsigned int MAX_X = 129; // Screen width
 const unsigned int MAX_Y = 129; // Screen height
+//
+// Send Command Macro (A0 pin)
+void Send_Command(unsigned char cmd) {
+  PORTB = SetBit(PORTB, 4, 0); // Command mode
+  SPI_SEND(cmd);
+}
+
+// Send Data Macro
+void Send_Data(unsigned char cmd) {
+  PORTB = SetBit(PORTB, 4, 1); // Data mode
+  SPI_SEND(cmd);
+}
 
 // Hardware Reset
 void HardwareReset() {

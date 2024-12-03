@@ -73,7 +73,10 @@ void shiftOut(char row) {
 
 // NOTE: RGB Helpers
 // Sets the color of the RGB LED
-unsigned char red, green, blue;
+unsigned char red, green, blue = 0x0;
+unsigned char currentRed, currentGreen, currentBlue = 0x0;
+unsigned char progress = 0;
+uint16_t currVal = 0x0;
 uint16_t target = 0x000;
 
 // TODO: Not working, give up and do software PWM
@@ -117,6 +120,20 @@ int RGB_TICK(int state) {
   case RGB_INIT:
     break;
   case RGB_ON:
+    currentRed = (currVal & 0xF00) >> 8;
+    currentGreen = (currVal & 0x0F0) >> 4;
+    currentBlue = currVal & 0x00F;
+
+    // Lights up the LED lights when you reach that color!
+    if (currentRed == red) {
+      progress |= 0x01;
+    }
+    if (currentGreen == green) {
+      progress |= 0x02;
+    }
+    if (currentBlue == blue) {
+      progress |= 0x04;
+    }
     break;
   default:
     break;

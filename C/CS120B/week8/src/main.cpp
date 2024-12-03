@@ -60,17 +60,16 @@ void TimerISR() {
 }
 
 // TODO: Shift register not working yet
-void shiftOut(char row) {
+void shiftOut(char data) {
   for (int i = 0; i < 8; ++i) {
     // Set the data pin to the correct bit
-    PORTD = SetBit(PORTD, 2, GetBit(row, 7 - i)); // DS
+    PORTD = SetBit(PORTD, 2, GetBit(data, 7 - i)); // DS
 
     PORTD = SetBit(PORTD, 7, 1); // SH - Clock High
     PORTD = SetBit(PORTD, 7, 0); // SH - Clock low
   }
   PORTD = SetBit(PORTD, 4, 1); // ST - Latch high
   PORTD = SetBit(PORTD, 4, 0); // ST - Latch low
-  // PORTD = SetBit(PORTD, 4, 1); // OE (lock)
 }
 
 // NOTE: RGB Helpers
@@ -428,6 +427,7 @@ int IR_TICK(int state) {
 }
 
 // NOTE: Still flickers, maybe I need a capacitor
+// Current period: 1ms
 int Shift_Tick(int state) {
   switch (state) {
   case SHIFT_INIT:
@@ -464,7 +464,8 @@ int main(void) {
   SPI_INIT();
   ST7735_init(); // Initialize display
   Screen(0x0000);
-  serial_init(9600);
+  // serial_init(9600); // NOTE: Debugging
+
   //  setupTimer();  // initializes timer
   //  setupPWM();    // initializes PWM
   // srand(getRandomSeed()); // TODO: sync to the crystal or something

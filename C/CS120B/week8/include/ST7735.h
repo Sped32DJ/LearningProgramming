@@ -22,15 +22,17 @@ const unsigned int MAX_Y = 129; // Screen height
 
 // Hardware Reset
 void HardwareReset() {
-  PORTD &= 0xFE; // setResetPinToLow
+  // PORTD &= 0xFE; // setResetPinToLow
+  SetBit(PORTB, 0, 0);
   _delay_ms(200);
-  PORTD |= 0x01; // setResetPinToHigh
+  // PORTD |= 0x01; // setResetPinToHigh
+  SetBit(PORTB, 0, 1);
   _delay_ms(200);
 }
 
 // Invoke CASET
 void columnSet(void) {
-  Send_Command(0x2A);
+  Send_Command(CASET);
   Send_Data(0x00);
   Send_Data(0x00);
   Send_Data(0x00);
@@ -39,7 +41,7 @@ void columnSet(void) {
 
 // Invoke RASET
 void rowSet(void) {
-  Send_Command(0x2B);
+  Send_Command(RASET);
   Send_Data(0x00);
   Send_Data(0x00);
   Send_Data(0x00);
@@ -48,17 +50,17 @@ void rowSet(void) {
 
 // Function to set the address window
 void setAddrWindow(int x0, int y0, int x1, int y1) {
-  Send_Command(0x2A); // CASET (Column Address Set)
-  Send_Data(0x00);    // High byte of x0
-  Send_Data(x0);      // Low byte of x0
-  Send_Data(0x00);    // High byte of x1
-  Send_Data(x1);      // Low byte of x1
+  Send_Command(CASET); // CASET (Column Address Set)
+  Send_Data(0x00);     // High byte of x0
+  Send_Data(x0);       // Low byte of x0
+  Send_Data(0x00);     // High byte of x1
+  Send_Data(x1);       // Low byte of x1
 
-  Send_Command(0x2B); // RASET (Row Address Set)
-  Send_Data(0x00);    // High byte of y0
-  Send_Data(y0);      // Low byte of y0
-  Send_Data(0x00);    // High byte of y1
-  Send_Data(y1);      // Low byte of y1
+  Send_Command(RASET); // RASET (Row Address Set)
+  Send_Data(0x00);     // High byte of y0
+  Send_Data(y0);       // Low byte of y0
+  Send_Data(0x00);     // High byte of y1
+  Send_Data(y1);       // Low byte of y1
 
   Send_Command(0x2C); // RAMWR (Memory Write)
 }
@@ -66,14 +68,14 @@ void setAddrWindow(int x0, int y0, int x1, int y1) {
 // Initialize ST7735
 void ST7735_init(void) {
   HardwareReset();
-  Send_Command(0x01); // Software reset
+  Send_Command(SWRESET); // Software reset
   _delay_ms(150);
-  Send_Command(0x11); // Sleep out
+  Send_Command(SLPOUT); // Sleep out
   _delay_ms(200);
-  Send_Command(0x3A); // Set color mode
-  Send_Data(0x05);    // 16-bit color
+  Send_Command(COLMOD); // Set color mode
+  Send_Data(0x05);      // 16-bit color. TODO: 12-bit
   _delay_ms(10);
-  Send_Command(0x29); // Display on
+  Send_Command(DISPON); // Display on
   _delay_ms(200);
 }
 

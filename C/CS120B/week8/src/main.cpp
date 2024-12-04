@@ -25,7 +25,7 @@ const unsigned long GCD_PERIOD = 1;
 const unsigned long RGB_PERIOD = 20;
 const unsigned long DISPLAY_PERIOD = 17; // ~59 updates per second
 const unsigned long BUZZER_PERIOD = 40;
-const unsigned long IR_PERIOD = 60;   // Enough to capture the input
+const unsigned long IR_PERIOD = 90;   // Enough to capture the input
 const unsigned long RED_PERIOD = 1;   // RedPWM
 const unsigned long GREEN_PERIOD = 1; // GreenPWM
 const unsigned long BLUE_PERIOD = 1;  // BluePWM
@@ -268,6 +268,7 @@ int DISPLAY_TICK(int state) {
     if (direction == 'o') {
       direction = '\0';
       HardwareReset();
+      Box(0, 0, 128, 128, 0xFFFF);
       state = DISPLAY_OFF;
     }
 
@@ -400,16 +401,16 @@ uint32_t decodeVal = 0;
 int IR_TICK(int state) {
   switch (state) {
   case IR_INIT:
-    IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
+    // IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
     state = IR_IDLE;
     break;
   case IR_IDLE:
     if (IRdecode(&results)) {
       decodeVal = results.value;
-      serial_println(results.value);
+      serial_println(decodeVal);
+      IRresume(); // despite calling IRdecode, I still need this (??)
     }
-    IRresume();              // despite calling IRdecode, I still need this (??)
-    IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
+    // IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
     break;
   default:
     state = IR_INIT;
@@ -424,6 +425,11 @@ int IR_TICK(int state) {
     // Once an action is done with the variable,
     // It gets sent to '\0'
     // DEBUGGIN: The PORTD stuff is to debug it works
+    if (IRdecode(&results)) {
+      decodeVal = results.value;
+      serial_println(decodeVal);
+      IRresume(); // despite calling IRdecode, I still need this (??)
+    }
     if (decodeVal == 16736925) {
       direction = 'u';
     } else if (decodeVal == 16754775) {
@@ -502,9 +508,10 @@ int main(void) {
   // Sets the timer to normal mode
   // TCCR1B = (1 << CS10); // Start Timer1 with no prescaler; for RGB
   SPI_INIT();
-  ST7735_init(); // Initialize display
+  IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
+  ST7735_init();           // Initialize display
   Screen(0x0000);
-  // serial_init(9600); // NOTE: Debugging
+  serial_init(9600); // NOTE: Debugging
 
   //  setupTimer();  // initializes timer
   //  setupPWM();    // initializes PWM
@@ -574,7 +581,7 @@ int main(void) {
 
   //  // NOTE: Clear below
   //  // Clear the screen with black
-  // Clear_Screen_With_Color(0x0F00);
+  Clear_Screen_With_Color(0x0F00);
   //
   //  // Draw "Hello!" in white on a black background at (10, 10)
   // textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);

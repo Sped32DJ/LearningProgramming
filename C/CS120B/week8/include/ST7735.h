@@ -25,7 +25,7 @@ void Send_Command(unsigned char cmd) {
   PORTB = SetBit(PORTB, 2, 0); // Command mode; CS = 0
   PORTB = SetBit(PORTB, 4, 0); // Command mode; A0 = 0
   SPI_SEND(cmd);
-  PORTB = SetBit(PORTB, 2, 1); // Command mode; CS = 0
+  PORTB = SetBit(PORTB, 2, 1); // Command mode; CS = 1
 }
 
 // Send Data Macro
@@ -33,7 +33,7 @@ void Send_Data(unsigned char cmd) {
   PORTB = SetBit(PORTB, 2, 0); // Command mode; CS = 0
   PORTB = SetBit(PORTB, 4, 1); // Data mode; A0 = 1
   SPI_SEND(cmd);
-  PORTB = SetBit(PORTB, 2, 1); // Command mode; CS = 0
+  PORTB = SetBit(PORTB, 2, 1); // Command mode; CS = 1
 }
 
 // Hardware Reset

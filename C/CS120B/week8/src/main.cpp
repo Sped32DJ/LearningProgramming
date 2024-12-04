@@ -96,6 +96,8 @@ int RGB_TICK(int state) {
     green = (target & 0x0F0) >> 4;
     blue = target & 0x00F;
 
+    currVal = 0x000;
+
     // Setting up PWM periods
     RH = red;
     GH = green;

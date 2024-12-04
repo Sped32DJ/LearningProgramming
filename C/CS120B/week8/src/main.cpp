@@ -1,5 +1,5 @@
-// #include "ST7735_Text.h"
 #include "ST7735.h"
+// #include "ST7735_Text.h"
 #include "helper.h"
 #include "irAVR.h"
 #include "serialATmega.h"
@@ -577,7 +577,7 @@ int main(void) {
   // Clear_Screen_With_Color(0x0F00);
   //
   //  // Draw "Hello!" in white on a black background at (10, 10)
-  //  textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);
+  // textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);
   //
   //  // Draw "World!" scaled 2x at (10, 30)
   //  extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);

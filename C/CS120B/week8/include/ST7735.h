@@ -38,7 +38,7 @@ void Send_Data(unsigned char cmd) {
 
 // Hardware Reset
 void HardwareReset() {
-  PORTB = SetBit(PORTB, 0, 0);
+  PORTB = SetBit(PORTB, 0, 0); // RESET pin
   _delay_ms(200);
   PORTB = SetBit(PORTB, 0, 1);
   _delay_ms(200);

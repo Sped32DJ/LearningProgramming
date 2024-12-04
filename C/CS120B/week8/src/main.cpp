@@ -275,11 +275,12 @@ int DISPLAY_TICK(int state) {
     }
 
     // Transition calculates parameters
-    if (target == currVal) {
+    if (currVal == target) {
       progressPer = 100;
+    } else if (currVal > target) {
+      progressPer = (target * 100) / currVal;
     } else {
-      // FIX: Check up on this calculation
-      progressPer = (100 * target) / (100 * currVal);
+      progressPer = (currVal * 100) / target;
     }
     timeMin = (rawSeconds / 60);
     timeSec = (rawSeconds % 60);
@@ -410,6 +411,12 @@ int IR_TICK(int state) {
     if (IRdecode(&results)) {
       decodeVal = results.value;
       serial_println(decodeVal);
+      serial_char(' ');
+      serial_println(target);
+      serial_char(' ');
+      serial_println(currVal);
+      serial_char(' ');
+      serial_println(progressPer);
       IRresume(); // despite calling IRdecode, I still need this (??)
     }
     // IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
@@ -430,24 +437,43 @@ int IR_TICK(int state) {
     if (IRdecode(&results)) {
       decodeVal = results.value;
       serial_println(decodeVal);
+      serial_char(' ');
+      serial_println(target);
+      serial_char(' ');
+      serial_println(currVal);
+      serial_char(' ');
+      serial_println(progressPer);
       IRresume(); // despite calling IRdecode, I still need this (??)
     }
-    if (decodeVal == 16736925) {
-      direction = 'u';
-    } else if (decodeVal == 16754775) {
-      direction = 'd';
-    } else if (decodeVal == 16720605) {
-      direction = 'l';
-      // shiftOut(0x04);
-    } else if (decodeVal == 16761405) {
-      direction = 'r';
-      // shiftOut(0x01);
-    } else if (decodeVal == 16712445) {
-      direction = 'c';
-      // shiftOut(0x02);
-    } else if (decodeVal == 16753245) {
+
+    if (decodeVal == 16753245) {
       direction = 'o';
+      currVal = 0x000;
       // shiftOut(0x00);
+    } else if (decodeVal == 16724175) {
+      // ++red (1)
+      currVal = (currentRed == 0xF) ? currVal & 0x0FF : currVal;
+      currVal = (currentRed < 0xF) ? currVal + 0x100 : currVal;
+    } else if (decodeVal == 16716015) {
+      // --red (4)
+      currVal = (currentRed == 0x0) ? currVal | 0xF00 : currVal;
+      currVal = (currentRed > 0x0) ? currVal - 0x100 : currVal;
+    } else if (decodeVal == 16718055) {
+      // ++green (2)
+      currVal = (currentGreen == 0xF) ? currVal & 0xF0F : currVal;
+      currVal = (currentGreen < 0xF) ? currVal + 0x010 : currVal;
+    } else if (decodeVal == 16726215) {
+      // --green (5)
+      currVal = (currentGreen == 0x0) ? currVal | 0x0F0 : currVal;
+      currVal = (currentGreen > 0x0) ? currVal - 0x010 : currVal;
+    } else if (decodeVal == 16743045) {
+      // ++blue (3)
+      currVal = (currentBlue == 0xF) ? currVal & 0xFF0 : currVal;
+      currVal = (currentBlue < 0xF) ? currVal + 0x001 : currVal;
+    } else if (decodeVal == 16734885) {
+      // --blue (6)
+      currVal = (currentBlue == 0x0) ? currVal | 0x00F : currVal;
+      currVal = (currentBlue > 0x0) ? currVal - 0x001 : currVal;
     } else {
       direction = '\0';
       // shiftOut(0x00);
@@ -512,7 +538,7 @@ int main(void) {
   SPI_INIT();
   IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
   ST7735_init();           // Initialize display
-  Screen(0x0000);
+  Screen(0x1234);
   serial_init(9600); // NOTE: Debugging
 
   //  setupTimer();  // initializes timer
@@ -583,7 +609,7 @@ int main(void) {
 
   //  // NOTE: Clear below
   //  // Clear the screen with black
-  Clear_Screen_With_Color(0x0F00);
+  // Clear_Screen_With_Color(0x0F00);
   //
   //  // Draw "Hello!" in white on a black background at (10, 10)
   // textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);

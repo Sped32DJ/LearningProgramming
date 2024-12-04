@@ -130,13 +130,20 @@ int RGB_TICK(int state) {
     // Lights up the LED lights when you reach that color!
     if (currentRed == red) {
       progress |= 0x01;
+    } else {
+      progress &= ~0x01;
     }
     if (currentGreen == green) {
       progress |= 0x02;
+    } else {
+      progress &= ~0x02;
     }
     if (currentBlue == blue) {
       progress |= 0x04;
+    } else {
+      progress &= ~0x04;
     }
+
     break;
   default:
     break;
@@ -292,8 +299,9 @@ int DISPLAY_TICK(int state) {
   case DISPLAY_INIT:
     break;
   case DISPLAY_ON:
-    Box(0, 0, 128, 128, 0xFFFF);
-    Pixel(15, 25, 0xFFF0);
+    // Turning this on flickers the LED
+    // Box(0, 0, 128, 128, 0xFFFF);
+    // Pixel(15, 25, 0xFFF0);
     break;
   case DISPLAY_OFF:
     break;
@@ -422,19 +430,19 @@ int IR_TICK(int state) {
       direction = 'd';
     } else if (decodeVal == 16720605) {
       direction = 'l';
-      shiftOut(0x04);
+      // shiftOut(0x04);
     } else if (decodeVal == 16761405) {
       direction = 'r';
-      shiftOut(0x01);
+      // shiftOut(0x01);
     } else if (decodeVal == 16712445) {
       direction = 'c';
-      shiftOut(0x02);
+      // shiftOut(0x02);
     } else if (decodeVal == 16753245) {
       direction = 'o';
-      shiftOut(0x00);
+      // shiftOut(0x00);
     } else {
       direction = '\0';
-      shiftOut(0x00);
+      // shiftOut(0x00);
     }
     decodeVal = 0;
     break;

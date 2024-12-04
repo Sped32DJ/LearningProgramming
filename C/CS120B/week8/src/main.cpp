@@ -538,7 +538,8 @@ int main(void) {
   SPI_INIT();
   IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
   ST7735_init();           // Initialize display
-  Screen(0x1234);
+  Screen(0x060);
+  Clear_Screen_With_Color(0x0FF);
   serial_init(9600); // NOTE: Debugging
 
   //  setupTimer();  // initializes timer

@@ -18,12 +18,12 @@
 #define COLMOD 0x3A // Interface pixel format
 
 const unsigned int MAX_X = 129; // Screen width
-const unsigned int MAX_Y = 129; // Screen height
+const unsigned int MAX_Y = 130; // Screen height
 
 // Send Command Macro (A0 pin)
 void Send_Command(unsigned char cmd) {
   PORTB = SetBit(PORTB, 2, 0); // Command mode; CS = 0
-  PORTB = SetBit(PORTB, 4, 0); // Command mode; A0 = 0
+  PORTB = SetBit(PORTB, 1, 0); // Command mode; A0 = 0
   SPI_SEND(cmd);
   PORTB = SetBit(PORTB, 2, 1); // Command mode; CS = 1
 }
@@ -31,7 +31,7 @@ void Send_Command(unsigned char cmd) {
 // Send Data Macro
 void Send_Data(unsigned char cmd) {
   PORTB = SetBit(PORTB, 2, 0); // Command mode; CS = 0
-  PORTB = SetBit(PORTB, 4, 1); // Data mode; A0 = 1
+  PORTB = SetBit(PORTB, 1, 1); // Data mode; A0 = 1
   SPI_SEND(cmd);
   PORTB = SetBit(PORTB, 2, 1); // Command mode; CS = 1
 }
@@ -141,8 +141,8 @@ void Box(short x, short y, short w, short h, short color) {
 void Screen(short color) {
   AddressBox(0, 0, 127, 127);
   for (int i = 0; i < 128 * 128; i++) {
-    Send_Data(color >> 8);
-    Send_Data(color & 0xFF);
+    Send_Data((color & 0x00FF) >> 8);
+    Send_Data(color & 0xFF00);
   }
 }
 

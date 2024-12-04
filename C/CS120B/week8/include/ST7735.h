@@ -118,6 +118,23 @@ void AddressBox(short Xi, short Yi, short Xf, short Yf) {
   Send_Command(RAMWR);
 }
 
+void Pixel(short x, short y, short color) {
+  AddressBox(x, y, x, y);
+  Send_Data(color >> 8);
+  Send_Data(color & 0xFF);
+}
+
+void Box(short x, short y, short w, short h, short color) {
+  for (int i = 0; i < w; i++) {
+    Pixel(x + i, y, color);
+    Pixel(x + i, y + h - 1, color);
+  }
+
+  for (int i = 0; i < h; i++) {
+    Pixel(x, y + i, color);
+    Pixel(x + w - 1, y + i, color);
+  }
+}
 // Personally written functions
 void Screen(short color) {
   AddressBox(0, 0, 127, 127);

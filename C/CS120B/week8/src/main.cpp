@@ -283,11 +283,6 @@ int DISPLAY_TICK(int state) {
       state = DISPLAY_ON;
     }
     break;
-  case DISPLAY_ON:
-    Box(0, 0, 128, 128, 0xFFFF);
-    Pixel(15, 25, 0xFFF0);
-
-    break;
   default:
     state = DISPLAY_INIT;
     break;
@@ -297,6 +292,8 @@ int DISPLAY_TICK(int state) {
   case DISPLAY_INIT:
     break;
   case DISPLAY_ON:
+    Box(0, 0, 128, 128, 0xFFFF);
+    Pixel(15, 25, 0xFFF0);
     break;
   case DISPLAY_OFF:
     break;

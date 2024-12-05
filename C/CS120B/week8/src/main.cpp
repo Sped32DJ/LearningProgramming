@@ -23,7 +23,7 @@ typedef struct _task {
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
 const unsigned long GCD_PERIOD = 1;
 const unsigned long RGB_PERIOD = 20;
-const unsigned long DISPLAY_PERIOD = 17; // ~59 updates per second
+const unsigned long DISPLAY_PERIOD = 100;
 const unsigned long BUZZER_PERIOD = 40;
 const unsigned long IR_PERIOD = 90;   // Enough to capture the input
 const unsigned long RED_PERIOD = 1;   // RedPWM
@@ -397,6 +397,9 @@ int BUZZER_TICK(int state) {
   return state;
 }
 void updateHex() {
+  currentRed = (currVal & 0xF00) >> 8;
+  currentGreen = (currVal & 0x0F0) >> 4;
+  currentBlue = currVal & 0x00F;
   fillBox(9, 30, 15, 25, 0x00);
   fillBox(29, 30, 15, 25, 0x0);
   fillBox(49, 30, 15, 25, 0x00);
@@ -496,6 +499,8 @@ int IR_TICK(int state) {
       currVal = (currentBlue == 0x0) ? currVal | 0x00F : currVal;
       currVal = (currentBlue > 0x0) ? currVal - 0x001 : currVal;
       // DrawChar(50, 32, 0xFFFF, 'F');
+      updateHex();
+    } else if (decodeVal == 16738455) { // 0 to update display
       updateHex();
     } else {
       direction = '\0';

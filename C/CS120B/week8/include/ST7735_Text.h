@@ -142,7 +142,7 @@ void DrawChar(short x, short y, short color, char currVal) {
       Pixel(i, y + 20, color);
     }
     break;
-  case '6': // FIX: Not working
+  case '6':
   case 0x6:
     // vertical
     for (short j = y; j < y + 21; j++) {

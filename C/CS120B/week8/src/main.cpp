@@ -269,7 +269,7 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction = '\0';
-      HardwareReset();
+      Screen(0x00); // Fills screen black
       // Box(0, 0, 128, 128, 0xFFFF);
       state = DISPLAY_OFF;
     }
@@ -290,7 +290,7 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction = '\0';
-      HardwareReset();
+      Screen(0x00); // Fills screen black
       state = DISPLAY_ON;
     }
     break;
@@ -454,37 +454,44 @@ int IR_TICK(int state) {
       // ++red (1)
       currVal = (currentRed == 0xF) ? currVal & 0x0FF : currVal;
       currVal = (currentRed < 0xF) ? currVal + 0x100 : currVal;
-      DrawChar(10, 32, 0xFFFF, 'F');
+      // DrawChar(10, 32, 0xFFFF, 'F');
+      // Box(9, 30, 15, 25, 0xFF);
+      fillBox(9, 30, 15, 25, 0x0);
       DrawChar(10, 32, 0xFFFF, currentRed);
     } else if (decodeVal == 16716015) {
       // --red (4)
       currVal = (currentRed == 0x0) ? currVal | 0xF00 : currVal;
       currVal = (currentRed > 0x0) ? currVal - 0x100 : currVal;
-      DrawChar(10, 32, 0xFFFF, 'F');
+      // DrawChar(10, 32, 0xFFFF, 'F');
+      fillBox(9, 30, 15, 25, 0x0);
       DrawChar(10, 32, 0xFFFF, currentRed);
     } else if (decodeVal == 16718055) {
       // ++green (2)
       currVal = (currentGreen == 0xF) ? currVal & 0xF0F : currVal;
       currVal = (currentGreen < 0xF) ? currVal + 0x010 : currVal;
-      DrawChar(30, 32, 0xFFFF, 'F');
+      // DrawChar(30, 32, 0xFFFF, 'F');
+      fillBox(29, 30, 15, 25, 0x0);
       DrawChar(30, 32, 0xFFFF, currentGreen);
     } else if (decodeVal == 16726215) {
       // --green (5)
       currVal = (currentGreen == 0x0) ? currVal | 0x0F0 : currVal;
       currVal = (currentGreen > 0x0) ? currVal - 0x010 : currVal;
-      DrawChar(30, 32, 0xFFFF, 'F');
+      // DrawChar(30, 32, 0xFFFF, 'F');
+      fillBox(29, 30, 15, 25, 0x0);
       DrawChar(30, 32, 0xFFFF, currentGreen);
     } else if (decodeVal == 16743045) {
       // ++blue (3)
       currVal = (currentBlue == 0xF) ? currVal & 0xFF0 : currVal;
       currVal = (currentBlue < 0xF) ? currVal + 0x001 : currVal;
-      DrawChar(50, 32, 0xFFFF, 'F');
+      // DrawChar(50, 32, 0xFFFF, 'F');
+      fillBox(49, 30, 15, 25, 0x0);
       DrawChar(50, 32, 0xFFFF, currentBlue);
     } else if (decodeVal == 16734885) {
       // --blue (6)
       currVal = (currentBlue == 0x0) ? currVal | 0x00F : currVal;
       currVal = (currentBlue > 0x0) ? currVal - 0x001 : currVal;
-      DrawChar(50, 32, 0xFFFF, 'F');
+      // DrawChar(50, 32, 0xFFFF, 'F');
+      fillBox(49, 30, 15, 25, 0x0);
       DrawChar(50, 32, 0xFFFF, currentBlue);
     } else {
       direction = '\0';
@@ -619,7 +626,7 @@ int main(void) {
   TimerSet(GCD_PERIOD);
   TimerOn();
 
-  Box(124, 64, 5, 5, 0xFFFF);
+  // Box(124, 64, 5, 5, 0xFFFF);
 
   //
   //   // Draw "Hello!" in white on a black background at (10, 10)

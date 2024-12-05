@@ -137,6 +137,12 @@ void Box(short x, short y, short w, short h, short color) {
     Pixel(x + w - 1, y + i, color);
   }
 }
-// Personally written functions
+void fillBox(short x, short y, short w, short h, short color) {
+  for (int i = 0; i < w; i++) {   // Iterate over the width
+    for (int j = 0; j < h; j++) { // Iterate over the height
+      Pixel(x + i, y + j, color); // Set the color of each pixel
+    }
+  }
+}
 
 #endif // ST7735_H

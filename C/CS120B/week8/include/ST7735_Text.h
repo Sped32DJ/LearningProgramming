@@ -11,13 +11,13 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '1':
   case 0x1:
-    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
+    for (short j = y; j < y + 20; j++) // Vertical Line
     {
       Pixel(x + 6, j, color);
       Pixel(x + 7, j, color);
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
+    for (short i = x; i < x + 12; i++) // Horizontal Line
     {
       if (i < x + 8 && i > x + 2) {
         Pixel(i, y, color);
@@ -30,7 +30,7 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '2':
   case 0x2:
-    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
+    for (short j = y; j < y + 20; j++) // Vertical Line
     {
       if (j < y + 11) {
         Pixel(x + 10, j, color);
@@ -41,7 +41,7 @@ void DrawChar(short x, short y, short color, char currVal) {
       }
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
+    for (short i = x; i < x + 12; i++) // Horizontal Line
     {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
@@ -56,13 +56,13 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '3':
   case 0x3:
-    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
+    for (short j = y; j < y + 21; j++) // Vertical Lines
     {
       Pixel(x + 10, j, color);
       Pixel(x + 11, j, color);
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
+    for (short i = x; i < x + 12; i++) // Horizontal Lines
     {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
@@ -76,28 +76,31 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '4':
   case 0x4:
-    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
-    {
+    // vertical
+    for (short j = y; j < y + 21; j++) {
       if (j < y + 11) {
         Pixel(x, j, color);
+
         Pixel(x + 1, j, color);
       }
 
-      Pixel(x + 10, j, color);
       Pixel(x + 11, j, color);
+
+      Pixel(x + 10, j, color);
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
-    {
-      Pixel(i, y + 9, color);
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y + 10, color);
+
+      Pixel(i, y + 9, color);
     }
 
     break;
   case '5':
   case 0x5:
-    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
-    {
+    // vertical
+    for (short j = y; j < y + 20; j++) {
       if (j < y + 11) {
         Pixel(x, j, color);
         Pixel(x + 1, j, color);
@@ -107,8 +110,8 @@ void DrawChar(short x, short y, short color, char currVal) {
       }
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
-    {
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
 
@@ -121,8 +124,8 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '6': // FIX: Not working
   case 0x6:
-    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
-    {
+    // vertical
+    for (short j = y; j < y + 21; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
 
@@ -132,8 +135,8 @@ void DrawChar(short x, short y, short color, char currVal) {
       }
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
-    {
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
 
@@ -147,27 +150,27 @@ void DrawChar(short x, short y, short color, char currVal) {
 
   case '7':
   case 0x7:
-    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
-    {
+    // vertical
+    for (short j = y; j < y + 20; j++) {
       Pixel(x + 11, j, color);
       Pixel(x + 12, j, color);
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
-    {
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
     }
     break;
   case 'A':
   case 0xA:
-    for (uint16_t j = y; j < y + 21; j++) {
+    for (short j = y; j < y + 21; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
       Pixel(x + 10, j, color);
       Pixel(x + 11, j, color);
     }
-    for (uint16_t i = x; i < x + 12; i++) {
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
       Pixel(i, y + 9, color);
@@ -176,17 +179,17 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '8':
   case 0x8:
-    for (uint16_t j = y; j < y + 20; j++) // Vertical Lines
-    {
+    // vertical
+    for (short j = y; j < y + 20; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
 
-      Pixel(x + 10, j, color);
       Pixel(x + 11, j, color);
+      Pixel(x + 10, j, color);
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
-    {
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
 
@@ -199,8 +202,8 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '9':
   case 0x9:
-    for (uint16_t j = y; j < y + 20; j++) // Vertical Lines
-    {
+    // vertical
+    for (short j = y; j < y + 20; j++) {
       if (j < y + 10) {
         Pixel(x, j, color);
         Pixel(x + 1, j, color);
@@ -210,8 +213,8 @@ void DrawChar(short x, short y, short color, char currVal) {
       Pixel(x + 11, j, color);
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
-    {
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
 
@@ -222,9 +225,11 @@ void DrawChar(short x, short y, short color, char currVal) {
       Pixel(i, y + 20, color);
     }
     break;
+
   case 'B':
   case 0xB:
-    for (uint16_t j = y; j < y + 21; j++) {
+    // vertical
+    for (short j = y; j < y + 21; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
       if (j <= y + 10) {
@@ -236,7 +241,8 @@ void DrawChar(short x, short y, short color, char currVal) {
         Pixel(x + 11, j, color);
       }
     }
-    for (uint16_t i = x; i < x + 12; i++) {
+    // horizontal
+    for (short i = x; i < x + 12; i++) {
       if (i < x + 10) {
         Pixel(i, y, color);
         Pixel(i, y + 1, color);
@@ -249,11 +255,13 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case 'C':
   case 0xC:
-    for (uint16_t j = y; j < y + 20; j++) {
+    // vertical
+    for (short j = y; j < y + 20; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
     }
-    for (uint16_t i = x; i < x + 12; i++) {
+    // horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
       Pixel(i, y + 19, color);
@@ -262,7 +270,8 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case 'D':
   case 0xD:
-    for (uint16_t j = y; j < y + 20; j++) {
+    // Vertical
+    for (short j = y; j < y + 20; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
       if (j > y + 1 && j < y + 19) {
@@ -270,7 +279,8 @@ void DrawChar(short x, short y, short color, char currVal) {
         Pixel(x + 10, j, color);
       }
     }
-    for (uint16_t i = x; i < x + 9; i++) {
+    // Horizontal
+    for (short i = x; i < x + 9; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
       Pixel(i, y + 19, color);
@@ -279,14 +289,14 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case 'E':
   case 0xE:
-    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
-    {
+    // Vertical
+    for (short j = y; j < y + 21; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
     }
 
-    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
-    {
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
 
@@ -299,11 +309,13 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case 'F':
   case 0xF:
-    for (uint16_t j = y; j < y + 21; j++) {
+    // Vertical
+    for (short j = y; j < y + 21; j++) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
     }
-    for (uint16_t i = x; i < x + 12; i++) {
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
       Pixel(i, y + 9, color);

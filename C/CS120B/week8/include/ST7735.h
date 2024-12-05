@@ -95,6 +95,9 @@ void ST7735_init(void) {
 
 // Function to send 16-bit color data and clear the screen with that color
 // White - 0xFFFF
+// red - 0xF800
+// green - 0x07E0
+// blue - 0x001F
 void Screen(int color) {
   // Set the address window to the full screen
   setAddrWindow(0, 0, MAX_X, MAX_Y);

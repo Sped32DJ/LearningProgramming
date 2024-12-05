@@ -119,7 +119,7 @@ void DrawChar(short x, short y, short color, char currVal) {
       Pixel(i, y + 20, color);
     }
     break;
-  case '6':
+  case '6': // FIX: Not working
   case 0x6:
     for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
     {
@@ -273,6 +273,26 @@ void DrawChar(short x, short y, short color, char currVal) {
     for (uint16_t i = x; i < x + 9; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case 'E':
+  case 0xE:
+    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
+    {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+    }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+
       Pixel(i, y + 19, color);
       Pixel(i, y + 20, color);
     }

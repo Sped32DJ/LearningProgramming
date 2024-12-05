@@ -456,43 +456,43 @@ int IR_TICK(int state) {
       currVal = (currentRed < 0xF) ? currVal + 0x100 : currVal;
       // DrawChar(10, 32, 0xFFFF, 'F');
       // Box(9, 30, 15, 25, 0xFF);
-      fillBox(9, 30, 15, 25, 0x0);
-      DrawChar(10, 32, 0xFFFF, currentRed);
+      fillBox(9, 30, 15, 25, 0x00);
+      DrawChar(10, 32, 0xF800, currentRed);
     } else if (decodeVal == 16716015) {
       // --red (4)
       currVal = (currentRed == 0x0) ? currVal | 0xF00 : currVal;
       currVal = (currentRed > 0x0) ? currVal - 0x100 : currVal;
       // DrawChar(10, 32, 0xFFFF, 'F');
-      fillBox(9, 30, 15, 25, 0x0);
-      DrawChar(10, 32, 0xFFFF, currentRed);
+      fillBox(9, 30, 15, 25, 0x00);
+      DrawChar(10, 32, 0xF800, currentRed);
     } else if (decodeVal == 16718055) {
       // ++green (2)
       currVal = (currentGreen == 0xF) ? currVal & 0xF0F : currVal;
       currVal = (currentGreen < 0xF) ? currVal + 0x010 : currVal;
       // DrawChar(30, 32, 0xFFFF, 'F');
       fillBox(29, 30, 15, 25, 0x0);
-      DrawChar(30, 32, 0xFFFF, currentGreen);
+      DrawChar(30, 32, 0x07E0, currentGreen);
     } else if (decodeVal == 16726215) {
       // --green (5)
       currVal = (currentGreen == 0x0) ? currVal | 0x0F0 : currVal;
       currVal = (currentGreen > 0x0) ? currVal - 0x010 : currVal;
       // DrawChar(30, 32, 0xFFFF, 'F');
       fillBox(29, 30, 15, 25, 0x0);
-      DrawChar(30, 32, 0xFFFF, currentGreen);
+      DrawChar(30, 32, 0x07E0, currentGreen);
     } else if (decodeVal == 16743045) {
       // ++blue (3)
       currVal = (currentBlue == 0xF) ? currVal & 0xFF0 : currVal;
       currVal = (currentBlue < 0xF) ? currVal + 0x001 : currVal;
       // DrawChar(50, 32, 0xFFFF, 'F');
-      fillBox(49, 30, 15, 25, 0x0);
-      DrawChar(50, 32, 0xFFFF, currentBlue);
+      fillBox(49, 30, 15, 25, 0x00);
+      DrawChar(50, 32, 0x001F, currentBlue);
     } else if (decodeVal == 16734885) {
       // --blue (6)
       currVal = (currentBlue == 0x0) ? currVal | 0x00F : currVal;
       currVal = (currentBlue > 0x0) ? currVal - 0x001 : currVal;
       // DrawChar(50, 32, 0xFFFF, 'F');
-      fillBox(49, 30, 15, 25, 0x0);
-      DrawChar(50, 32, 0xFFFF, currentBlue);
+      fillBox(49, 30, 15, 25, 0x00);
+      DrawChar(50, 32, 0x001F, currentBlue);
     } else {
       direction = '\0';
       // shiftOut(0x00);

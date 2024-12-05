@@ -6,6 +6,8 @@
 
 void DrawChar(short x, short y, short color, char currVal) {
   switch (currVal) {
+  case '0': // TODO:
+    break;
   case '1':
     for (uint16_t j = y; j < y + 20; j++) // Vertical Line
     {

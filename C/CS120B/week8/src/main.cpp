@@ -396,6 +396,14 @@ int BUZZER_TICK(int state) {
   }
   return state;
 }
+void updateHex() {
+  fillBox(9, 30, 15, 25, 0x00);
+  fillBox(29, 30, 15, 25, 0x0);
+  fillBox(49, 30, 15, 25, 0x00);
+  DrawChar(10, 32, 0x001F, currentRed);
+  DrawChar(30, 32, 0x07E0, currentGreen);
+  DrawChar(50, 32, 0xF800, currentBlue);
+}
 
 // TEST: Not sure if this works
 decode_results results; // Stores decoded results
@@ -427,12 +435,7 @@ int IR_TICK(int state) {
   switch (state) {
   case IR_INIT:
     // Drawing the init colors
-    fillBox(9, 30, 15, 25, 0x00);
-    fillBox(29, 30, 15, 25, 0x0);
-    fillBox(49, 30, 15, 25, 0x00);
-    DrawChar(10, 32, 0x001F, currentRed);
-    DrawChar(30, 32, 0x07E0, currentGreen);
-    DrawChar(50, 32, 0xF800, currentBlue);
+    updateHex();
     break;
   case IR_IDLE:
     // Map the command to a direction
@@ -455,12 +458,7 @@ int IR_TICK(int state) {
     if (decodeVal == 16753245) {
       direction = 'o';
       currVal = 0x000;
-      fillBox(9, 30, 15, 25, 0x00);
-      fillBox(29, 30, 15, 25, 0x0);
-      fillBox(49, 30, 15, 25, 0x00);
-      DrawChar(10, 32, 0x001F, currentRed);
-      DrawChar(30, 32, 0x07E0, currentGreen);
-      DrawChar(50, 32, 0xF800, currentBlue);
+      updateHex();
       // shiftOut(0x00);
     } else if (decodeVal == 16724175) {
       // ++red (1) 0x001F
@@ -468,43 +466,37 @@ int IR_TICK(int state) {
       currVal = (currentRed == 0xF) ? currVal & 0x0FF : currVal;
       currVal = (currentRed < 0xF) ? currVal + 0x100 : currVal;
       // DrawChar(10, 32, 0xFFFF, 'F');
-      fillBox(9, 30, 15, 25, 0x00);
-      DrawChar(10, 32, 0x001F, currentRed);
+      updateHex();
     } else if (decodeVal == 16716015) {
       // --red (4)
       currVal = (currentRed == 0x0) ? currVal | 0xF00 : currVal;
       currVal = (currentRed > 0x0) ? currVal - 0x100 : currVal;
       // DrawChar(10, 32, 0xFFFF, 'F');
-      fillBox(9, 30, 15, 25, 0x00);
-      DrawChar(10, 32, 0x001F, currentRed);
+      updateHex();
     } else if (decodeVal == 16718055) {
       // ++green (2)
       currVal = (currentGreen == 0xF) ? currVal & 0xF0F : currVal;
       currVal = (currentGreen < 0xF) ? currVal + 0x010 : currVal;
       // DrawChar(30, 32, 0xFFFF, 'F');
-      fillBox(29, 30, 15, 25, 0x0);
-      DrawChar(30, 32, 0x07E0, currentGreen);
+      updateHex();
     } else if (decodeVal == 16726215) {
       // --green (5)
       currVal = (currentGreen == 0x0) ? currVal | 0x0F0 : currVal;
       currVal = (currentGreen > 0x0) ? currVal - 0x010 : currVal;
       // DrawChar(30, 32, 0xFFFF, 'F');
-      fillBox(29, 30, 15, 25, 0x0);
-      DrawChar(30, 32, 0x07E0, currentGreen);
+      updateHex();
     } else if (decodeVal == 16743045) {
       // ++blue (3) 0xF800
       currVal = (currentBlue == 0xF) ? currVal & 0xFF0 : currVal;
       currVal = (currentBlue < 0xF) ? currVal + 0x001 : currVal;
       // DrawChar(50, 32, 0xFFFF, 'F');
-      fillBox(49, 30, 15, 25, 0x00);
-      DrawChar(50, 32, 0xF800, currentBlue);
+      updateHex();
     } else if (decodeVal == 16734885) {
       // --blue (6)
       currVal = (currentBlue == 0x0) ? currVal | 0x00F : currVal;
       currVal = (currentBlue > 0x0) ? currVal - 0x001 : currVal;
       // DrawChar(50, 32, 0xFFFF, 'F');
-      fillBox(49, 30, 15, 25, 0x00);
-      DrawChar(50, 32, 0xF800, currentBlue);
+      updateHex();
     } else {
       direction = '\0';
       // shiftOut(0x00);
@@ -634,6 +626,8 @@ int main(void) {
 
   // MR (unlock) FIX: I think this should be deprecated
   PORTD = SetBit(PORTD, 4, 1);
+
+  updateHex();
 
   TimerSet(GCD_PERIOD);
   TimerOn();

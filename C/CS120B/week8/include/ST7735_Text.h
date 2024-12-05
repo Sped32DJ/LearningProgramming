@@ -4,79 +4,291 @@
 #include "ST7735.h"
 #include <avr/interrupt.h>
 
-// Define font dimensions
-#define CHAR_WIDTH 5
-#define CHAR_HEIGHT 7
+void DrawChar(short x, short y, short color, char currVal) {
+  switch (currVal) {
+  case '1':
+    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
+    {
+      Pixel(x + 6, j, color);
+      Pixel(x + 7, j, color);
+    }
 
-// Placeholder font array (5x7 ASCII characters starting from ' ')
-const uint8_t font[96][CHAR_WIDTH] = {
-    // Add font data here. Each character is represented by 5 bytes (columns)
-    // For example, for 'A' (ASCII 65), you'd have:
-    // { 0x1F, 0x05, 0x05, 0x1F, 0x00 } // Simplified example
-};
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
+    {
+      if (i < x + 8 && i > x + 2) {
+        Pixel(i, y, color);
+        Pixel(i, y + 1, color);
+      }
 
-// Class for character handling
-class ST7735_Text {
-public:
-  // Draw a single character
-  void drawChar(int x, int y, char c, int color, int bgColor, uint8_t size) {
-    if (c < 32 || c > 127)
-      return; // Ensure valid ASCII range
-
-    // Extract the bitmap for the character
-    const uint8_t *charBitmap = font[c - 32];
-
-    for (int col = 0; col < CHAR_WIDTH; col++) {
-      uint8_t line = charBitmap[col];
-      for (int row = 0; row < CHAR_HEIGHT; row++) {
-        if (line & 0x01) {
-          // Draw foreground pixel
-          if (size == 1) {
-            setPixel(x + col, y + row, color);
-          } else {
-            fillRect(x + col * size, y + row * size, size, size, color);
-          }
-        } else if (bgColor != color) {
-          // Draw background pixel
-          if (size == 1) {
-            setPixel(x + col, y + row, bgColor);
-          } else {
-            fillRect(x + col * size, y + row * size, size, size, bgColor);
-          }
-        }
-        line >>= 1;
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case '2':
+    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
+    {
+      if (j < y + 11) {
+        Pixel(x + 10, j, color);
+        Pixel(x + 11, j, color);
+      } else if (j >= y + 11) {
+        Pixel(x, j, color);
+        Pixel(x + 1, j, color);
       }
     }
-  }
 
-  // Draw a string starting at (x, y)
-  void drawString(int x, int y, const char *str, int color, int bgColor,
-                  uint8_t size) {
-    while (*str) {
-      drawChar(x, y, *str, color, bgColor, size);
-      x += (CHAR_WIDTH + 1) * size; // Advance cursor for the next character
-      str++;
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 10, color);
+      Pixel(i, y + 11, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
     }
-  }
 
-private:
-  // Helper to set a single pixel
-  void setPixel(int x, int y, int color) {
-    if (x < 0 || x >= MAX_X || y < 0 || y >= MAX_Y)
-      return;                  // Boundary check
-    setAddrWindow(x, y, x, y); // Target single pixel
-    Send_Data(color >> 8);     // Send high byte
-    Send_Data(color & 0xFF);   // Send low byte
-  }
-
-  // Helper to fill a rectangle (used for scaled characters)
-  void fillRect(int x, int y, int w, int h, int color) {
-    setAddrWindow(x, y, x + w - 1, y + h - 1);
-    for (int i = 0; i < w * h; i++) {
-      Send_Data(color >> 8);   // High byte
-      Send_Data(color & 0xFF); // Low byte
+    break;
+  case '3':
+    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
+    {
+      Pixel(x + 10, j, color);
+      Pixel(x + 11, j, color);
     }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case '4':
+    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
+    {
+      if (j < y + 11) {
+        Pixel(x, j, color);
+        Pixel(x + 1, j, color);
+      }
+
+      Pixel(x + 10, j, color);
+      Pixel(x + 11, j, color);
+    }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
+    {
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+    }
+
+    break;
+  case '5':
+    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
+    {
+      if (j < y + 11) {
+        Pixel(x, j, color);
+        Pixel(x + 1, j, color);
+      } else if (j >= y + 11) {
+        Pixel(x + 10, j, color);
+        Pixel(x + 11, j, color);
+      }
+    }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 10, color);
+      Pixel(i, y + 11, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case '6':
+    for (uint16_t j = y; j < y + 21; j++) // Vertical Lines
+    {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+
+      if (j > 10) {
+        Pixel(x + 10, j, color);
+        Pixel(x + 11, j, color);
+      }
+    }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case '7':
+    for (uint16_t j = y; j < y + 20; j++) // Vertical Line
+    {
+      Pixel(x + 11, j, color);
+      Pixel(x + 12, j, color);
+    }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Line
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+    }
+    break;
+  case 'A': // Draws an 'A'
+    for (uint16_t j = y; j < y + 21; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+      Pixel(x + 10, j, color);
+      Pixel(x + 11, j, color);
+    }
+    for (uint16_t i = x; i < x + 12; i++) {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+    }
+    break;
+  case '8':
+    for (uint16_t j = y; j < y + 20; j++) // Vertical Lines
+    {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+
+      Pixel(x + 10, j, color);
+      Pixel(x + 11, j, color);
+    }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 10, color);
+      Pixel(i, y + 11, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case '9':
+    for (uint16_t j = y; j < y + 20; j++) // Vertical Lines
+    {
+      if (j < y + 10) {
+        Pixel(x, j, color);
+        Pixel(x + 1, j, color);
+      }
+
+      Pixel(x + 10, j, color);
+      Pixel(x + 11, j, color);
+    }
+
+    for (uint16_t i = x; i < x + 12; i++) // Horizontal Lines
+    {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 10, color);
+      Pixel(i, y + 11, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case 'B': // Draws a 'B'
+    for (uint16_t j = y; j < y + 21; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+      if (j <= y + 10) {
+        Pixel(x + 8, j, color);
+        Pixel(x + 9, j, color);
+      }
+      if (j > y + 10) {
+        Pixel(x + 10, j, color);
+        Pixel(x + 11, j, color);
+      }
+    }
+    for (uint16_t i = x; i < x + 12; i++) {
+      if (i < x + 10) {
+        Pixel(i, y, color);
+        Pixel(i, y + 1, color);
+      }
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case 'C': // Draws a 'C'
+    for (uint16_t j = y; j < y + 20; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+    }
+    for (uint16_t i = x; i < x + 12; i++) {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case 'D': // Draws a 'D'
+    for (uint16_t j = y; j < y + 20; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+      if (j > y + 1 && j < y + 19) {
+        Pixel(x + 9, j, color);
+        Pixel(x + 10, j, color);
+      }
+    }
+    for (uint16_t i = x; i < x + 9; i++) {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case 'E': // Draws an 'E'
+    for (uint16_t j = y; j < y + 21; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+    }
+    for (uint16_t i = x; i < x + 12; i++) {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case 'F': // Draws an 'F'
+    for (uint16_t j = y; j < y + 21; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+    }
+    for (uint16_t i = x; i < x + 12; i++) {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+      Pixel(i, y + 9, color);
+      Pixel(i, y + 10, color);
+    }
+    break;
+  default:
+    break;
   }
-};
+}
 
 #endif // ST7735_TEXT_H

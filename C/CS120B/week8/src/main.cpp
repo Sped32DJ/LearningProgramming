@@ -1,5 +1,5 @@
 #include "ST7735.h"
-// #include "ST7735_Text.h"
+#include "ST7735_Text.h"
 #include "helper.h"
 #include "irAVR.h"
 #include "serialATmega.h"
@@ -77,7 +77,7 @@ void shiftOut(char data) {
 // NOTE: RGB Helpers
 // Sets the color of the RGB LED
 unsigned char red, green, blue = 0x0;
-unsigned char currentRed, currentGreen, currentBlue = 0x0;
+char currentRed, currentGreen, currentBlue = 0x0;
 unsigned char progress = 0;
 uint16_t currVal = 0x000;
 uint16_t target = 0x000;
@@ -270,7 +270,7 @@ int DISPLAY_TICK(int state) {
     if (direction == 'o') {
       direction = '\0';
       HardwareReset();
-      Box(0, 0, 128, 128, 0xFFFF);
+      // Box(0, 0, 128, 128, 0xFFFF);
       state = DISPLAY_OFF;
     }
 
@@ -454,10 +454,12 @@ int IR_TICK(int state) {
       // ++red (1)
       currVal = (currentRed == 0xF) ? currVal & 0x0FF : currVal;
       currVal = (currentRed < 0xF) ? currVal + 0x100 : currVal;
+      DrawChar(10, 32, 0xFFFF, currentRed);
     } else if (decodeVal == 16716015) {
       // --red (4)
       currVal = (currentRed == 0x0) ? currVal | 0xF00 : currVal;
       currVal = (currentRed > 0x0) ? currVal - 0x100 : currVal;
+      DrawChar(10, 32, 0xFFFF, currentRed);
     } else if (decodeVal == 16718055) {
       // ++green (2)
       currVal = (currentGreen == 0xF) ? currVal & 0xF0F : currVal;
@@ -538,9 +540,8 @@ int main(void) {
   SPI_INIT();
   IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
   ST7735_init();           // Initialize display
-  Screen(0x060);
-  Clear_Screen_With_Color(0x0FF);
-  serial_init(9600); // NOTE: Debugging
+  Screen(0x00);            // Fills screen black
+  serial_init(9600);       // NOTE: Debugging
 
   //  setupTimer();  // initializes timer
   //  setupPWM();    // initializes PWM
@@ -607,16 +608,16 @@ int main(void) {
 
   TimerSet(GCD_PERIOD);
   TimerOn();
+  DrawChar(10, 32, 0xFFFF, 'A');
 
-  //  // NOTE: Clear below
-  //  // Clear the screen with black
-  // Clear_Screen_With_Color(0x0F00);
+  Box(124, 64, 5, 5, 0xFFFF);
+
   //
-  //  // Draw "Hello!" in white on a black background at (10, 10)
-  // textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);
+  //   // Draw "Hello!" in white on a black background at (10, 10)
+  //  textHandler.drawString(10, 10, "Hello!", 0xFFFF, 0x0000, 1);
   //
-  //  // Draw "World!" scaled 2x at (10, 30)
-  //  extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
+  //   // Draw "World!" scaled 2x at (10, 30)
+  //   extHandler.drawString(10, 30, "World!", 0xFFFF, 0x0000, 2);
 
   while (1) {
   }

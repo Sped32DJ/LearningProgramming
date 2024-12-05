@@ -427,6 +427,13 @@ int IR_TICK(int state) {
   }
   switch (state) {
   case IR_INIT:
+    // Drawing the init colors
+    fillBox(9, 30, 15, 25, 0x00);
+    fillBox(29, 30, 15, 25, 0x0);
+    fillBox(49, 30, 15, 25, 0x00);
+    DrawChar(10, 32, 0x001F, currentRed);
+    DrawChar(30, 32, 0x07E0, currentGreen);
+    DrawChar(50, 32, 0xF800, currentBlue);
     break;
   case IR_IDLE:
     // Map the command to a direction
@@ -451,20 +458,20 @@ int IR_TICK(int state) {
       currVal = 0x000;
       // shiftOut(0x00);
     } else if (decodeVal == 16724175) {
-      // ++red (1)
+      // ++red (1) 0x001F
+      // NOTE: Moving this out of here causes RGB LED flickering
       currVal = (currentRed == 0xF) ? currVal & 0x0FF : currVal;
       currVal = (currentRed < 0xF) ? currVal + 0x100 : currVal;
       // DrawChar(10, 32, 0xFFFF, 'F');
       // Box(9, 30, 15, 25, 0xFF);
-      fillBox(9, 30, 15, 25, 0x00);
-      DrawChar(10, 32, 0xF800, currentRed);
+      // TODO: Move all of these drawing functions over to the screen tick
     } else if (decodeVal == 16716015) {
       // --red (4)
       currVal = (currentRed == 0x0) ? currVal | 0xF00 : currVal;
       currVal = (currentRed > 0x0) ? currVal - 0x100 : currVal;
       // DrawChar(10, 32, 0xFFFF, 'F');
       fillBox(9, 30, 15, 25, 0x00);
-      DrawChar(10, 32, 0xF800, currentRed);
+      DrawChar(10, 32, 0x001F, currentRed);
     } else if (decodeVal == 16718055) {
       // ++green (2)
       currVal = (currentGreen == 0xF) ? currVal & 0xF0F : currVal;
@@ -480,19 +487,19 @@ int IR_TICK(int state) {
       fillBox(29, 30, 15, 25, 0x0);
       DrawChar(30, 32, 0x07E0, currentGreen);
     } else if (decodeVal == 16743045) {
-      // ++blue (3)
+      // ++blue (3) 0xF800
       currVal = (currentBlue == 0xF) ? currVal & 0xFF0 : currVal;
       currVal = (currentBlue < 0xF) ? currVal + 0x001 : currVal;
       // DrawChar(50, 32, 0xFFFF, 'F');
       fillBox(49, 30, 15, 25, 0x00);
-      DrawChar(50, 32, 0x001F, currentBlue);
+      DrawChar(50, 32, 0xF800, currentBlue);
     } else if (decodeVal == 16734885) {
       // --blue (6)
       currVal = (currentBlue == 0x0) ? currVal | 0x00F : currVal;
       currVal = (currentBlue > 0x0) ? currVal - 0x001 : currVal;
       // DrawChar(50, 32, 0xFFFF, 'F');
       fillBox(49, 30, 15, 25, 0x00);
-      DrawChar(50, 32, 0x001F, currentBlue);
+      DrawChar(50, 32, 0xF800, currentBlue);
     } else {
       direction = '\0';
       // shiftOut(0x00);

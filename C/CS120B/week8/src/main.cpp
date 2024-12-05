@@ -269,7 +269,6 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction = '\0';
-      Screen(0x00); // Fills screen black
       // Box(0, 0, 128, 128, 0xFFFF);
       state = DISPLAY_OFF;
     }
@@ -290,7 +289,7 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction = '\0';
-      Screen(0x00); // Fills screen black
+      // Screen(0x00); // Fills screen black
       state = DISPLAY_ON;
     }
     break;
@@ -456,6 +455,12 @@ int IR_TICK(int state) {
     if (decodeVal == 16753245) {
       direction = 'o';
       currVal = 0x000;
+      fillBox(9, 30, 15, 25, 0x00);
+      fillBox(29, 30, 15, 25, 0x0);
+      fillBox(49, 30, 15, 25, 0x00);
+      DrawChar(10, 32, 0x001F, currentRed);
+      DrawChar(30, 32, 0x07E0, currentGreen);
+      DrawChar(50, 32, 0xF800, currentBlue);
       // shiftOut(0x00);
     } else if (decodeVal == 16724175) {
       // ++red (1) 0x001F
@@ -463,8 +468,8 @@ int IR_TICK(int state) {
       currVal = (currentRed == 0xF) ? currVal & 0x0FF : currVal;
       currVal = (currentRed < 0xF) ? currVal + 0x100 : currVal;
       // DrawChar(10, 32, 0xFFFF, 'F');
-      // Box(9, 30, 15, 25, 0xFF);
-      // TODO: Move all of these drawing functions over to the screen tick
+      fillBox(9, 30, 15, 25, 0x00);
+      DrawChar(10, 32, 0x001F, currentRed);
     } else if (decodeVal == 16716015) {
       // --red (4)
       currVal = (currentRed == 0x0) ? currVal | 0xF00 : currVal;

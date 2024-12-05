@@ -8,17 +8,37 @@ void DrawChar(short x, short y, short color, char currVal) {
   switch (currVal) {
   case '0': // TODO:
   case 0x0:
+    // vertical
+    for (short j = y; j < y + 20; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+
+      Pixel(x + 11, j, color);
+      Pixel(x + 10, j, color);
+    }
+
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      // Pixel(i, y + 10, color);
+      // Pixel(i, y + 11, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
     break;
   case '1':
   case 0x1:
-    for (short j = y; j < y + 20; j++) // Vertical Line
-    {
+    // vertical
+    for (short j = y; j < y + 20; j++) {
       Pixel(x + 6, j, color);
       Pixel(x + 7, j, color);
     }
 
-    for (short i = x; i < x + 12; i++) // Horizontal Line
-    {
+    // horizontal
+    for (short i = x; i < x + 12; i++) {
       if (i < x + 8 && i > x + 2) {
         Pixel(i, y, color);
         Pixel(i, y + 1, color);
@@ -30,8 +50,8 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '2':
   case 0x2:
-    for (short j = y; j < y + 20; j++) // Vertical Line
-    {
+    // vertical
+    for (short j = y; j < y + 20; j++) {
       if (j < y + 11) {
         Pixel(x + 10, j, color);
         Pixel(x + 11, j, color);
@@ -41,8 +61,8 @@ void DrawChar(short x, short y, short color, char currVal) {
       }
     }
 
-    for (short i = x; i < x + 12; i++) // Horizontal Line
-    {
+    // horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
 
@@ -56,14 +76,14 @@ void DrawChar(short x, short y, short color, char currVal) {
     break;
   case '3':
   case 0x3:
-    for (short j = y; j < y + 21; j++) // Vertical Lines
-    {
+    // vertical
+    for (short j = y; j < y + 21; j++) {
       Pixel(x + 10, j, color);
       Pixel(x + 11, j, color);
     }
 
-    for (short i = x; i < x + 12; i++) // Horizontal Lines
-    {
+    // horizontal
+    for (short i = x; i < x + 12; i++) {
       Pixel(i, y, color);
       Pixel(i, y + 1, color);
 
@@ -129,7 +149,7 @@ void DrawChar(short x, short y, short color, char currVal) {
       Pixel(x, j, color);
       Pixel(x + 1, j, color);
 
-      if (j > 10) {
+      if (j > y + 10) {
         Pixel(x + 10, j, color);
         Pixel(x + 11, j, color);
       }
@@ -137,12 +157,15 @@ void DrawChar(short x, short y, short color, char currVal) {
 
     // Horizontal
     for (short i = x; i < x + 12; i++) {
-      Pixel(i, y, color);
-      Pixel(i, y + 1, color);
+      // top
+      // Pixel(i, y, color);
+      // Pixel(i, y + 1, color);
 
+      // middle
       Pixel(i, y + 9, color);
       Pixel(i, y + 10, color);
 
+      // bottom
       Pixel(i, y + 19, color);
       Pixel(i, y + 20, color);
     }

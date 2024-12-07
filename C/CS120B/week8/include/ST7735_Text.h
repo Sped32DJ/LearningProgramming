@@ -373,6 +373,10 @@ void DrawChar(short x, short y, short color, char currVal) {
       ++ri;
     }
     break;
+  case ':':
+    Box(x, y + 5, 2, 2, color);
+    Box(x, y + 15, 2, 2, color);
+    break;
   default:
     break;
   }

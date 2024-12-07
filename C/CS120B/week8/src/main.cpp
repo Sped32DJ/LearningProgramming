@@ -23,14 +23,14 @@ typedef struct _task {
 // TODO: Define Periods for each task
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
 const unsigned long GCD_PERIOD = 1;
-const unsigned long RGB_PERIOD = 20;
+const unsigned long RGB_PERIOD = 100;
 const unsigned long DISPLAY_PERIOD = 100;
-const unsigned long BUZZER_PERIOD = 40;
+const unsigned long BUZZER_PERIOD = 1000;
 const unsigned long IR_PERIOD = 90;   // Enough to capture the input
 const unsigned long RED_PERIOD = 1;   // RedPWM
 const unsigned long GREEN_PERIOD = 1; // GreenPWM
 const unsigned long BLUE_PERIOD = 1;  // BluePWM
-const unsigned long SHIFT_PERIOD = 1; // Still causes Jitters
+const unsigned long SHIFT_PERIOD = 5; // Still causes Jitters
 const unsigned long TIME_PERIOD = 2000;
 const unsigned long TEMP_PERIOD = 1000;
 
@@ -49,6 +49,9 @@ enum TEMP_states { TEMP_INIT, TEMP_READ };
 
 // NOTE: IR Variables
 unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
+long long progressPer = 0;
+int rawSeconds = 0;
+int timeMin, timeSec;
 
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
@@ -118,6 +121,10 @@ int RGB_TICK(int state) {
     // TODO: Not sure if this works
     target = rand() & 0xFFF;
     // target = 0xF00;
+    timeMin = 0;
+    timeSec = 0;
+    rawSeconds = 0;
+    currVal = 0x000;
     red = (target & 0xF00) >> 8;
     green = (target & 0x0F0) >> 4;
     blue = target & 0x00F;
@@ -283,12 +290,12 @@ int BLUE_TICK(int state) {
   return state;
 }
 
-long long progressPer = 0;
-int rawSeconds = 0;
-int timeMin, timeSec;
 int DISPLAY_TICK(int state) {
   switch (state) {
   case DISPLAY_INIT:
+    rawSeconds = 0;
+    timeMin = 0;
+    timeSec = 0;
     state = DISPLAY_ON;
     break;
   case DISPLAY_ON:
@@ -296,6 +303,8 @@ int DISPLAY_TICK(int state) {
     if (direction == 'o') {
       direction = '\0';
       // Box(0, 0, 128, 128, 0xFFFF);
+      timeMin = 0;
+      timeSec = 0;
       state = DISPLAY_OFF;
     }
 
@@ -315,6 +324,10 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction = '\0';
+      rawSeconds = 0;
+      timeMin = 0;
+      timeSec = 0;
+
       // Screen(0x00); // Fills screen black
       state = DISPLAY_ON;
     }
@@ -436,11 +449,12 @@ void updateHex() {
     progressPer = (currVal > target) ? (target * 100) / currVal
                                      : (currVal * 100) / target;
   }
+  Screen(0x00); // Fills screen black
 
   // Hex values
-  fillBox(9 + 20, 30, 15, 25, 0x00);
-  fillBox(29 + 20, 30, 15, 25, 0x0);
-  fillBox(49 + 20, 30, 15, 25, 0x00);
+  //  fillBox(9 + 20, 30, 15, 25, 0x00);
+  //  fillBox(29 + 20, 30, 15, 25, 0x0);
+  //  fillBox(49 + 20, 30, 15, 25, 0x00);
 
   DrawChar(10, 40, 0xFFFF, 'x');
   DrawChar(10 + 20, 32, 0x001F, currentRed);
@@ -448,9 +462,9 @@ void updateHex() {
   DrawChar(50 + 20, 32, 0xF800, currentBlue);
 
   // Progress
-  fillBox(9, 60, 15, 25, 0x00);
-  fillBox(29, 60, 15, 25, 0x0);
-  fillBox(49, 60, 15, 25, 0x0);
+  //  fillBox(9, 60, 15, 25, 0x00);
+  //  fillBox(29, 60, 15, 25, 0x0);
+  //  fillBox(49, 60, 15, 25, 0x0);
 
   DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
   DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
@@ -458,13 +472,14 @@ void updateHex() {
   DrawChar(70, 65, 0xFFFF, '%');
 
   // Time
-  fillBox(9, 90, 15, 25, 0x00);
-  fillBox(29, 90, 15, 25, 0x0);
-  fillBox(49, 90, 15, 25, 0x0);
+  //  fillBox(9, 90, 15, 25, 0x00);
+  //  fillBox(29, 90, 15, 25, 0x0);
+  //  fillBox(49, 90, 15, 25, 0x0);
 
-  DrawChar(10, 90, 0xFFFF, timeMin);
-  DrawChar(30, 90, 0xFFFF, (timeSec / 10) % 10);
-  DrawChar(50, 90, 0xFFFF, timeSec % 10);
+  DrawChar(10, 90, 0x07FF, timeMin);
+  DrawChar(26, 90, 0x07FF, ':');
+  DrawChar(32, 90, 0x07FF, (timeSec / 10) % 10);
+  DrawChar(52, 90, 0x07FF, timeSec % 10);
 }
 
 // TEST: Not sure if this works
@@ -479,15 +494,15 @@ int IR_TICK(int state) {
   case IR_IDLE:
     if (IRdecode(&results)) {
       decodeVal = results.value;
-      serial_println(decodeVal);
-      serial_char(' ');
-      serial_println(target);
-      serial_char(' ');
-      serial_println(currVal);
-      serial_char(' ');
-      serial_println(progressPer);
-      updateTempHum();
-      serial_println(temperature);
+      //    serial_println(decodeVal);
+      //    serial_char(' ');
+      //    serial_println(target);
+      //    serial_char(' ');
+      //    serial_println(currVal);
+      //    serial_char(' ');
+      //    serial_println(progressPer);
+      //    updateTempHum();
+      //    serial_println(temperature);
       IRresume(); // despite calling IRdecode, I still need this (??)
     }
     // IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC
@@ -509,18 +524,21 @@ int IR_TICK(int state) {
     // DEBUGGIN: The PORTD stuff is to debug it works
     if (IRdecode(&results)) {
       decodeVal = results.value;
-      serial_println(decodeVal);
-      serial_char(' ');
-      serial_println(target);
-      serial_char(' ');
-      serial_println(currVal);
-      serial_char(' ');
-      serial_println(progressPer);
+      //  serial_println(decodeVal);
+      //  serial_char(' ');
+      //  serial_println(target);
+      //  serial_char(' ');
+      //  serial_println(currVal);
+      //  serial_char(' ');
+      //  serial_println(progressPer);
       IRresume(); // despite calling IRdecode, I still need this (??)
     }
 
     if (decodeVal == 16753245) {
       direction = 'o';
+      timeMin = 0;
+      timeSec = 0;
+      rawSeconds = 0;
       currVal = 0x000;
       updateHex();
       // shiftOut(0x00);

@@ -3,6 +3,8 @@
 
 #include "ST7735.h"
 #include <avr/interrupt.h>
+short le;
+short ri;
 
 void DrawChar(short x, short y, short color, char currVal) {
   switch (currVal) {
@@ -343,6 +345,32 @@ void DrawChar(short x, short y, short color, char currVal) {
       Pixel(i, y + 1, color);
       Pixel(i, y + 9, color);
       Pixel(i, y + 10, color);
+    }
+    break;
+  case 'x':
+    // vertical
+    le = 0;
+    ri = 0;
+    for (short j = y; j < y + 12; j++) {
+      Pixel(x + le, j, color);
+      Pixel(x + 1 + le, j, color);
+      ++le;
+
+      Pixel(x + 11 - ri, j, color);
+      Pixel(x + 10 - ri, j, color);
+      ++ri;
+    }
+    break;
+  case '%':
+    // vertical
+    le = 0;
+    ri = 0;
+    Box(x, y, 2, 2, color);
+    Box(x + 10, y + 10, 2, 2, color);
+    for (short j = y; j < y + 12; j++) {
+      Pixel(x + 11 - ri, j, color);
+      Pixel(x + 10 - ri, j, color);
+      ++ri;
     }
     break;
   default:

@@ -1,3 +1,4 @@
+#include "DHT.h"
 #include "ST7735.h"
 #include "ST7735_Text.h"
 #include "helper.h"
@@ -31,6 +32,7 @@ const unsigned long GREEN_PERIOD = 1; // GreenPWM
 const unsigned long BLUE_PERIOD = 1;  // BluePWM
 const unsigned long SHIFT_PERIOD = 1; // Still causes Jitters
 const unsigned long TIME_PERIOD = 1000;
+const unsigned long TEMP_PERIOD = 1000;
 
 task tasks[NUM_TASKS];
 
@@ -43,6 +45,7 @@ enum GREEN_TICK { GHigh, GLow };
 enum BLUE_TICK { BHigh, BLow };
 enum SHIFT_States { SHIFT_INIT };
 enum TIME_states { CALC };
+enum TEMP_states { TEMP_INIT, TEMP_READ };
 
 // NOTE: IR Variables
 unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
@@ -59,6 +62,29 @@ void TimerISR() {
     tasks[i].elapsedTime +=
         GCD_PERIOD; // Increment the elapsed time by GCD_PERIOD
   }
+}
+
+int TEMP_Tick(int state) {
+  switch (state) {
+  case TEMP_INIT:
+    state = TEMP_READ;
+    break;
+  case TEMP_READ:
+    state = TEMP_READ;
+    break;
+  default:
+    state = TEMP_INIT;
+    break;
+  }
+  switch (state) {
+  case TEMP_INIT:
+    break;
+  case TEMP_READ:
+    break;
+  default:
+    break;
+  }
+  return state;
 }
 
 // TODO: Shift register not working yet
@@ -400,12 +426,34 @@ void updateHex() {
   currentRed = (currVal & 0xF00) >> 8;
   currentGreen = (currVal & 0x0F0) >> 4;
   currentBlue = currVal & 0x00F;
-  fillBox(9, 30, 15, 25, 0x00);
-  fillBox(29, 30, 15, 25, 0x0);
-  fillBox(49, 30, 15, 25, 0x00);
-  DrawChar(10, 32, 0x001F, currentRed);
-  DrawChar(30, 32, 0x07E0, currentGreen);
-  DrawChar(50, 32, 0xF800, currentBlue);
+
+  if (currVal == target) {
+    progressPer = 100;
+  } else if (currVal > target) {
+    progressPer = (target * 100) / currVal;
+  } else {
+    progressPer = (currVal * 100) / target;
+  }
+
+  // Hex values
+  fillBox(9 + 20, 30, 15, 25, 0x00);
+  fillBox(29 + 20, 30, 15, 25, 0x0);
+  fillBox(49 + 20, 30, 15, 25, 0x00);
+
+  DrawChar(10, 40, 0xFFFF, 'x');
+  DrawChar(10 + 20, 32, 0x001F, currentRed);
+  DrawChar(30 + 20, 32, 0x07E0, currentGreen);
+  DrawChar(50 + 20, 32, 0xF800, currentBlue);
+
+  // Progress
+  fillBox(9, 60, 15, 25, 0x00);
+  fillBox(29, 60, 15, 25, 0x0);
+  fillBox(49, 60, 15, 25, 0x0);
+
+  DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
+  DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
+  DrawChar(50, 60, 0xFFFF, progressPer % 10);
+  DrawChar(70, 65, 0xFFFF, '%');
 }
 
 // TEST: Not sure if this works
@@ -427,6 +475,8 @@ int IR_TICK(int state) {
       serial_println(currVal);
       serial_char(' ');
       serial_println(progressPer);
+      updateTempHum();
+      serial_println(temperature);
       IRresume(); // despite calling IRdecode, I still need this (??)
     }
     // IRinit(&DDRC, &PINC, 0); // initializes IR, or it may be DDRC

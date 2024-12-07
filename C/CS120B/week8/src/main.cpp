@@ -105,8 +105,8 @@ void shiftOut(char data) {
 unsigned char red, green, blue = 0x0;
 char currentRed, currentGreen, currentBlue = 0x0;
 unsigned char progress = 0;
-uint16_t currVal = 0x000;
-uint16_t target = 0x000;
+long long currVal = 0x000;
+long long target = 0x000;
 
 // TODO: Not working, give up and do software PWM
 int r, RH, RL;
@@ -283,7 +283,7 @@ int BLUE_TICK(int state) {
   return state;
 }
 
-int progressPer = 0;
+long long progressPer = 0;
 int rawSeconds = 0;
 int timeMin, timeSec;
 int DISPLAY_TICK(int state) {
@@ -429,10 +429,9 @@ void updateHex() {
 
   if (currVal == target) {
     progressPer = 100;
-  } else if (currVal > target) {
-    progressPer = (target * 100) / currVal;
   } else {
-    progressPer = (currVal * 100) / target;
+    progressPer = (currVal > target) ? (target * 100) / currVal
+                                     : (currVal * 100) / target;
   }
 
   // Hex values

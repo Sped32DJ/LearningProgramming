@@ -31,7 +31,7 @@ const unsigned long RED_PERIOD = 1;   // RedPWM
 const unsigned long GREEN_PERIOD = 1; // GreenPWM
 const unsigned long BLUE_PERIOD = 1;  // BluePWM
 const unsigned long SHIFT_PERIOD = 1; // Still causes Jitters
-const unsigned long TIME_PERIOD = 1000;
+const unsigned long TIME_PERIOD = 2000;
 const unsigned long TEMP_PERIOD = 1000;
 
 task tasks[NUM_TASKS];
@@ -206,7 +206,7 @@ int RED_TICK(int state) {
   case RHigh:
     ++r;
     PORTD = SetBit(PORTD, 3, 1);
-    // r = (r > 12) ? 0 : r + 1;
+    //  r = (r > 12) ? 0 : r + 1;
     break;
   case RLow:
     ++r;
@@ -422,6 +422,8 @@ int BUZZER_TICK(int state) {
   }
   return state;
 }
+
+// At this poinbt, this is the updateScreen function...
 void updateHex() {
   currentRed = (currVal & 0xF00) >> 8;
   currentGreen = (currVal & 0x0F0) >> 4;
@@ -429,6 +431,7 @@ void updateHex() {
 
   if (currVal == target) {
     progressPer = 100;
+    progressPer = (!target) ? 0 : 100;
   } else {
     progressPer = (currVal > target) ? (target * 100) / currVal
                                      : (currVal * 100) / target;
@@ -453,6 +456,15 @@ void updateHex() {
   DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
   DrawChar(50, 60, 0xFFFF, progressPer % 10);
   DrawChar(70, 65, 0xFFFF, '%');
+
+  // Time
+  fillBox(9, 90, 15, 25, 0x00);
+  fillBox(29, 90, 15, 25, 0x0);
+  fillBox(49, 90, 15, 25, 0x0);
+
+  DrawChar(10, 90, 0xFFFF, timeMin);
+  DrawChar(30, 90, 0xFFFF, (timeSec / 10) % 10);
+  DrawChar(50, 90, 0xFFFF, timeSec % 10);
 }
 
 // TEST: Not sure if this works
@@ -586,6 +598,16 @@ int ELAPSED_Tick(int state) {
   }
   switch (state) {
   case CALC:
+    // Time
+    // If I keep this, it is too buggy
+    //  fillBox(9, 90, 15, 25, 0x00);
+    //  fillBox(29, 90, 15, 25, 0x0);
+    //  fillBox(49, 90, 15, 25, 0x0);
+
+    //  DrawChar(10, 90, 0xFFFF, timeMin);
+    //  DrawChar(30, 90, 0xFFFF, (timeSec / 10) % 10);
+    //  DrawChar(50, 90, 0xFFFF, timeSec % 10);
+    ++rawSeconds;
     ++rawSeconds;
     break;
   }

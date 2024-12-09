@@ -92,8 +92,14 @@ void updateHex() {
   //  fillBox(49 + 20, 30, 15, 25, 0x00);
 
   DrawChar(10, 40, 0xFFFF, 'x');
+  if (currentRed == target >> 8)
+    Box(27, 30, 18, 26, 0x001F);
   DrawChar(10 + 20, 32, 0x001F, currentRed);
+  if (currentGreen == ((target >> 4) & 0x0F))
+    Box(47, 30, 18, 26, 0x07E0);
   DrawChar(30 + 20, 32, 0x07E0, currentGreen);
+  if (currentBlue == (target & 0x0F))
+    Box(67, 30, 18, 26, 0xF800);
   DrawChar(50 + 20, 32, 0xF800, currentBlue);
 
   // Progress

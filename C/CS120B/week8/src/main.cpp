@@ -62,7 +62,7 @@ unsigned char playGame = 0;
 // Sets the color of the RGB LED
 unsigned char red, green, blue = 0x0;
 char currentRed, currentGreen, currentBlue = 0x0;
-unsigned char progress = 0;
+unsigned char progress = 0; // Variable for the shift register
 long long currVal = 0x000;
 long long target = 0x000;
 
@@ -390,8 +390,7 @@ int DISPLAY_TICK(int state) {
     if (direction == 'o') {
       direction = '\0';
       // Box(0, 0, 128, 128, 0xFFFF);
-      timeMin = 0;
-      timeSec = 0;
+      clearTime();
       state = DISPLAY_OFF;
     }
 
@@ -443,8 +442,7 @@ int DISPLAY_TICK(int state) {
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction = '\0';
-      timeMin = 0;
-      timeSec = 0;
+      clearTime();
 
       // Screen(0x00); // Fills screen black
       state = DISPLAY_ON;

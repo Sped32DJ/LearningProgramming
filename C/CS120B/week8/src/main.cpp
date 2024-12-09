@@ -273,7 +273,8 @@ int RED_TICK(int state) {
   switch (state) {
   case RHigh:
     ++r;
-    PORTD = SetBit(PORTD, 3, 1);
+    if (playGame)
+      PORTD = SetBit(PORTD, 3, 1);
     //  r = (r > 12) ? 0 : r + 1;
     break;
   case RLow:
@@ -308,7 +309,8 @@ int GREEN_TICK(int state) {
   switch (state) {
   case GHigh:
     ++g;
-    PORTD = SetBit(PORTD, 5, 1);
+    if (playGame)
+      PORTD = SetBit(PORTD, 5, 1);
     break;
   case GLow:
     ++g;
@@ -340,7 +342,8 @@ int BLUE_TICK(int state) {
   switch (state) {
   case BHigh:
     ++b;
-    PORTD = SetBit(PORTD, 6, 1);
+    if (playGame)
+      PORTD = SetBit(PORTD, 6, 1);
     break;
   case BLow:
     ++b;
@@ -406,9 +409,11 @@ int DISPLAY_TICK(int state) {
         timeMin = 0;
         timeSec = 0;
         rawSeconds = 0;
-        playGame = 1;
+        playGame = 0;
         currVal = 0x000;
-        updateHex();
+        shiftOut(0x00);
+        Screen(0x00); // Fills screen black
+        // updateHex();
         IRresume(); // despite calling IRdecode, I still need this (??)
         state = DISPLAY_INIT;
       }

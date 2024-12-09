@@ -125,6 +125,12 @@ void updateHex() {
   DrawChar(52, 90, 0x07FF, timeSec % 10);
 }
 
+void clearTime() {
+  timeMin = 0;
+  timeSec = 0;
+  rawSeconds = 0;
+}
+
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
        i++) { // Iterate through each task in the task array
@@ -181,9 +187,7 @@ int RGB_TICK(int state) {
     // TODO: Not sure if this works
     target = rand() & 0xFFF;
     // target = 0xF00;
-    timeMin = 0;
-    timeSec = 0;
-    rawSeconds = 0;
+    clearTime();
     currVal = 0x000;
     red = (target & 0xF00) >> 8;
     green = (target & 0x0F0) >> 4;
@@ -375,9 +379,7 @@ unsigned char colorX = 0;
 int DISPLAY_TICK(int state) {
   switch (state) {
   case DISPLAY_INIT:
-    rawSeconds = 0;
-    timeMin = 0;
-    timeSec = 0;
+    clearTime();
     if (direction == 'o' || playGame) {
       direction = '\0';
       state = DISPLAY_ON;
@@ -412,9 +414,7 @@ int DISPLAY_TICK(int state) {
 
       if (IRdecode(&results)) {
         decodeVal = results.value;
-        timeMin = 0;
-        timeSec = 0;
-        rawSeconds = 0;
+        clearTime();
         playGame = 0;
         currVal = 0x000;
         shiftOut(0x00);
@@ -635,9 +635,7 @@ int IR_TICK(int state) {
 
     if (decodeVal == 16753245) {
       direction = 'o';
-      timeMin = 0;
-      timeSec = 0;
-      rawSeconds = 0;
+      clearTime();
       playGame = 1;
       currVal = 0x000;
       updateHex();

@@ -52,6 +52,8 @@ unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
 long long progressPer = 0;
 int rawSeconds = 0;
 int timeMin, timeSec;
+// Works perfectly fine when this is = 1
+// This will help me implement the main menu
 unsigned char playGame = 1;
 
 void TimerISR() {
@@ -504,7 +506,7 @@ void updateHex() {
 
   if (((progressPer / 100) % 10))
     DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
-  if ((progressPer % 10) || ((progressPer / 100) % 10))
+  if ((progressPer % 10) || ((progressPer / 100) % 10) || progressPer == 10)
     DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
   DrawChar(50, 60, 0xFFFF, progressPer % 10);
   DrawChar(70, 65, 0xFFFF, '%');

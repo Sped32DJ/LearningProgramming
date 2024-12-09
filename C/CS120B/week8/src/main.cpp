@@ -52,6 +52,7 @@ unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
 long long progressPer = 0;
 int rawSeconds = 0;
 int timeMin, timeSec;
+unsigned char playGame = 1;
 
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
@@ -136,13 +137,20 @@ int RGB_TICK(int state) {
     GH = green;
     BH = blue;
 
+    if (!playGame) {
+      RH = 0;
+      GH = 0;
+      BH = 0;
+    }
     RL = RH > 0 ? 16 - RH : 16;
     GL = GH > 0 ? 16 - GH : 16;
     BL = BH > 0 ? 16 - BH : 16;
-    state = RGB_ON;
+    if (playGame)
+      state = RGB_ON;
     break;
   case RGB_ON:
     if (direction == 'o') {
+      playGame = 1;
       state = RGB_INIT;
       direction = '\0';
     }
@@ -290,13 +298,27 @@ int BLUE_TICK(int state) {
   return state;
 }
 
+// White - 0xFFFF
+// Red -   0xF800
+// Orange - 0xFC00
+// Yellow - 0xFFE0
+// Green - 0x07E0
+// Cyan -  0x07FF
+// Blue -  0x001F
+// Purple - 0xF81F
+// Magenta - 0xF81F
+long rainbow[] = {0xF800, 0xFC00, 0xFFE0, 0x07E0,
+                  0x07FF, 0x001F, 0xF81F, 0xF81F};
+unsigned char colorX = 0;
 int DISPLAY_TICK(int state) {
   switch (state) {
   case DISPLAY_INIT:
     rawSeconds = 0;
     timeMin = 0;
     timeSec = 0;
-    state = DISPLAY_ON;
+    if (playGame) {
+      state = DISPLAY_ON;
+    }
     break;
   case DISPLAY_ON:
     // NOTE: Make an else that loops into itself?
@@ -305,6 +327,7 @@ int DISPLAY_TICK(int state) {
       // Box(0, 0, 128, 128, 0xFFFF);
       timeMin = 0;
       timeSec = 0;
+      playGame = 1;
       state = DISPLAY_OFF;
     }
 
@@ -318,6 +341,17 @@ int DISPLAY_TICK(int state) {
     }
     timeMin = (rawSeconds / 60);
     timeSec = (rawSeconds % 60);
+    if (currVal == target) {
+      // Draw the characters with colors cycling through the rainbow vector
+      DrawChar(10, 90, rainbow[colorX % 8], timeMin);
+      DrawChar(26, 90, rainbow[(colorX + 1) % 8], ':');
+      DrawChar(32, 90, rainbow[(colorX + 2) % 8], (timeSec / 10) % 10);
+      DrawChar(52, 90, rainbow[(colorX + 3) % 8], timeSec % 10);
+
+      // Update colorX to cycle
+      ++colorX;
+    } else {
+    }
 
     break;
   case DISPLAY_OFF:
@@ -339,6 +373,8 @@ int DISPLAY_TICK(int state) {
   // NOTE: Furbish these commands
   switch (state) {
   case DISPLAY_INIT:
+    Screen(0x00);
+
     break;
   case DISPLAY_ON:
     // Turning this on flickers the LED
@@ -466,8 +502,10 @@ void updateHex() {
   //  fillBox(29, 60, 15, 25, 0x0);
   //  fillBox(49, 60, 15, 25, 0x0);
 
-  DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
-  DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
+  if (((progressPer / 100) % 10))
+    DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
+  if ((progressPer % 10) || ((progressPer / 100) % 10))
+    DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
   DrawChar(50, 60, 0xFFFF, progressPer % 10);
   DrawChar(70, 65, 0xFFFF, '%');
 
@@ -514,7 +552,6 @@ int IR_TICK(int state) {
   switch (state) {
   case IR_INIT:
     // Drawing the init colors
-    updateHex();
     break;
   case IR_IDLE:
     // Map the command to a direction
@@ -625,8 +662,11 @@ int ELAPSED_Tick(int state) {
     //  DrawChar(10, 90, 0xFFFF, timeMin);
     //  DrawChar(30, 90, 0xFFFF, (timeSec / 10) % 10);
     //  DrawChar(50, 90, 0xFFFF, timeSec % 10);
-    ++rawSeconds;
-    ++rawSeconds;
+    if (currVal != target) {
+      ++rawSeconds;
+      ++rawSeconds;
+    }
+
     break;
   }
   return state;

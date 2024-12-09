@@ -97,8 +97,13 @@ void ST7735_init(void) {
 // Common Colors in RGB565:
 // White - 0xFFFF
 // Red -   0xF800
+// Orange - 0xFC00
+// Yellow - 0xFFE0
 // Green - 0x07E0
+// Cyan -  0x07FF
 // Blue -  0x001F
+// Purple - 0xF81F
+// Magenta - 0xF81F
 void Screen(int color) {
   // Set the address window to the full screen
   setAddrWindow(0, 0, MAX_X, MAX_Y);

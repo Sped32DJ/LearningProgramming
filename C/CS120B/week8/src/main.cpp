@@ -401,11 +401,31 @@ int DISPLAY_TICK(int state) {
       DrawChar(32, 90, rainbow[(colorX + 2) % 8], (timeSec / 10) % 10);
       DrawChar(52, 90, rainbow[(colorX + 3) % 8], timeSec % 10);
 
+      if (IRdecode(&results)) {
+        decodeVal = results.value;
+        timeMin = 0;
+        timeSec = 0;
+        rawSeconds = 0;
+        playGame = 1;
+        currVal = 0x000;
+        updateHex();
+        IRresume(); // despite calling IRdecode, I still need this (??)
+        state = DISPLAY_INIT;
+      }
+
       // Update colorX to cycle
       ++colorX;
       if (colorX > 7) {
         colorX = 0;
       }
+      //      if (IRdecode(&results)) {
+      //        decodeVal = results.value;
+      //        playGame = 0;
+      //        updateHex();
+      //        Screen(0x00); // Fills screen black
+      //        IRresume();   // despite calling IRdecode, I still need this
+      //        (??) state = DISPLAY_INIT;
+      //      }
     }
     break;
   case DISPLAY_OFF:
@@ -427,11 +447,13 @@ int DISPLAY_TICK(int state) {
   switch (state) {
   case DISPLAY_INIT:
     // Screen(0x00);
-    DrawChar(27, 50, rainbow[colorX % 8], 'P');
-    DrawChar(47, 50, rainbow[(colorX + 1) % 8], 'L');
-    DrawChar(67, 50, rainbow[(colorX + 2) % 8], 'A');
-    DrawChar(87, 50, rainbow[(colorX + 3) % 8], 'Y');
-    Box(22, 46, 80, 30, 0xFFFF);
+    if (!playGame) {
+      DrawChar(27, 50, rainbow[colorX % 8], 'P');
+      DrawChar(47, 50, rainbow[(colorX + 1) % 8], 'L');
+      DrawChar(67, 50, rainbow[(colorX + 2) % 8], 'A');
+      DrawChar(87, 50, rainbow[(colorX + 3) % 8], 'Y');
+      Box(22, 46, 80, 30, 0xFFFF);
+    }
     target = rand() & 0xFFF; // Keeps rolling rand()
 
     if (IRdecode(&results)) {

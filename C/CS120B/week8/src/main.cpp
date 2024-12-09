@@ -24,7 +24,7 @@ typedef struct _task {
 //  e.g. const unsined long TASK1_PERIOD = <PERIOD>
 const unsigned long GCD_PERIOD = 1;
 const unsigned long RGB_PERIOD = 100;
-const unsigned long DISPLAY_PERIOD = 100;
+const unsigned long DISPLAY_PERIOD = 50;
 const unsigned long BUZZER_PERIOD = 1000;
 const unsigned long IR_PERIOD = 90;   // Enough to capture the input
 const unsigned long RED_PERIOD = 1;   // RedPWM
@@ -52,9 +52,72 @@ unsigned char direction = '\0'; // Holds the direction ('u', 'd', 'l', 'r')
 long long progressPer = 0;
 int rawSeconds = 0;
 int timeMin, timeSec;
+decode_results results; // Stores decoded results
+uint32_t decodeVal = 0;
 // Works perfectly fine when this is = 1
 // This will help me implement the main menu
 unsigned char playGame = 0;
+
+// NOTE: RGB Helpers
+// Sets the color of the RGB LED
+unsigned char red, green, blue = 0x0;
+char currentRed, currentGreen, currentBlue = 0x0;
+unsigned char progress = 0;
+long long currVal = 0x000;
+long long target = 0x000;
+
+// TODO: Not working, give up and do software PWM
+int r, RH, RL;
+int g, GH, GL;
+int b, BH, BL;
+
+// At this poinbt, this is the updateScreen function...
+void updateHex() {
+  currentRed = (currVal & 0xF00) >> 8;
+  currentGreen = (currVal & 0x0F0) >> 4;
+  currentBlue = currVal & 0x00F;
+
+  if (currVal == target) {
+    progressPer = 100;
+    progressPer = (!target) ? 0 : 100;
+  } else {
+    progressPer = (currVal > target) ? (target * 100) / currVal
+                                     : (currVal * 100) / target;
+  }
+  Screen(0x00); // Fills screen black
+
+  // Hex values
+  //  fillBox(9 + 20, 30, 15, 25, 0x00);
+  //  fillBox(29 + 20, 30, 15, 25, 0x0);
+  //  fillBox(49 + 20, 30, 15, 25, 0x00);
+
+  DrawChar(10, 40, 0xFFFF, 'x');
+  DrawChar(10 + 20, 32, 0x001F, currentRed);
+  DrawChar(30 + 20, 32, 0x07E0, currentGreen);
+  DrawChar(50 + 20, 32, 0xF800, currentBlue);
+
+  // Progress
+  //  fillBox(9, 60, 15, 25, 0x00);
+  //  fillBox(29, 60, 15, 25, 0x0);
+  //  fillBox(49, 60, 15, 25, 0x0);
+
+  if (((progressPer / 100) % 10))
+    DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
+  if ((progressPer % 10) || ((progressPer / 100) % 10) || progressPer > 9)
+    DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
+  DrawChar(50, 60, 0xFFFF, progressPer % 10);
+  DrawChar(70, 65, 0xFFFF, '%');
+
+  // Time
+  //  fillBox(9, 90, 15, 25, 0x00);
+  //  fillBox(29, 90, 15, 25, 0x0);
+  //  fillBox(49, 90, 15, 25, 0x0);
+
+  DrawChar(10, 90, 0x07FF, timeMin);
+  DrawChar(26, 90, 0x07FF, ':');
+  DrawChar(32, 90, 0x07FF, (timeSec / 10) % 10);
+  DrawChar(52, 90, 0x07FF, timeSec % 10);
+}
 
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
@@ -106,18 +169,6 @@ void shiftOut(char data) {
   PORTD = SetBit(PORTD, 4, 0); // ST - Latch low
 }
 
-// NOTE: RGB Helpers
-// Sets the color of the RGB LED
-unsigned char red, green, blue = 0x0;
-char currentRed, currentGreen, currentBlue = 0x0;
-unsigned char progress = 0;
-long long currVal = 0x000;
-long long target = 0x000;
-
-// TODO: Not working, give up and do software PWM
-int r, RH, RL;
-int g, GH, GL;
-int b, BH, BL;
 int RGB_TICK(int state) {
   switch (state) {
   case RGB_INIT:
@@ -381,7 +432,15 @@ int DISPLAY_TICK(int state) {
     DrawChar(67, 50, rainbow[(colorX + 2) % 8], 'A');
     DrawChar(87, 50, rainbow[(colorX + 3) % 8], 'Y');
     Box(22, 46, 80, 30, 0xFFFF);
-    // Box(27, 60, 80, 30, 0xFFFF);
+    target = rand() & 0xFFF; // Keeps rolling rand()
+
+    if (IRdecode(&results)) {
+      decodeVal = results.value;
+      playGame = 1;
+      updateHex();
+      IRresume(); // despite calling IRdecode, I still need this (??)
+    }
+    //  Box(27, 60, 80, 30, 0xFFFF);
 
     // Draw the characters with colors cycling through the rainbow vector
     //   DrawChar(10, 90, rainbow[colorX % 8], timeMin);
@@ -492,57 +551,7 @@ int BUZZER_TICK(int state) {
   return state;
 }
 
-// At this poinbt, this is the updateScreen function...
-void updateHex() {
-  currentRed = (currVal & 0xF00) >> 8;
-  currentGreen = (currVal & 0x0F0) >> 4;
-  currentBlue = currVal & 0x00F;
-
-  if (currVal == target) {
-    progressPer = 100;
-    progressPer = (!target) ? 0 : 100;
-  } else {
-    progressPer = (currVal > target) ? (target * 100) / currVal
-                                     : (currVal * 100) / target;
-  }
-  Screen(0x00); // Fills screen black
-
-  // Hex values
-  //  fillBox(9 + 20, 30, 15, 25, 0x00);
-  //  fillBox(29 + 20, 30, 15, 25, 0x0);
-  //  fillBox(49 + 20, 30, 15, 25, 0x00);
-
-  DrawChar(10, 40, 0xFFFF, 'x');
-  DrawChar(10 + 20, 32, 0x001F, currentRed);
-  DrawChar(30 + 20, 32, 0x07E0, currentGreen);
-  DrawChar(50 + 20, 32, 0xF800, currentBlue);
-
-  // Progress
-  //  fillBox(9, 60, 15, 25, 0x00);
-  //  fillBox(29, 60, 15, 25, 0x0);
-  //  fillBox(49, 60, 15, 25, 0x0);
-
-  if (((progressPer / 100) % 10))
-    DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
-  if ((progressPer % 10) || ((progressPer / 100) % 10) || progressPer > 9)
-    DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
-  DrawChar(50, 60, 0xFFFF, progressPer % 10);
-  DrawChar(70, 65, 0xFFFF, '%');
-
-  // Time
-  //  fillBox(9, 90, 15, 25, 0x00);
-  //  fillBox(29, 90, 15, 25, 0x0);
-  //  fillBox(49, 90, 15, 25, 0x0);
-
-  DrawChar(10, 90, 0x07FF, timeMin);
-  DrawChar(26, 90, 0x07FF, ':');
-  DrawChar(32, 90, 0x07FF, (timeSec / 10) % 10);
-  DrawChar(52, 90, 0x07FF, timeSec % 10);
-}
-
 // TEST: Not sure if this works
-decode_results results; // Stores decoded results
-uint32_t decodeVal = 0;
 int IR_TICK(int state) {
   switch (state) {
   case IR_INIT:

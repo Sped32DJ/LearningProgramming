@@ -1,4 +1,4 @@
-PWD /home/dannyarch/projects/LearningProgramming/LaTeX/CS120B/week10
+PWD /home/danny/projects/LearningProgramming/LaTeX/CS120B/week10
 INPUT /var/lib/texmf/web2c/luahbtex/lualatex.fmt
 INPUT ./EECS120B_EC1.tex
 OUTPUT EECS120B_EC1.log
@@ -15,7 +15,7 @@ INPUT /usr/share/texmf-dist/tex/luatex/lualibs/lualibs-extended.lua
 INPUT /usr/share/texmf-dist/tex/luatex/lualibs/lualibs-extended-merged.lua
 INPUT /usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload-log.lua
 INPUT /usr/share/texmf-dist/tex/luatex/luaotfload/fontloader-basics-gen.lua
-OUTPUT /home/dannyarch/.texlive/texmf-var/m_t_x_t_e_s_t.tmp
+OUTPUT /home/danny/.texlive/texmf-var/m_t_x_t_e_s_t.tmp
 INPUT /usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload-parsers.lua
 INPUT /usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload-configuration.lua
 INPUT /usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload-status.lua
@@ -62,8 +62,8 @@ INPUT /usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload-bcp47.lua
 INPUT /usr/share/texmf-dist/tex/latex/l3kernel/expl3.lua
 INPUT /usr/share/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texmf-dist/tex/latex/base/size12.clo
-INPUT /home/dannyarch/.texlive/texmf-var/luatex-cache/generic/names/luaotfload-names.luc.gz
-INPUT /home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-regular.luc
+INPUT /home/danny/.texlive/texmf-var/luatex-cache/generic/names/luaotfload-names.luc.gz
+INPUT /home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-regular.luc
 INPUT /usr/share/texmf-dist/tex/latex/geometry/geometry.sty
 INPUT /usr/share/texmf-dist/tex/latex/graphics/keyval.sty
 INPUT /usr/share/texmf-dist/tex/generic/iftex/ifvtex.sty
@@ -93,7 +93,7 @@ INPUT /usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 INPUT /usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 INPUT /usr/share/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.lua
 INPUT /usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-INPUT /home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman17-regular.luc
+INPUT /home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman17-regular.luc
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmr7.tfm
@@ -104,9 +104,9 @@ INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmsy7.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmex10.tfm
+INPUT /home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-bold.luc
 OUTPUT EECS120B_EC1.pdf
 INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
-INPUT /home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-bold.luc
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
@@ -116,3 +116,4 @@ INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
+INPUT ./EECS120B_EC1.aux

@@ -52,83 +52,104 @@ EE/CS 120B}
 
 \doublespacing
 
+\section{Introduction:}
 % TODO Make sure to fix this bad boy up
-I wrote a guess the color game. The idea originally came from a friend who I saw constantly play CSS battle,
+I wrote a guess the color game. The idea originally came from a friend who I saw constantly play CSSbattle.net,
 I always aspired to be that good at him at guessing the hex values instantly and rebuilding a website like that.
-So I decided to make a game that would help me get better at it!
+So I decided to make a game that would help me get better at it! 
+
+In terms of the UI, there is a main menu that gives you a play button. After you press play,
+a random color is presented to, a prompt to enter the 
+hex code of the presented color. Then a percentage
+of how close you are to the target value. Along with
+a timer that records how fast you solve it.
+As you solve the colors, the shift register turns on one of the
+three LEDs on the small board.
+\pagebreak
+\section{Build Upons:}
+\begin{enumerate}
+  \item \textbf{ST7735 Display:}
+    There are two scenes, the start menu, and the playing scene.
+    The start menu's functionality is to show the in the center "PLAY"
+    (which is doing a chroma animation),
+    and, after you press any input, it goes straight into the gamae.
+    This main menu plays a huge role. It serves to keep rolling rand()
+    in the background which almost simulates having 
+    a unique srand() seed after every single boot.
+
+    Then, there is the play scene. This is where you have the RGB LED
+    display a 
+  \item \textbf{Shift Register:} This was implemented successfully.
+    The only issue is that I believe there are insulation issues, hence why they flicker.
+    When ever I touch the cables, the three LEDs turn off.
+    I notice that when I unplug the VCC, the lights are stable and don't flicker.
+    But this only works while the RED LED is on.
+    I believe this is either poor insulation, or the arduino
+    just doesn't have enough power. It does not take away from the functionality.
+  \item \textbf{IR Sensor / NEC remove:}
+    The IR tasks and sensor works perfectly, 
+    I have minimized the amount of times it returns trash values, by setting a higher
+    period. Besides that, sometimes the IR sensor doesn't read if the display is being updated,
+    and again, I believe this is more hardware limitations of the microcontroller.
+\end{enumerate}
+
+\pagebreak
+\section{User Guide:}
+\begin{itemize}
+  \item When you begin in the start screen, you will be presented with a 
+    simple prompt. To get out of the prompt and play the game, just press any button.
+    You may need to hold down any button until you get the play scene.
+  \item In the play scene, you will be presented with an RGB LED being lit up
+    to a random color and a hex value that you input.
+    \item\subsection*{Game's Inputs:}
+    \begin{itemize}
+      \item\textbf{Power Button:} This will roll you a new color if you don't like it 
+      \item\textbf{1:} This will iterate your red hex value
+      \item\textbf{4:} This will lower your hex value by one
+      \item\textbf{2:} This will iterate your green hex value
+      \item\textbf{2:} This will lower your green hex value by one
+      \item\textbf{3:} This will iterate your blue hex value
+      \item\textbf{6:} This will lower your blue hex value by one
+        % TODO: Insert image of remote and a drawing over, such as ++r, or --r over the button
+    \end{itemize}
+  \item You will need to guess the color that the RGB-LED is displaying.
+  \item As you get the closer to the color, the lights in the little board
+    that are connected to the shift register will start outputting values.
+    \begin{itemize}
+      \item Example: If you get the value of red correctly,
+        the shift register turn on the Red LED.
+        Along with the display putting a box over the hex value you have correctly guessed.
+    \end{itemize}
+  \item After you have correctly guessed the color, you will be greeted with your
+    elapsed time being paused and showing in chroma mode.
+    This means you have won, and pressing 
+    the power button will put you into the main menu to start again.
+\end{itemize}
+
 \pagebreak
 \section{Hardware:}
 \begin{enumerate}
-  \item ST7735 Display
-  \item RGB LED
-  \item Shift Register
-  \item IR Sensor / NEC remove
-  \item 8 switch DIP
+  \item \textbf{ST7735 Display:}
+  \item \textbf{RGB LED:}
+    This one was successfully implemented, except for the part
+    where it flickers a bit while the display is updating.
+    I believe this is power issues. But it doesn't take away
+    from the functionality.
+  \item \textbf{Shift Register:} This was implemented successfully.
+  \item \textbf{IR Sensor / NEC remove:}
+  \item \textbf{8 switch DIP:}
+    This has two functionalities, and it works perfectly fine. Pin 7 is my on and off switch.
+    Then my pin 0 is for debugging and to keep rolling new colors. I used this before I came up
+    with a method to always display a pseudo random color.
 \end{enumerate}
-
-\section{Inputs:}
-
-\begin{tabular}{ l l l }
-   \textbf{PC0}: & IR & \quad (Serial Data) \\
-   \textbf{PC1}: & Switch 8 & \quad (0 = High; 1 = Low) \\
-\end{tabular}
-
-\section{Outputs:}
-
-\begin{tabular}{ l l l }
-
-   \textbf{PB5}: & Display - SCK & \quad (0 = Off; 1 = On) \\
-   \textbf{PB3}: & Display - SDK & \quad (0 = Off; 1 = On) \\
-   \textbf{PB2}: & Display - CS Pin \\
-   \textbf{PD7}: & Shift Register - SH & \quad (0 = Off; 1 = On) \\
-   \textbf{PD6}: & RGB - Blue & \quad (0 = Off; 1 = On) \\
-   \textbf{PD5}: & RGB - Green & \quad (0 = Off; 1 = On) \\
-   \textbf{PD4}: & Shift Register - ST  & \quad (0 = Off; 1 = On) \\
-   \textbf{PD3}: & RGB - Red & \quad (0 = Off; 1 = On) \\
-   \textbf{PD2}: & Shift Register - DS & \quad (0 = Off; 1 = On) \\
-\end{tabular}
 
 \pagebreak
-\section{Tasks:}
 
-% FIX: Figure what is wrong with the enumeration
-\begin{enumerate}
-  \item \textbf{RGB_TICK:}
-    This is the duty cycle for the RGB LEDs PWM tasks.
-    It handles when it is appropriate to have the LEDs on or off.
-  \item \textbf{DISPLAY_TICK:}
-    Helps take care of the two states, the start menu and the active playing menu.
-    When you beat the game, it will strobe rainbow through the time that it took you to solve the color.
-    Along with the start menu, and the strobing rainbow. 
-    To strobe the rainbow, I have an array with the colors of the rainbow,
-    and I iterate through them.
-  \item \textbf{IR_TICK:}
-    This function is always reading the IR sensor. 
-    The power button starts the game from the start screen, and from the play state, it rolls a new color.
-    While it rolls a new color, it resets the time, currVal, and goes to RGB_Tick to ask for a new color. 
-    Since it grabs the inputs, it updates the currVal when ever it is modified either up or down;
-    along with handling overflow.
-  \item \textbf{RED_TICK:}
-    For context, I had issues with digital PWM, and this was my next best option that worked perfectly fine. 
-    I was able to get this working within the first week and get this out of the way.
-    The PWM tick function for the green part of the RGB LED.
-  \item \textbf{GREEN_TICK:}
-    The PWM tick function for the green part of the RGB LED.
-  \item \textbf{BLUE_TICK:}
-    The PWM tick function for the blue part of the RGB LED.
-  \item \textbf{SHIFT_Tick:}
-    This runs in a single state to put the value \textbf{progress} into 
-    the shiftOut() function. The LEDs are only ever turned on when 
-    currVal is equal to the target value in the respect hex bits of Red, Green, and Blue.
-  \item \textbf{ELAPSED_Tick:}
-    Tracks the elapsed time in a single state.
-    It pauses the elapsed time when you beat the game. 
-    Then it pauses the time, so display tick can show the time in chroma.
-\end{enumerate}
+
+
 
 \pagebreak
 \section{Software Libraries Used:}
-
 \begin{itemize}
   \item \textbf{avr/io.h}:
     This library is used for the I/O operations on the AVR microcontroller.
@@ -138,164 +159,98 @@ So I decided to make a game that would help me get better at it!
   \item \textbf{avr/interrupt.h}:
     I used this library to enable the interrupts for the IR sensor.
 \end{itemize} 
- 
+
+% The following are personally written
+\begin{itemize}
+  \item \textbf{ST77535.h:}
+      Holds the function for sending data/commands, resets the display.
+      Along with the init function for the display. The main functions are
+      Screen(int color) function that fills the screen with that color.
+Box(short x, short y, short w, short h, short color) that draws a box. 
+Then the bigger brother, fillBox(short x, short y, short w, short h, short color) 
+that colors in the box. 
+
+
+Then the most important function, Pixel(short x, short y, short color).
+This function is used by DrawChar(short x, short y, short color, char currVal).
+To write all my characters. This function alone is 436 lines of code. 
+This function takes my base char of 8, and builds on top of it in a 7-segment like manner.
+  \item \textbf{ST77535 Text.h:}
+    This file exclusively holds all 436 linese of 
+    the DrawChar(short x, short y, short color, char currVal) function. 
+    This function draws a char onto the screen. Using case statements, it 
+    knows what character you inputted.
+  \item \textbf{helper.h:} SetBit, GetBit were the two important
+    functions out of this file.
+  \item \textbf{irAVR.h:} This file is entirely
+    written by the TA. It helps with the funcionality of the IR Remote.
+  \item\textbf{spiAVR.h:}
+    I have the default wiring for SCK, MOSI, and SS. 
+    This has the SPI Init function, and the SPI Send function.
+  \item\textbf{timerISR.h:} 
+    This just holds the timerISR function
+    This function is not modified.
+\end{itemize}
+
+\section{Wiring Diagram:}
+
+\subsection*{Inputs:}
+\begin{tabular}{ l l l }
+   \textbf{PC0}: & IR & \quad (Serial Data) \\
+   \textbf{PC1}: & DIP-Switch 7 & \quad (0 = low; 1 = High) \\
+\end{tabular}
+
+\subsection*{Outputs:}
+\begin{tabular}{ l l l }
+
+   \textbf{PB5}: & Display - SCK & \quad  \\
+   \textbf{PB3}: & Display - SDK & \quad  \\
+   \textbf{PB2}: & Display - CS Pin \\
+   \textbf{PD7}: & Shift Register - SH & \quad  \\
+   \textbf{PD6}: & RGB - Blue & \quad (PWM) \\
+   \textbf{PD5}: & RGB - Green & \quad (PWM) \\
+   \textbf{PD4}: & Shift Register - ST  & \quad  \\
+   \textbf{PD3}: & RGB - Red & \quad (PWM) \\
+   \textbf{PD2}: & Shift Register - DS & \quad  \\
+\end{tabular}
+
 \pagebreak
-\section{SM Chart:}
+\section{Tasks Diagram:}
+\begin{enumerate}
+  \item\textbf{RGB TICK:}
+    This is the duty cycle for the RGB LEDs PWM tasks.
+    It handles when it is appropriate to have the LEDs on or off.
+  \item\textbf{DISPLAY TICK:}
+    Helps take care of the two states, the start menu and the active playing menu.
+    When you beat the game, it will strobe rainbow through the time that it took you to solve the color.
+    Along with the start menu, and the strobing rainbow. 
+    To strobe the rainbow, I have an array with the colors of the rainbow,
+    and I iterate through them.
+  \item\textbf{IR TICK:}
+    This function is always reading the IR sensor. 
+    The power button starts the game from the start screen, and from the play state, it rolls a new color.
+    While it rolls a new color, it resets the time, currVal, and goes to RGB Tick to ask for a new color. 
+    Since it grabs the inputs, it updates the currVal when ever it is modified either up or down;
+    along with handling overflow.
+  \item\textbf{RED TICK:}
+    For context, I had issues with digital PWM, and this was my next best option that worked perfectly fine. 
+    I was able to get this working within the first week and get this out of the way.
+    The PWM tick function for the green part of the RGB LED.
+  \item\textbf{GREEN TICK:}
+    The PWM tick function for the green part of the RGB LED.
+  \item\textbf{BLUE TICK:}
+    The PWM tick function for the blue part of the RGB LED.
+  \item\textbf{SHIFT Tick:}
+    This runs in a single state to put the value \textbf{progress} into 
+    the shiftOut() function. The LEDs are only ever turned on when 
+    currVal is equal to the target value in the respect hex bits of Red, Green, and Blue.
+  \item\textbf{ELAPSED Tick:}
+    Tracks the elapsed time in a single state.
+    It pauses the elapsed time when you beat the game. 
+\end{enumerate}
 
-
-  I am aware that I excluded A6, the Timer State.
-  That is due to the limitation that it would probably be its own state machine to have the desired behavior.
-  I am also aware with the lack of concurrency in the state machine.
-  \pagebreak
-
-  \section{SM in RIMS}
-  \begin{lstlisting}[language=C]
-#include "rims.h"
-
-enum states {
-  INIT,
-  IDLE,
-  WATERING,
-  NUTRIENT,
-  LIGHTING_KONTROL,
-  TEMPERATURE_KONTROL,
-  MANUAL_OVERRIDE,
-  STOP
-} State;
-
-// State machine function
-void Tick() {
-  // State Transitions
-  switch (State) {
-  case INIT:
-    // Initialize all sensors and outputs to default values
-    if (A & 0x40) {
-      State = INIT;
-    }
-    State = IDLE;
-
-  case IDLE:
-    if (~A & 0x01)
-      State = WATERING;
-    if (~A & 0x02)
-      State = NUTRIENT;
-    if (~A & 0x04)
-      State = LIGHTING_KONTROL;
-    if (~A & 0x08)
-      State = TEMPERATURE_KONTROL;
-    if (A & 0x10)
-      State = MANUAL_OVERRIDE;
-    if (A & 0x20)
-      State = STOP;
-    if (A & 0x40)
-      State = INIT;
-    State = IDLE;
-    break;
-
-  case WATERING:
-    if (A & 0x01) {
-      B = B & ~0x01;
-      State = IDLE;
-    }
-    State = WATERING;
-    break;
-
-  case NUTRIENT:
-    if (A & 0x02) {
-      B = B & ~0x02;
-      State = IDLE;
-    }
-    State = NUTRIENT;
-    break;
-
-  case LIGHTING_KONTROL:
-    if (A & 0x04) {
-      B = B & ~0x04;
-      State = IDLE;
-    }
-    State = LIGHTING_KONTROL;
-    break;
-
-  case TEMPERATURE_KONTROL:
-    if (A & 0x08) {
-      B = B & ~0x08;
-      State = IDLE;
-    }
-    State = TEMPERATURE_KONTROL;
-    break;
-
-  case MANUAL_OVERRIDE:
-    if (~A & 0x10) {
-      State = IDLE;
-    }
-    State = MANUAL_OVERRIDE;
-    break;
-
-  case STOP:
-    if (~A & 0x20) {
-      State = IDLE;
-    }
-    State = STOP;
-    break;
-
-  default:
-    State = INIT;
-    break;
-  }
-
-  // State Actions
-  switch (State) {
-  case INIT:
-    B = 0x00;
-    break;
-
-  case IDLE:
-    break;
-
-  case WATERING:
-    // B0 = 1;
-    B = B | 0x01;
-    break;
-
-  case NUTRIENT:
-    // B1 = 1;
-    B = B | 0x02;
-    break;
-
-  case LIGHTING_KONTROL:
-    // B2 = 1;
-    B = B | 0x04;
-    break;
-
-  case TEMPERATURE_KONTROL:
-    // B3 = 1;
-    B = B | 0x08;
-    break;
-
-  case MANUAL_OVERRIDE:
-    break;
-
-  case STOP:
-    B = 0x00;
-    break;
-
-  case default:
-    break;
-  }
-}
-
-int main() {
-
-  State = INIT;
-
-  while (1) {
-    Tick();
-  }
-
-  return 0;
-}
-
-  \end{lstlisting}
+\section{SynchSM Diagrams:}
+ 
 % --------------------------------------------------------------
 %     You don't have to mess with anything below this line.
 % --------------------------------------------------------------

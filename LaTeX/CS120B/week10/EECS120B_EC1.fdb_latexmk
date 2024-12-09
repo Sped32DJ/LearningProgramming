@@ -1,9 +1,12 @@
 # Fdb version 4
-["pdflatex"] 1733741118.99477 "EECS120B_EC1.tex" "EECS120B_EC1.pdf" "EECS120B_EC1" 1733741119.59305 2
-  "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-bold.luc" 1728865262.64255 128286 dfc00623b3bae8851f7df0d3d7a72972 ""
-  "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-regular.luc" 1728865262.49155 127657 c9d11ec6a23bb78b502043969a9465c0 ""
-  "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman17-regular.luc" 1729280815.59282 128908 66fcceaa053fc1bb44f78430d72048b0 ""
-  "/home/dannyarch/.texlive/texmf-var/luatex-cache/generic/names/luaotfload-names.luc.gz" 1728865262.23355 421662 5aa88f3db6d8707a496d361fbcadd89a ""
+["pdflatex"] 1733772638.96426 "EECS120B_EC1.tex" "EECS120B_EC1.pdf" "EECS120B_EC1" 1733772639.44216 0
+  "/home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-bold.luc" 1729020679.89024 128286 dfc00623b3bae8851f7df0d3d7a72972 ""
+  "/home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-regular.luc" 1729020679.75692 127657 c9d11ec6a23bb78b502043969a9465c0 ""
+  "/home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman17-regular.luc" 1729272453.66934 128908 66fcceaa053fc1bb44f78430d72048b0 ""
+  "/home/danny/.texlive/texmf-var/luatex-cache/generic/names/luaotfload-names.luc.gz" 1729020556.05734 367818 ae76fc421e6189762e5b6eb32151d195 ""
+  "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman12-bold.otf" 1727349926 110496 b9c8767d4cc3bf3f4b21f676bf89aa78 ""
+  "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman12-regular.otf" 1727349926 110400 d844cffffa1af59f9d2bb1bfdb6f1a2c ""
+  "/usr/share/texmf-dist/fonts/opentype/public/lm/lmroman17-regular.otf" 1727349926 110248 1d75fdc9dbe45e70de83ff6cc79a81c9 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmex10.tfm" 1727349926 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm" 1727349926 1528 abec98dbc43e172678c11b3b9031252a ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1727349926 1524 4414a8315f39513458b80dfc63bff03a ""
@@ -100,10 +103,10 @@
   "/usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload-tounicode.lua" 1727349926 7528 245271ce518c136c96f22fee6cb810ab ""
   "/usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload-unicode.lua" 1727349926 7917 cebc6454abe34f2fe1c1248f8b2453da ""
   "/usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload.lua" 1727349926 13565 50482dad4c221a79dbdbb982122baf8c ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1731469877.6072 5312047 b07fcd2a9090df96fc745b92a3db793b ""
-  "/var/lib/texmf/web2c/luahbtex/lualatex.fmt" 1731469792 12260820 8686c1efda1c977ac8913009f3164e4d ""
-  "EECS120B_EC1.aux" 1733741119.56005 296 e9c0cbf397d6e80b21910c3fda3519eb "pdflatex"
-  "EECS120B_EC1.tex" 1733741118.89006 7690 8e05379197ff641bd9be2782db41cc7f ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1733378988.48519 325518 3dff2bac5bde75cd7e600320ce8a00d6 ""
+  "/var/lib/texmf/web2c/luahbtex/lualatex.fmt" 1733378976 12260338 6ae9cef9fde7ff94e476578806513a0a ""
+  "EECS120B_EC1.aux" 1733772639.35976 851 064f302c3e37aa2737fad0ca44233f56 "pdflatex"
+  "EECS120B_EC1.tex" 1733772638.87976 10873 a87cc10ac5c986853e6a6734a9682b1e ""
   (generated)
   "EECS120B_EC1.aux"
   "EECS120B_EC1.log"

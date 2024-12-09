@@ -1,0 +1,303 @@
+% --------------------------------------------------------------
+% This is all preamble stuff that you don't have to worry about.
+% Head down to where it says "Start here"
+% --------------------------------------------------------------
+ 
+\documentclass[12pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{setspace,fancyhdr,listings,xcolor,graphicx}
+\lstset{
+    language=C,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=10pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    rulecolor=\color{black},
+    tabsize=2,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    title=\lstname,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green},
+    stringstyle=\color{red},
+    basicstyle=\ttfamily\footnotesize,
+    escapeinside={\%*}{*)},
+    morekeywords={*,...},
+    lineskip=-1pt % Adjust this value to make lines more compact
+}
+\pagestyle{fancy}
+\fancyhf{}
+
+\setlength{\headheight}{15pt}
+\fancyhead[R]{Topete \thepage}
+
+\begin{document}
+ 
+% --------------------------------------------------------------
+%                         Start here
+% --------------------------------------------------------------
+ 
+\title{Final Project: Guess The Color}
+\author{Danny Topete\\ %replace with your name
+EE/CS 120B}
+
+\maketitle
+
+\doublespacing
+
+% TODO Make sure to fix this bad boy up
+I wrote a guess the color game. The idea originally came from a friend who I saw constantly play CSS battle,
+I always aspired to be that good at him at guessing the hex values instantly and rebuilding a website like that.
+So I decided to make a game that would help me get better at it!
+\pagebreak
+\section{Hardware:}
+\begin{enumerate}
+  \item ST7735 Display
+  \item RGB LED
+  \item Shift Register
+  \item IR Sensor / NEC remove
+  \item 8 switch DIP
+\end{enumerate}
+
+\section{Inputs:}
+
+\begin{tabular}{ l l l }
+   \textbf{PC0}: & IR & \quad (Serial Data) \\
+   \textbf{PC1}: & Switch 8 & \quad (0 = High; 1 = Low) \\
+\end{tabular}
+
+\section{Outputs:}
+
+\begin{tabular}{ l l l }
+
+   \textbf{PB5}: & Display - SCK & \quad (0 = Off; 1 = On) \\
+   \textbf{PB3}: & Display - SDK & \quad (0 = Off; 1 = On) \\
+   \textbf{PB2}: & Display - CS Pin \\
+   \textbf{PD7}: & Shift Register - SH & \quad (0 = Off; 1 = On) \\
+   \textbf{PD6}: & RGB - Blue & \quad (0 = Off; 1 = On) \\
+   \textbf{PD5}: & RGB - Green & \quad (0 = Off; 1 = On) \\
+   \textbf{PD4}: & Shift Register - ST  & \quad (0 = Off; 1 = On) \\
+   \textbf{PD3}: & RGB - Red & \quad (0 = Off; 1 = On) \\
+   \textbf{PD2}: & Shift Register - DS & \quad (0 = Off; 1 = On) \\
+\end{tabular}
+
+\pagebreak
+\section{Tasks:}
+
+% FIX: Figure what is wrong with the enumeration
+\begin{enumerate}
+  \item \textbf{RGB_TICK:}
+    This is the duty cycle for the RGB LEDs PWM tasks.
+    It handles when it is appropriate to have the LEDs on or off.
+  \item \textbf{DISPLAY_TICK:}
+    Helps take care of the two states, the start menu and the active playing menu.
+    When you beat the game, it will strobe rainbow through the time that it took you to solve the color.
+    Along with the start menu, and the strobing rainbow. 
+    To strobe the rainbow, I have an array with the colors of the rainbow,
+    and I iterate through them.
+  \item \textbf{IR_TICK:}
+    This function is always reading the IR sensor. 
+    The power button starts the game from the start screen, and from the play state, it rolls a new color.
+    While it rolls a new color, it resets the time, currVal, and goes to RGB_Tick to ask for a new color. 
+    Since it grabs the inputs, it updates the currVal when ever it is modified either up or down;
+    along with handling overflow.
+  \item \textbf{RED_TICK:}
+    For context, I had issues with digital PWM, and this was my next best option that worked perfectly fine. 
+    I was able to get this working within the first week and get this out of the way.
+    The PWM tick function for the green part of the RGB LED.
+  \item \textbf{GREEN_TICK:}
+    The PWM tick function for the green part of the RGB LED.
+  \item \textbf{BLUE_TICK:}
+    The PWM tick function for the blue part of the RGB LED.
+  \item \textbf{SHIFT_Tick:}
+    This runs in a single state to put the value \textbf{progress} into 
+    the shiftOut() function. The LEDs are only ever turned on when 
+    currVal is equal to the target value in the respect hex bits of Red, Green, and Blue.
+  \item \textbf{ELAPSED_Tick:}
+    Tracks the elapsed time in a single state.
+    It pauses the elapsed time when you beat the game. 
+    Then it pauses the time, so display tick can show the time in chroma.
+\end{enumerate}
+
+\pagebreak
+\section{Software Libraries Used:}
+
+\begin{itemize}
+  \item \textbf{avr/io.h}:
+    This library is used for the I/O operations on the AVR microcontroller.
+  \item \textbf{stdlib.h}:
+    I used for the rand() function to generate a random color to guess.
+    It keeps the game interesting.
+  \item \textbf{avr/interrupt.h}:
+    I used this library to enable the interrupts for the IR sensor.
+\end{itemize} 
+ 
+\pagebreak
+\section{SM Chart:}
+
+
+  I am aware that I excluded A6, the Timer State.
+  That is due to the limitation that it would probably be its own state machine to have the desired behavior.
+  I am also aware with the lack of concurrency in the state machine.
+  \pagebreak
+
+  \section{SM in RIMS}
+  \begin{lstlisting}[language=C]
+#include "rims.h"
+
+enum states {
+  INIT,
+  IDLE,
+  WATERING,
+  NUTRIENT,
+  LIGHTING_KONTROL,
+  TEMPERATURE_KONTROL,
+  MANUAL_OVERRIDE,
+  STOP
+} State;
+
+// State machine function
+void Tick() {
+  // State Transitions
+  switch (State) {
+  case INIT:
+    // Initialize all sensors and outputs to default values
+    if (A & 0x40) {
+      State = INIT;
+    }
+    State = IDLE;
+
+  case IDLE:
+    if (~A & 0x01)
+      State = WATERING;
+    if (~A & 0x02)
+      State = NUTRIENT;
+    if (~A & 0x04)
+      State = LIGHTING_KONTROL;
+    if (~A & 0x08)
+      State = TEMPERATURE_KONTROL;
+    if (A & 0x10)
+      State = MANUAL_OVERRIDE;
+    if (A & 0x20)
+      State = STOP;
+    if (A & 0x40)
+      State = INIT;
+    State = IDLE;
+    break;
+
+  case WATERING:
+    if (A & 0x01) {
+      B = B & ~0x01;
+      State = IDLE;
+    }
+    State = WATERING;
+    break;
+
+  case NUTRIENT:
+    if (A & 0x02) {
+      B = B & ~0x02;
+      State = IDLE;
+    }
+    State = NUTRIENT;
+    break;
+
+  case LIGHTING_KONTROL:
+    if (A & 0x04) {
+      B = B & ~0x04;
+      State = IDLE;
+    }
+    State = LIGHTING_KONTROL;
+    break;
+
+  case TEMPERATURE_KONTROL:
+    if (A & 0x08) {
+      B = B & ~0x08;
+      State = IDLE;
+    }
+    State = TEMPERATURE_KONTROL;
+    break;
+
+  case MANUAL_OVERRIDE:
+    if (~A & 0x10) {
+      State = IDLE;
+    }
+    State = MANUAL_OVERRIDE;
+    break;
+
+  case STOP:
+    if (~A & 0x20) {
+      State = IDLE;
+    }
+    State = STOP;
+    break;
+
+  default:
+    State = INIT;
+    break;
+  }
+
+  // State Actions
+  switch (State) {
+  case INIT:
+    B = 0x00;
+    break;
+
+  case IDLE:
+    break;
+
+  case WATERING:
+    // B0 = 1;
+    B = B | 0x01;
+    break;
+
+  case NUTRIENT:
+    // B1 = 1;
+    B = B | 0x02;
+    break;
+
+  case LIGHTING_KONTROL:
+    // B2 = 1;
+    B = B | 0x04;
+    break;
+
+  case TEMPERATURE_KONTROL:
+    // B3 = 1;
+    B = B | 0x08;
+    break;
+
+  case MANUAL_OVERRIDE:
+    break;
+
+  case STOP:
+    B = 0x00;
+    break;
+
+  case default:
+    break;
+  }
+}
+
+int main() {
+
+  State = INIT;
+
+  while (1) {
+    Tick();
+  }
+
+  return 0;
+}
+
+  \end{lstlisting}
+% --------------------------------------------------------------
+%     You don't have to mess with anything below this line.
+% --------------------------------------------------------------
+ 
+\end{document}t

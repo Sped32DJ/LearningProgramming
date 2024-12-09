@@ -103,7 +103,7 @@ void updateHex() {
 
   if (((progressPer / 100) % 10))
     DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
-  if ((progressPer % 10) || ((progressPer / 100) % 10) || progressPer > 9)
+  if (progressPer > 9)
     DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
   DrawChar(50, 60, 0xFFFF, progressPer % 10);
   DrawChar(70, 65, 0xFFFF, '%');
@@ -696,9 +696,6 @@ int ELAPSED_Tick(int state) {
       ++rawSeconds;
       ++rawSeconds;
     }
-    ++rawSeconds;
-    ++rawSeconds;
-
     break;
   }
   return state;

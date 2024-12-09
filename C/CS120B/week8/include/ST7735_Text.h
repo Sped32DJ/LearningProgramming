@@ -377,6 +377,67 @@ void DrawChar(short x, short y, short color, char currVal) {
     Box(x, y + 5, 2, 2, color);
     Box(x, y + 15, 2, 2, color);
     break;
+  case 'P':
+    for (short j = y; j < y + 20; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+
+      if (j < y + 10) {
+        Pixel(x + 10, j, color);
+        Pixel(x + 11, j, color);
+      }
+    }
+
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
+      Pixel(i, y, color);
+      Pixel(i, y + 1, color);
+
+      Pixel(i, y + 10, color);
+      Pixel(i, y + 11, color);
+
+      //    Pixel(i, y + 19, color);
+      //    Pixel(i, y + 20, color);
+    }
+    break;
+  case 'L':
+    for (short j = y; j < y + 20; j++) {
+      Pixel(x, j, color);
+      Pixel(x + 1, j, color);
+
+      //    Pixel(x + 11, j, color);
+      //    Pixel(x + 10, j, color);
+    }
+
+    // Horizontal
+    for (short i = x; i < x + 12; i++) {
+      //    Pixel(i, y, color);
+      //    Pixel(i, y + 1, color);
+
+      //    Pixel(i, y + 10, color);
+      //    Pixel(i, y + 11, color);
+
+      Pixel(i, y + 19, color);
+      Pixel(i, y + 20, color);
+    }
+    break;
+  case 'Y':
+    // Upper diagonal arms
+    for (short j = 0; j < 6; j++) {
+      Pixel(x + j, y + j, color); // Left diagonal arm
+      Pixel(x + j + 1, y + j, color);
+
+      Pixel(x + 10 - j, y + j, color); // Right diagonal arm
+      Pixel(x + 10 - j - 1, y + j, color);
+    }
+
+    // Vertical stem
+    for (short j = y + 5; j < y + 20; j++) {
+      Pixel(x + 4, j, color);
+      Pixel(x + 5, j, color);
+      Pixel(x + 6, j, color);
+    }
+    break;
   default:
     break;
   }

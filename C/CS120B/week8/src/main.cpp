@@ -54,7 +54,7 @@ int rawSeconds = 0;
 int timeMin, timeSec;
 // Works perfectly fine when this is = 1
 // This will help me implement the main menu
-unsigned char playGame = 1;
+unsigned char playGame = 0;
 
 void TimerISR() {
   for (unsigned int i = 0; i < NUM_TASKS;
@@ -147,14 +147,14 @@ int RGB_TICK(int state) {
     RL = RH > 0 ? 16 - RH : 16;
     GL = GH > 0 ? 16 - GH : 16;
     BL = BH > 0 ? 16 - BH : 16;
-    if (playGame)
+    if (playGame) {
       state = RGB_ON;
+    }
     break;
   case RGB_ON:
     if (direction == 'o') {
-      playGame = 1;
       state = RGB_INIT;
-      direction = '\0';
+      // direction = '\0';
     }
     if (GetBit(PINC, 1)) {
       state = RGB_INIT;
@@ -318,7 +318,8 @@ int DISPLAY_TICK(int state) {
     rawSeconds = 0;
     timeMin = 0;
     timeSec = 0;
-    if (playGame) {
+    if (direction == 'o' || playGame) {
+      direction = '\0';
       state = DISPLAY_ON;
     }
     break;
@@ -329,7 +330,6 @@ int DISPLAY_TICK(int state) {
       // Box(0, 0, 128, 128, 0xFFFF);
       timeMin = 0;
       timeSec = 0;
-      playGame = 1;
       state = DISPLAY_OFF;
     }
 
@@ -352,15 +352,15 @@ int DISPLAY_TICK(int state) {
 
       // Update colorX to cycle
       ++colorX;
-    } else {
+      if (colorX > 7) {
+        colorX = 0;
+      }
     }
-
     break;
   case DISPLAY_OFF:
     // NOTE: Make an else that loops into itself?
     if (direction == 'o') {
       direction = '\0';
-      rawSeconds = 0;
       timeMin = 0;
       timeSec = 0;
 
@@ -375,7 +375,25 @@ int DISPLAY_TICK(int state) {
   // NOTE: Furbish these commands
   switch (state) {
   case DISPLAY_INIT:
-    Screen(0x00);
+    // Screen(0x00);
+    DrawChar(27, 50, rainbow[colorX % 8], 'P');
+    DrawChar(47, 50, rainbow[(colorX + 1) % 8], 'L');
+    DrawChar(67, 50, rainbow[(colorX + 2) % 8], 'A');
+    DrawChar(87, 50, rainbow[(colorX + 3) % 8], 'Y');
+    Box(22, 46, 80, 30, 0xFFFF);
+    // Box(27, 60, 80, 30, 0xFFFF);
+
+    // Draw the characters with colors cycling through the rainbow vector
+    //   DrawChar(10, 90, rainbow[colorX % 8], timeMin);
+    //   DrawChar(26, 90, rainbow[(colorX + 1) % 8], ':');
+    //   DrawChar(32, 90, rainbow[(colorX + 2) % 8], (timeSec / 10) % 10);
+    //   DrawChar(52, 90, rainbow[(colorX + 3) % 8], timeSec % 10);
+
+    // Update colorX to cycle
+    ++colorX;
+    if (colorX > 7) {
+      colorX = 0;
+    }
 
     break;
   case DISPLAY_ON:
@@ -506,7 +524,7 @@ void updateHex() {
 
   if (((progressPer / 100) % 10))
     DrawChar(10, 60, 0xFFFF, (progressPer / 100) % 10);
-  if ((progressPer % 10) || ((progressPer / 100) % 10) || progressPer == 10)
+  if ((progressPer % 10) || ((progressPer / 100) % 10) || progressPer > 9)
     DrawChar(30, 60, 0xFFFF, (progressPer / 10) % 10);
   DrawChar(50, 60, 0xFFFF, progressPer % 10);
   DrawChar(70, 65, 0xFFFF, '%');
@@ -578,6 +596,7 @@ int IR_TICK(int state) {
       timeMin = 0;
       timeSec = 0;
       rawSeconds = 0;
+      playGame = 1;
       currVal = 0x000;
       updateHex();
       // shiftOut(0x00);
@@ -668,6 +687,8 @@ int ELAPSED_Tick(int state) {
       ++rawSeconds;
       ++rawSeconds;
     }
+    ++rawSeconds;
+    ++rawSeconds;
 
     break;
   }
@@ -763,7 +784,7 @@ int main(void) {
   // MR (unlock) FIX: I think this should be deprecated
   PORTD = SetBit(PORTD, 4, 1);
 
-  updateHex();
+  // updateHex();
 
   TimerSet(GCD_PERIOD);
   TimerOn();

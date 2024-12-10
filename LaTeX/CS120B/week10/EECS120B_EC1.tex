@@ -7,6 +7,9 @@
 
 \usepackage[margin=1in]{geometry}
 \usepackage{setspace,fancyhdr,listings,xcolor,graphicx,adjustbox}
+
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref} % Configures hyperlink color
+
 \lstset{
     language=C,
     numbers=left,
@@ -53,18 +56,22 @@ Guess The Color}
 \doublespacing
 
 \section{Introduction:}
-% TODO Make sure to fix this bad boy up
-I wrote a guess the color game. The idea originally came from a friend who I saw constantly play CSSbattle.net,
+I wrote a guess the color game. The idea originally came from watching a friend 
+be good at CSSbattle.net,
 I always aspired to be that good at him at guessing the hex values instantly and rebuilding a website like that.
-So I decided to make a game that would help me get better at it!
+So I decided to make a game that would help me practice!
 
 In terms of the UI, there is a main menu that gives you a play button. After you press play,
 a random color is presented to, a prompt to enter the
 hex code of the presented color. Then a percentage
 of how close you are to the target value. Along with
 a timer that records how fast you solve it.
-As you solve the colors, the shift register turns on one of the
+As you solve the colors, the Shift Register turns on one of the
 three LEDs on the small board.
+
+% FIX:  INSERT YOUTUBE DEMO
+\href{https://www.youtube.com/}{Final Project Demo Video}
+
 \pagebreak
 \section{Build Upons:}
 \begin{enumerate}
@@ -86,7 +93,7 @@ three LEDs on the small board.
     But this only works while the RED LED is on.
     I believe this is either poor insulation, or the arduino
     just doesn't have enough power. It does not take away from the functionality.
-  \item \textbf{IR Sensor / NEC remove:}
+  \item \textbf{IR Sensor / NEC Remote:}
     The IR tasks and sensor works perfectly,
     I have minimized the amount of times it returns trash values, by setting a higher
     period. Besides that, sometimes the IR sensor doesn't read if the display is being updated,

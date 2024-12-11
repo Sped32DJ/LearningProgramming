@@ -72,6 +72,14 @@ int g, GH, GL;
 int b, BH, BL;
 
 // At this poinbt, this is the updateScreen function...
+// long long getPercent(int a, int b) {
+//  if (b == 0)
+//    return 0;
+//  // return (a > b) ? (a * 100) / b : (b * 100) / a;
+//  return (a * 100LL) / b;
+//}
+// long long s, d, f;
+
 void updateHex() {
   currentRed = (currVal & 0xF00) >> 8;
   currentGreen = (currVal & 0x0F0) >> 4;
@@ -83,6 +91,10 @@ void updateHex() {
   } else {
     progressPer = (currVal > target) ? (target * 100) / currVal
                                      : (currVal * 100) / target;
+    //    s = getPercent(currentRed, (target & 0xF00) >> 8);
+    //    d = getPercent(currentGreen, (target & 0x0F0) >> 4);
+    //    f = getPercent(currentBlue, target & 0x00F);
+    //   k
   }
   Screen(0x00); // Fills screen black
 
@@ -401,6 +413,11 @@ int DISPLAY_TICK(int state) {
       progressPer = (target * 100) / currVal;
     } else {
       progressPer = (currVal * 100) / target;
+      //  Proportionate Percentage
+      //      progressPer = (getPercent(currVal >> 8, currentRed) *
+      //                         getPercent((currVal >> 4) & 0xF, currentGreen),
+      //                     getPercent(currVal & 0xF, currentBlue)) /
+      //                    3;
     }
     timeMin = (rawSeconds / 60);
     timeSec = (rawSeconds % 60);

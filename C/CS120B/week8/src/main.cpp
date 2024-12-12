@@ -78,23 +78,32 @@ int b, BH, BL;
 //  // return (a > b) ? (a * 100) / b : (b * 100) / a;
 //  return (a * 100LL) / b;
 //}
-// long long s, d, f;
+long long s, d, f = 0;
+long long targetRed, targetGreen, targetBlue = 0;
 
 void updateHex() {
   currentRed = (currVal & 0xF00) >> 8;
   currentGreen = (currVal & 0x0F0) >> 4;
   currentBlue = currVal & 0x00F;
 
+  targetRed = (target & 0xF00) >> 8;
+  targetGreen = (target & 0x0F0) >> 4;
+  targetBlue = target & 0x00F;
+
   if (currVal == target) {
     progressPer = 100;
     progressPer = (!target) ? 0 : 100;
   } else {
-    progressPer = (currVal > target) ? (target * 100) / currVal
-                                     : (currVal * 100) / target;
-    //    s = getPercent(currentRed, (target & 0xF00) >> 8);
-    //    d = getPercent(currentGreen, (target & 0x0F0) >> 4);
-    //    f = getPercent(currentBlue, target & 0x00F);
-    //   k
+    s = (currentRed > targetRed) ? (targetRed * 100) / currentRed
+                                 : (currentRed * 100) / targetRed;
+    d = (currentGreen > target) ? (targetGreen * 100) / currentGreen
+                                : (currentGreen * 100) / targetGreen;
+    f = (currentBlue > target) ? (targetBlue * 100) / currentBlue
+                               : (currentBlue * 100) / targetBlue;
+    // progressPer = (currVal > target) ? (target * 100) / currVal : (currVal *
+    progressPer = (s + d + f) / 3;
+    // 100) / target;
+    //    k
   }
   Screen(0x00); // Fills screen black
 

@@ -1,0 +1,179 @@
+\documentclass{article}[12pt]
+\usepackage{fullpage}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage[ruled,lined,linesnumbered]{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{graphicx}
+
+\ifx\solutiontemplate\undefined
+\newcommand{\solkeyword}[1]{}
+\newcommand{\policy}[1]{#1}
+\else
+\newcommand{\solkeyword}[1]{#1}
+\newcommand{\policy}[1]{}
+\fi
+
+\newcommand\encircle[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt} {\footnotesize #1}}} }
+
+
+\newenvironment{solution}[0]{\vspace{.1in} \textbf{Solution.} \,}{}
+
+\newcommand{\deadline}{11:59pm, Mon 1/22, 2024}
+
+\newcommand{\assigntitle}[1]{{
+  \noindent \large \bf
+  CS141, Winter 2024,
+  Assignment \##1 \hfill Due: {\deadline}\\
+  Name: Danny Topete %put in your name here
+  \hspace{2.5in}
+  Student ID: 862389624 %put in your id here
+  \\
+  [-.05in]
+  \mbox{}\hrulefill \mbox{}\\}}
+
+\begin{document}
+
+\assigntitle{1}{}
+\date{}
+
+\section{A Complex Complexity Problem (20pts)}
+
+\begin{center}
+\begin{multicols}{4}
+\begin{enumerate}[label=\encircle{\arabic*}]
+  \item $(\sqrt{2})^{\log n}$
+  \item $3^n$
+  \item $n!$
+  \item $n^2$
+  \item $n^3$
+  \item $\log^2n$
+  \item $\log(n!)$
+  \item $2^{2^n}$
+  \item $\ln\ln n$
+  \item $1$
+  \item $\ln n$
+  \item $\log \log n$
+  \item $(n+1)!$
+  \item $\sqrt{\log n}$
+  \item $n$
+  \item $2^n$
+  \item $n\log n$
+  \item $2^{2^n+1}$
+  \item $5n^2-13n+6$
+  \item $n/\log n$
+\end{enumerate}
+\end{multicols}
+\end{center}
+
+\begin{enumerate}[label=(\arabic*)]
+  \item (1pt) What does \emph{polynomial} mean (use $O(\cdot)$, $\Omega(\cdot)$, $\omega(\cdot)$, $\Theta(\cdot)$, $o(\cdot)$ to present your answer)? (2pts) Which of them are polynomial?
+    \begin{itemize}
+      \item polynomial means anything that is f(n) \epsilon  \Theta($n^k$) k > 0.
+        \begin{itemize}
+          \item $f(n)$ \epsilon $O(n^k)$: $f(n)$ grows at most as fast as $n^k$
+          \item $f(n)$ \epsilon $\Omega(n^k)$: $f(n)$ grows at least as fast as $n^k$
+          \item $f(n)$ $\epsilon$  $o(n^k)$: $f(n)$ grows slower than $n^k$ as $n \rightarrow \infty$
+          \item $f(n)$ \epsilon $\omega(n^k)$: $f(n)$ grows faster than $n^k$ as $n$ $\rightarrow \infty$
+        \end{itemize}
+      \item the equations that would be polynomial would be:
+\begin{center}
+\begin{multicols}{4}
+\begin{enumerate}[label=\encircle{\arabic*}]
+  \item $n^2$
+  \item $n^3$
+  \item $5n^2-13n+6$
+\end{enumerate}
+\end{multicols}
+\end{center}
+    \end{itemize}
+
+  \item (1pt) What does \emph{polylogarithmic} mean (use $O(\cdot)$, $\Omega(\cdot)$, $\omega(\cdot)$, $\Theta(\cdot)$, $o(\cdot)$ to present your answer)? (2pts) Which of them are polylogarithmic?
+    \begin{itemize}
+      \item polylogarithmic means anything with a polynomial
+        multiplied by a logarithmic.
+      \item Equations that follow:
+\begin{center}
+\begin{multicols}{4}
+\begin{enumerate}[label=\encircle{\arabic*}]
+  \item $\log^2n$
+  \item $\log(n!)$
+  \item $\ln\ln n$
+  \item $\ln n$
+  \item $\log \log n$
+  \item $n\log n$
+  \item $n/\log n$
+\end{enumerate}
+\end{multicols}
+\end{center}
+
+    \end{itemize}
+
+  \item (1pt) What does \emph{sublinear} mean (use $O(\cdot)$, $\Omega(\cdot)$, $\omega(\cdot)$, $\Theta(\cdot)$, $o(\cdot)$ to present your answer)? (2pts) Which of them are sublinear?
+    \begin{itemize}
+      \item Sublinear growth is
+      \item Equations that follow:
+\begin{center}
+\begin{multicols}{4}
+\begin{enumerate}[label=\encircle{\arabic*}]
+  \item $(\sqrt{2})^{\log n}$
+  \item $3^n$
+  \item $n!$
+  \item $n^2$
+  \item $n^3$
+  \item $\log^2n$
+  \item $\log(n!)$
+  \item $2^{2^n}$
+  \item $\ln\ln n$
+  \item $1$
+  \item $\ln n$
+  \item $\log \log n$
+  \item $(n+1)!$
+  \item $\sqrt{\log n}$
+  \item $n$
+  \item $2^n$
+  \item $n\log n$
+  \item $2^{2^n+1}$
+  \item $5n^2-13n+6$
+  \item $n/\log n$
+\end{enumerate}
+\end{multicols}
+\end{center}
+
+    \end{itemize}
+
+  \item (1pt) What does \emph{superlinear} mean (use $O(\cdot)$, $\Omega(\cdot)$, $\omega(\cdot)$, $\Theta(\cdot)$, $o(\cdot)$ to present your answer)? (2pts) Which of them are superlinear?
+
+  \item (2pts) Which of the above 20 functions grow the fastest (if you think there are multiple answers, list \emph{all} of them)?
+
+  \item (6pts) Finally, please rank all the functions by ascending order of growth; Group together those functions that are big-Theta of one another.
+
+\end{enumerate}
+
+\newpage
+\section{Calculate the Fibonacci numbers (20pts)}
+
+\newpage
+\section{Normal Loop analysis (10pts)}
+
+\newpage
+\section{Weird Loop analysis (20pts)}
+
+\newpage
+\section{Design of water container (20pts)}
+
+\newpage
+\section{Statement judgment (20pts)}
+
+\newpage
+\begin{thebibliography}{99}
+\bibitem{ref1} This definition is from...
+\end{thebibliography}
+\end{document}

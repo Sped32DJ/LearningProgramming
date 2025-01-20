@@ -1,0 +1,68 @@
+\documentclass{article}[12pt]
+\usepackage{fullpage}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage[ruled,lined,linesnumbered]{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{graphicx}
+
+\ifx\solutiontemplate\undefined
+\newcommand{\solkeyword}[1]{}
+\newcommand{\policy}[1]{#1}
+\else
+\newcommand{\solkeyword}[1]{#1}
+\newcommand{\policy}[1]{}
+\fi
+
+\newcommand\encircle[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt} {\footnotesize #1}}} }
+
+
+\newenvironment{solution}[0]{\vspace{.1in} \textbf{Solution.} \,}{}
+
+\newcommand{\deadline}{11:59pm, Mon 1/22, 2024}
+
+\newcommand{\assigntitle}[1]{{
+  \noindent \large \bf
+  CS141, Winter 2024,
+  Assignment \##1 \hfill Due: {\deadline}\\
+  Name:  %put in your name here
+  \hspace{2.5in}
+  Student ID:  %put in your id here
+  \\
+  [-.05in]
+  \mbox{}\hrulefill \mbox{}\\}}
+
+\begin{document}
+
+\assigntitle{1}{}
+\date{}
+
+\section{A Complex Complexity Problem (20pts)}
+
+\newpage
+\section{Calculate the Fibonacci numbers (20pts)}
+
+\newpage
+\section{Normal Loop analysis (10pts)}
+
+\newpage
+\section{Weird Loop analysis (20pts)}
+
+\newpage
+\section{Design of water container (20pts)}
+
+\newpage
+\section{Statement judgment (20pts)}
+
+\newpage
+\begin{thebibliography}{99}
+\bibitem{ref1} This definition is from...
+\end{thebibliography}
+\end{document}

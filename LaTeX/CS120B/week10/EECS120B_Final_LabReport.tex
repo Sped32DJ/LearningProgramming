@@ -69,8 +69,7 @@ a timer that records how fast you solve it.
 As you solve the colors, the Shift Register turns on one of the
 three LEDs on the small board.
 
-% FIX:  INSERT YOUTUBE DEMO
-\href{https://www.youtube.com/}{Final Project Demo Video}
+\href{https://youtu.be/q6jeuhIvPzk}{Final Project Demo Video}
 
 \pagebreak
 \section{Build Upons:}
@@ -79,20 +78,26 @@ three LEDs on the small board.
     There are two scenes, the start menu, and the playing scene.
     The start menu's functionality is to show the in the center "PLAY"
     (which is doing a chroma animation),
-    and, after you press any input, it goes straight into the gamae.
+    and, after you press any input, it goes straight into the game.
     This main menu plays a huge role. It serves to keep rolling rand()
     in the background which almost simulates having
     a unique srand() seed after every single boot.
 
     Then, there is the play scene. This is where you have the RGB LED
-    display a
+    display a random color, and you have to guess the hex value.
   \item \textbf{Shift Register - 74HC595:} This was implemented successfully.
     The only issue is that I believe there are insulation issues, hence why they flicker.
+
     When ever I touch the cables, the three LEDs turn off.
     I notice that when I unplug the VCC, the lights are stable and don't flicker.
-    But this only works while the RED LED is on.
+    But this only works while the RED LED is on. 
+
+
     I believe this is either poor insulation, or the arduino
-    just doesn't have enough power. It does not take away from the functionality.
+    just doesn't have enough power. 
+    This may be a hardware limitation to where it does not want to be one while 
+    other things are being computed. Or just the fact that 5V is very limited for this circuit.
+    It does not take away from the functionality.
   \item \textbf{IR Sensor / NEC Remote:}
     The IR tasks and sensor works perfectly,
     I have minimized the amount of times it returns trash values, by setting a higher
@@ -175,7 +180,7 @@ three LEDs on the small board.
     I used for the rand() function to generate a random color to guess.
     It keeps the game interesting.
   \item \textbf{avr/interrupt.h}:
-    I used this library to enable the interrupts for the IR sensor.
+    This library was used in the .h files that were provided to me.
 \end{itemize}
 
 % The following are personally written

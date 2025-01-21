@@ -26,7 +26,7 @@
 
 \newenvironment{solution}[0]{\vspace{.1in} \textbf{Solution.} \,}{}
 
-\newcommand{\deadline}{11:59pm, Mon 1/22, 2024}
+\newcommand{\deadline}{11:59pm, Tues 1/21, 2024}
 
 \newcommand{\assigntitle}[1]{{
   \noindent \large \bf
@@ -41,8 +41,8 @@
 
 \begin{document}
 
-\assigntitle{1}{}
-\date{}
+\assigntitle{1}{Assignment Title}
+\date{\today}
 
 \section{A Complex Complexity Problem (20pts)}
 
@@ -80,6 +80,7 @@
         \begin{itemize}
           \item $f(n)$ \epsilon $O(n^k)$: $f(n)$ grows at most as fast as $n^k$
           \item $f(n)$ \epsilon $\Omega(n^k)$: $f(n)$ grows at least as fast as $n^k$
+          \item $f(n)$ \epsilon $\Theta(n^k)$: $f(n)$ grows at the same rate as $n^k$
           \item $f(n)$ $\epsilon$  $o(n^k)$: $f(n)$ grows slower than $n^k$ as $n \rightarrow \infty$
           \item $f(n)$ \epsilon $\omega(n^k)$: $f(n)$ grows faster than $n^k$ as $n$ $\rightarrow \infty$
         \end{itemize}
@@ -87,6 +88,7 @@
 \begin{center}
 \begin{multicols}{4}
 \begin{enumerate}[label=\encircle{\arabic*}]
+  \item $n$
   \item $n^2$
   \item $n^3$
   \item $5n^2-13n+6$
@@ -97,8 +99,16 @@
 
   \item (1pt) What does \emph{polylogarithmic} mean (use $O(\cdot)$, $\Omega(\cdot)$, $\omega(\cdot)$, $\Theta(\cdot)$, $o(\cdot)$ to present your answer)? (2pts) Which of them are polylogarithmic?
     \begin{itemize}
-      \item polylogarithmic means anything with a polynomial
-        multiplied by a logarithmic.
+      \item polylogarithmic function is a function that grows 
+        slower than any polynomial function with the logarithm as its input.
+        Where $f(n) \epsilon \Theta(\log^k n)$, k > 0.
+        \begin{itemize}
+          \item $f(n)$ \epsilon $O(\log^k n)$: $f(n)$ grows at most as fast as $\log^k n$
+          \item $f(n)$ \epsilon $\Omega(\log^k n)$: $f(n)$ grows at least as fast as $\log^k n$
+          \item $f(n)$ $\epsilon$  $o(\log^k n)$: $f(n)$ grows slower than $\log^k n$ as $n \rightarrow \infty$
+          \item $f(n)$ \epsilon $\omega(\log^k n)$: $f(n)$ grows faster than $\log^k n$ as $n$ $\rightarrow \infty$
+          \item $f(n)$ \epsilon $\Theta(\log^k n)$: $f(n)$ grows at the same rate as $\log^k n$
+        \end{itemize}
       \item Equations that follow:
 \begin{center}
 \begin{multicols}{4}
@@ -116,32 +126,34 @@
 
     \end{itemize}
 
+\pagebreak
+
   \item (1pt) What does \emph{sublinear} mean (use $O(\cdot)$, $\Omega(\cdot)$, $\omega(\cdot)$, $\Theta(\cdot)$, $o(\cdot)$ to present your answer)? (2pts) Which of them are sublinear?
     \begin{itemize}
-      \item Sublinear growth is
+      \item Sublinear growth is $f(n)$ that grows slower than a linear function as n \rightarrow \infty
+      \item Characterized by 
+        \begin{equation}
+          lim_{n \rightarrow \infty} \frac{f(n)}{n} = 0
+        \end{equation}
+
+        \begin{itemize}
+          \item $f(n)$ \epsilon $O(n)$: $f(n)$ grows at most as fast as $n$
+          \item $f(n)$ \epsilon $\Omega(n)$: $f(n)$ grows at least as fast as $n$
+          \item $f(n)$ \epsilon $\Theta(n)$: $f(n)$ grows at the same rate as $n$
+          \item $f(n)$ $\epsilon$  $o(n)$: $f(n)$ grows slower than $n$ as $n \rightarrow \infty$
+          \item $f(n)$ \epsilon $\omega(n)$: $f(n)$ grows faster than $n$ as $n$ $\rightarrow \infty$
+        \end{itemize}
       \item Equations that follow:
 \begin{center}
 \begin{multicols}{4}
 \begin{enumerate}[label=\encircle{\arabic*}]
   \item $(\sqrt{2})^{\log n}$
-  \item $3^n$
-  \item $n!$
-  \item $n^2$
-  \item $n^3$
   \item $\log^2n$
   \item $\log(n!)$
-  \item $2^{2^n}$
   \item $\ln\ln n$
-  \item $1$
   \item $\ln n$
   \item $\log \log n$
-  \item $(n+1)!$
   \item $\sqrt{\log n}$
-  \item $n$
-  \item $2^n$
-  \item $n\log n$
-  \item $2^{2^n+1}$
-  \item $5n^2-13n+6$
   \item $n/\log n$
 \end{enumerate}
 \end{multicols}
@@ -150,8 +162,51 @@
     \end{itemize}
 
   \item (1pt) What does \emph{superlinear} mean (use $O(\cdot)$, $\Omega(\cdot)$, $\omega(\cdot)$, $\Theta(\cdot)$, $o(\cdot)$ to present your answer)? (2pts) Which of them are superlinear?
+    \begin{itemize}
+      \item Superlinear growth is $f(n)$ that grows faster than a linear function as n \rightarrow \infty
+      \item Characterized by
+        \begin{equation}
+          lim_{n \rightarrow \infty} \frac{f(n)}{n} = \infty
+        \end{equation}
+        \begin{itemize}
+          \item $f(n)$ \epsilon $O(n)$: $f(n)$ grows at most as fast as $n$
+          \item $f(n)$ \epsilon $\Omega(n)$: $f(n)$ grows at least as fast as $n$
+          \item $f(n)$ \epsilon $\Theta(n)$: $f(n)$ grows at the same rate as $n$
+          \item $f(n)$ $\epsilon$  $o(n)$: $f(n)$ grows slower than $n$ as $n \rightarrow \infty$
+          \item $f(n)$ \epsilon $\omega(n)$: $f(n)$ grows faster than $n$ as $n$ $\rightarrow \infty$
+        \end{itemize}
+      \item equations that follow:
+\begin{center}
+\begin{multicols}{4}
+\begin{enumerate}[label=\encircle{\arabic*}]
+  \item $3^n$
+  \item $n!$
+  \item $n^2$
+  \item $n^3$
+  \item $\log(n!)$
+  \item $2^{2^n}$
+  \item $(n+1)!$
+  \item $2^n$
+  \item $n\log n$
+  \item $2^{2^n+1}$
+  \item $5n^2-13n+6$
+\end{enumerate}
+\end{multicols}
+\end{center}
+    \end{itemize}
 
   \item (2pts) Which of the above 20 functions grow the fastest (if you think there are multiple answers, list \emph{all} of them)?
+    \begin{itemize}
+      \item The functions that grow the fastest are:
+        \begin{itemize}
+          \item $2^{2^n}$
+          \item $2^{2^n+1}$
+        \end{itemize}
+      \item these functions are double exponential
+      \item Double exponential grows faster than factorial, logarithmic, polynomial, polylogarithmic, sublinear, and exponential functions
+        (Which are the properties of the given functions)
+      \item These two functions are the fastests growing functions and are both superlinear
+    \end{itemize}
 
   \item (6pts) Finally, please rank all the functions by ascending order of growth; Group together those functions that are big-Theta of one another.
 

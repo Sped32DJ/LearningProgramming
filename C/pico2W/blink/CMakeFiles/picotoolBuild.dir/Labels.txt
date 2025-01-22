@@ -1,0 +1,14 @@
+# Target labels
+ picotoolBuild
+# Source files and their labels
+/home/danny/projects/LearningProgramming/C/pico2W/blink/CMakeFiles/picotoolBuild
+/home/danny/projects/LearningProgramming/C/pico2W/blink/CMakeFiles/picotoolBuild.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/CMakeFiles/picotoolBuild-complete.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-build.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-configure.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-download.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-install.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-mkdir.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-patch.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-test.rule
+/home/danny/projects/LearningProgramming/C/pico2W/blink/picotool/src/picotoolBuild-stamp/picotoolBuild-update.rule

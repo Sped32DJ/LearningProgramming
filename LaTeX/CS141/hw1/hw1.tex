@@ -139,10 +139,8 @@
 
         \begin{itemize}
           \item $f(n)$ \epsilon $O(n)$: $f(n)$ grows at most as fast as $n$
-          \item $f(n)$ \epsilon $\Omega(n)$: $f(n)$ grows at least as fast as $n$
-          \item $f(n)$ \epsilon $\Theta(n)$: $f(n)$ grows at the same rate as $n$
-          \item $f(n)$ $\epsilon$  $o(n)$: $f(n)$ grows slower than $n$ as $n \rightarrow \infty$
-          \item $f(n)$ \epsilon $\omega(n)$: $f(n)$ grows faster than $n$ as $n$ $\rightarrow \infty$
+          \item $f(n)$ \epsilon $\Omega(n)$: $f(n)$ it does not grow as fast as $n$ or faster
+          \item $f(n)$ $\epsilon$  $o(n)$: $f(n)$ grows slower than $n$
         \end{itemize}
       \item Equations that follow:
 \begin{center}
@@ -170,10 +168,8 @@
           lim_{n \rightarrow \infty} \frac{f(n)}{n} = \infty
         \end{equation}
         \begin{itemize}
-          \item $f(n)$ \epsilon $O(n)$: $f(n)$ grows at most as fast as $n$
-          \item $f(n)$ \epsilon $\Omega(n)$: $f(n)$ grows at least as fast as $n$
-          \item $f(n)$ \epsilon $\Theta(n)$: $f(n)$ grows at the same rate as $n$
-          \item $f(n)$ $\epsilon$  $o(n)$: $f(n)$ grows slower than $n$ as $n \rightarrow \infty$
+          \item $f(n)$ \epsilon $O(n)$: $f(n)$ Does not grow at most as fast as $n$
+          \item $f(n)$ \epsilon $\Omega(n)$: $f(n)$ at least as fast as $n$
           \item $f(n)$ \epsilon $\omega(n)$: $f(n)$ grows faster than $n$ as $n$ $\rightarrow \infty$
         \end{itemize}
       \item equations that follow:
@@ -318,12 +314,161 @@ fib3(n)
 \newpage
 \section{Normal Loop analysis (10pts)}
 
+Give a tight bound (using the big-theta notation) on the time complexity of 
+following method as a function of $n$. For simplicity, 
+you can assume $n$ to be a power of two. Justify your answer.
+
+\hfill \break
+
+\begin{algorithmic}
+\Function{NormalLoop}{n: \textbf{int}}
+\State $i = n$
+
+While {$i \geq 1$}
+
+for {$j = 1$ to $n$}
+        \State $k = 1$
+
+
+        \While{$k \leq n$}
+            \State $k = 2 \times k$
+    \State $i = i - 1$
+\EndFunction
+\end{algorithmic}
+
+\begin{itemize}
+  \item The while loop is nesting the for loop that is nesting the while loop
+  \item The outer while loop will run $n$ times. 
+   The while loop runs $i = n$ times and decrements once after every iteration.
+  Giving this \Theta(n).
+  \item The for loop will run $i$ times times every iteration of the while loop.
+    Giving this \Theta(n)
+  \item the nested while loop will run $log(n)$ times every iteration of the for loop.
+    Since it starts at $k = 1$ and doubles every iteration until $k = n$. 
+    That would make it $log_2(n)$.
+    Giving this \Theta(log(n)).
+
+  \item Multiplying all of these together, we get \Theta(n) * \Theta(n) * \Theta(log(n))
+    $\Rightarrow \Theta(n^2log(n))$.
+\end{itemize}
+
 \newpage
 \section{Weird Loop analysis (20pts)}
 
+Give a tight bound (using the big-theta notation) on the time complexity of following method as a function of $n$. For simplicity, you can assume $n$ to be a power of two. Justify your answer.
+
+\hfill \break
+
+\begin{algorithmic}
+\Function{WeirdLoop}{n: \textbf{int}}
+\State $i = n$
+
+\While{$i \geq 1$}
+    For{$j = 1$ \textbf{to} $i$}
+        \State $k = 1$
+        \While{$k \leq n$}
+            \State $k = 2 \times k$
+       % \EndWhile
+    %\EndFor
+    \State $i = \lfloor i / 2 \rfloor$
+%\EndWhile
+\EndFunction
+\end{algorithmic}
+
+\begin{itemize}
+  \item The outer while loop will run $log(n)$ times.
+    Since it starts at $i = n$ and divides by $2$ every iteration until $i = 1$.
+    Giving this \Theta(log(n)).
+
+  \item The for loop will run $i$ times every iteration of the while loop.
+    $i$ starts at $n$ and is divided by $2$ every iteration. $i$ decreases geometrically
+    (n, n/2, n/4, n/8, ..., 1) = 2n. Giving this \Theta(n).
+
+  \item The nested while loop will run $log(n)$ times every iteration of the for loop.
+    Since it starts at $k = 1$ and doubles every iteration until $k = n$. 
+    That would make it $log_2(n)$.
+    Giving this \Theta(log(n)).
+
+  \item Multiplying all of these together, we get \Theta(log(n)) * \Theta(n) * \Theta(log(n))
+    $\Rightarrow \Theta(nlog^2(n))$.
+\end{itemize}
+
 \newpage
 \section{Design of water container (20pts)}
+Given $n$ non-negative integers $a_1, a_2, ..., a_n$, where each represents a point at coordinate $(i, a_i)$. $n$ vertical lines are drawn such that the two endpoints of line i is at $(i, a_i)$ and $(i, 0)$. Find two lines, which together with x-axis forms a container, such that the container contains the most water. Here are some examples:
 
+\begin{enumerate}
+\item {Solve the problem with brute-force approach by providing the pseudo-code for this problem. What is the time complexity of this approach?}
+\item {Is there any better solution? If so, describe your solution, including pseudo-code, with time complexity analysis.}
+\end{enumerate}
+{Note: You may not slant the container and $n$ is at least $2$.}
+
+
+\subsection{Brute-force approach}
+\begin{itemize}
+  \item This approach will compare every possible pair of lines and calculate the area.
+    Giving the maximum area possible.
+  \item This would require a nested loop to compare every pair of lines.
+    Each loop being $n$ in length. Giving this \Theta($n^2$).
+\end{itemize}
+Function \textbf{maxAreaBruteForce}($a$[ ]):
+
+$maxArea$ = 0
+
+$n$ = length($a$)
+
+for $i$ = 0 to $n$ - 1{
+
+  \indent \indent for($j$ = $i$ + 1 to $n$){
+
+    \indent \indent \indent $area$ = min($a$[$i$], $a$[$j$]) * ($j$ - $i$)
+      
+          \indent \indent \indent $maxArea$ = max($maxArea$, $area$)
+  }
+
+  return maxArea
+}
+
+\pagebreak
+\subsection{Better solution}
+
+Function \textbf{maxAreaOnePass}($a$[ ]):
+
+$maxArea$ = 0
+
+$left$ = 0
+
+$right$ = a.size() - 1
+
+while left < right:
+
+\indent \indent $area$ = min($a$[$left$], $a$[$right$]) * ($right$ - $left$)
+
+\indent \indent $maxArea$ = max($maxArea$, $area$)
+\hfill \break
+
+\indent \indent if $a$[$left$] < $a$[$right$]:
+
+\indent \indent \indent $left$ = $left$ + 1
+
+\indent \indent else:
+
+\indent \indent \indent right = right - 1 \\
+
+\indent return $maxArea$
+
+\hfill \break
+
+\begin{itemize}
+  \item This solution is better since we only iterate \Theta(n) times.
+  Everything is done in one pass.
+\item The time complexity is \Theta(n) since we only iterate through the array once.
+\item We start by pointing to the first and last element of the array to an int $left$ and int $right$.
+  We calculate the area and move the pointer that has the smaller height.
+  This is because the area is determined by the smaller height.
+  This keeps repeating until the two pointers meet. 
+  Meaning we have iterated n times.
+\end{itemize}
 \newpage
 \section{Statement judgment (20pts)}
 Is the following statement true or false?
@@ -332,8 +477,14 @@ Is the following statement true or false?
 \end{center}
 {Justify your answer using the basic definition of the $\Theta$-notation.}
 
+
 \begin{itemize}
-  \item This would not be true
+  \item This would be false since we can prove that $3^n$ grows asymptotically faster than $2^n$.
+  \item Given f(n) = $3^n$ and g(n) = $2^n$. 
+    $\frac{f(n)}{g(n)}$ = $\frac{3^n}{2^n}$ = $(\frac{3}{2})^n$.
+  \item $(\frac{3}{2})^n$ grows witout a bound as $n$ \Rightarrow \infty (diverges into infinity).
+    Since $\frac{f(n)}{g(n)}$ \Rightarrow $\frac{3}{2}$ > 1, it will grow faster than $2^n$.
+    Making $f(n) = 3^n$ grow faster than $g(n) = 2^n$.
 \end{itemize}
 
 \newpage

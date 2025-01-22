@@ -61,7 +61,7 @@ unsigned char playGame = 0;
 // NOTE: RGB Helpers
 // Sets the color of the RGB LED
 unsigned char red, green, blue = 0x0;
-char currentRed, currentGreen, currentBlue = 0x0;
+long long currentRed, currentGreen, currentBlue = 0x0;
 unsigned char progress = 0; // Variable for the shift register
 long long currVal = 0x000;
 long long target = 0x000;

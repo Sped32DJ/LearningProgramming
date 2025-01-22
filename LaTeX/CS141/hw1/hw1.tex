@@ -12,6 +12,7 @@
 \usepackage{enumitem}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{listings}
 
 \ifx\solutiontemplate\undefined
 \newcommand{\solkeyword}[1]{}
@@ -195,6 +196,7 @@
 \end{center}
     \end{itemize}
 
+    \pagebreak
   \item (2pts) Which of the above 20 functions grow the fastest (if you think there are multiple answers, list \emph{all} of them)?
     \begin{itemize}
       \item The functions that grow the fastest are:
@@ -208,12 +210,110 @@
       \item These two functions are the fastests growing functions and are both superlinear
     \end{itemize}
 
+
   \item (6pts) Finally, please rank all the functions by ascending order of growth; Group together those functions that are big-Theta of one another.
+\begin{center}
+\begin{multicols}{4}
+\begin{enumerate}[label=\encircle{\arabic*}]
+  \item $1$
+  \item $\log \log n$
+  \item $\ln\ln n$
+  \item $\sqrt{\log n}$
+  \item $n/\log n$
+  \item $\ln n$
+  \item $(\sqrt{2})^{\log n}$
+  \item $\log^2n$
+  \item $n$
+  \item $\log(n!)$
+  \item $n\log n$
+  \item $n^2$
+  \item $5n^2-13n+6$
+  \item $n^3$
+  \item $2^n$
+  \item $3^n$
+  \item $n!$
+  \item $(n+1)!$
+  \item $2^{2^n}$
+  \item $2^{2^n+1}$
+\end{enumerate}
+\end{multicols}
+\end{center}
 
 \end{enumerate}
 
 \newpage
 \section{Calculate the Fibonacci numbers (20pts)}
+In mathematical terms, the sequence F n of Fibonacci numbers is defined by the recurrence relation:
+
+
+$F_n = F_{n-1} + F_{n-2}$ , where $F_0 = 0,F_1 = 1$ 
+
+
+Discuss the correctness of the following algorithms that calculate Fibonacci numbers:
+\begin{enumerate}
+\item {Algorithm 1}
+\begin{lstlisting}
+fib1(n)
+{
+  integer array f[n+1];
+  f[0] = 0;
+  f[1] = 1;
+
+  for (i = 2 to n)
+    f[i] = f[i-1] + f[i-2]
+  return f[n];
+}
+\end{lstlisting}
+\begin{itemize}
+  \item The first algorithm is valid
+  \item It has a base case
+  \item It uses memory to store previous values.
+    Does not require recursion to keep the values in the stack.
+  \item The array is a sufficient size and will not cause problems.
+    You will need $n$ memory to store that entire array.
+\end{itemize}
+\item {Algorithm 2}
+\begin{lstlisting}
+fib2(n)
+{
+    if(n > 1)
+        return fib2(n-1) + fib2(n-2)
+    else if(n < 1)
+        return fib2(n)
+}
+\end{lstlisting}
+\begin{itemize}
+  \item There would be no base case
+  \item it will keep terminating since there is no terminating
+    case
+  \item no matter the value you insert, it will keep looping
+\end{itemize}
+
+\pagebreak
+\item {Algorithm 3}
+\begin{lstlisting}
+fib3(n)
+{
+  a = 0 
+  b = 1
+  if(n = 0)
+    return a
+  for (i = 2 to n)
+  {
+	c = a + b
+	b = c
+	a = b
+  }
+  return b;
+}
+\end{lstlisting}
+    \begin{itemize}
+      \item This algorithm can not work
+      \item in the for loop, $b$ and $a$ will be equal to $c$
+        since a copy is never saved
+    \end{itemize}
+
+\end{enumerate}
 
 \newpage
 \section{Normal Loop analysis (10pts)}

@@ -1,0 +1,23 @@
+#1
+Make a game using the PS2 controller (serial)
+A very simple one at that, maybe like a game of pong or something.
+Using ST7735 TFT display and a PS2 controller.
+
+#2
+Something related to the webserver
+Maybe a blink server web interface?
+
+#3
+Airmouse / hijacking 2.4GHz signals to do flipper things.
+Any sort of badUSB stuff with the Pico2W
+
+3.1
+Using the FlipperHTTP firmware on the Pico2W and using it
+
+#4 (Endgame)
+A website that can control the AC of my house.
+Scrap that, all the IR stuff of the room.
+Then have automated stuff like turning on the AC when it is damn cold.
+  Not letting the room reach a certain temperature.
+Then have this very same thing connected to the Google Home using Arduino Home app
+Have this very same website just have shortcuts to the closet/fan lights that are tied to Google Home.

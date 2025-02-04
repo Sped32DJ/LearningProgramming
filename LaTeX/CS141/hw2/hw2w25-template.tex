@@ -7,7 +7,7 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 \usepackage[ruled,lined,linesnumbered]{algorithm2e}
-\usepackage{algpseudocode}
+%\usepackage{algpseudocode}
 \usepackage{multicol}
 \usepackage{enumitem}
 \usepackage{url}
@@ -239,9 +239,36 @@ Justification:
 \section{Significant Inversion (15 points)}
 
 \subsection{Algorithm (10 pts)}
+\begin{algorithm}[H]
+\caption{CountSignificantInversions(X, low, high)}
+\If {low $\geq$ high} {return 0;}
+mid = (low + high) / 2\;
+count = CountSI(X, low, mid) + CountSI(X, mid+1, high)\;
+j = mid+1\;
+\For {i = low to mid} {
+  \While {j $\leq$ high \textbf{AND} X[i] $\geq$ 2 \cdot X[j]} {
+    ++j\;
+  }
+  count += j - (mid+1)\;
+}
+Merge(X, low, mid, high)\;
+Return count\;
+
+\end{algorithm}
 
 \vspace*{10px}
 \subsection{Recurrence \& Time Complexity (5 pts)}
+\begin{itemize}
+  \item The recurrence relation for this algorithm is $T(n) = 2T(\frac{n}{2}) + O(n)$
+  \item The algorithm is called twice within the code and the 
+    array is split in half for each call. Making the algorithm 
+    2T($\frac{n}{2}$)
+  \item The $O(n)$ comes from the for loop that iterates through the array
+  \item Using master's theorem,
+    $n^{\log_{2} 2}$ = n$^{1}$ = n.
+    Which is equal to the $O(n)$ in the recurrence relation
+  \item This algorithm is $\Theta(n \log n)$
+\end{itemize}
 
 \newpage
 \section{Data Recovery (15 points)}

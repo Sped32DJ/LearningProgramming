@@ -261,6 +261,25 @@ Justification:
 %Return count\;
 %}
 %\end{algorithm}
+\begin{itemize}
+  \item Function CountSI(X, low, high)
+    \begin{itemize}
+      \item \textbf{if} (low $\geq$ high) \textbf{return} 0;
+      \item mid = (low + high) / 2;
+      \item count = CountSI(X, low, mid) + CountSI(X, mid+1, high);
+      \item j = mid+1;
+      \item \textbf{for} (i = low to mid)
+        \begin{itemize}
+          \item \textbf{while} (j $\leq$ high \textbf{AND} X[i] $\geq$ 2 $\cdot$ X[j])
+        \begin{itemize}
+          \item ++j;
+        \end{itemize}
+          \item count += j - (mid+1);
+        \end{itemize}
+      \item Merge(X, low, mid, high);
+      \item \textbf{return} count;
+    \end{itemize}
+\end{itemize}
 
 \vspace*{10px}
 \subsection{Recurrence \& Time Complexity (5 pts)}
@@ -283,60 +302,212 @@ Justification:
 \begin{itemize}
   \item \textbf{Objective}: Look for the longest common sequence
     using divide and conquer 
-  \item  test
+\end{itemize}
+
+function \textbf{commonSequence}(string s1, string s2)
+\begin{itemize}
+  \item \textbf{if} (s1.length() == 0 \textbf{OR} s2.length() == 0) \textbf{return} "";
+  \item minLength = min(s1.length(), s2.length());
+  \item result = ""
+  \item \textbf{for} i = 0 to minLength-1
+    \begin{itemize}
+      \item \textbf{if} (s1[i] == s2[i]): result += s1[i];
+      \item else \textbf{break};
+    \end{itemize}
+  \item return result
+\end{itemize}
+
+function \textbf{longestCommonSequence}(string s1, string s2, int low, int high)
+\begin{itemize}
+  \item if low == high \textbf{return} s1[low]; $//$ base case
+  \item mid = (low + high) / 2;
+  \item left = \textbf{longestCommonSequence}(s1, s2, low, mid);
+  \item right = \textbf{longestCommonSequence}(s1, s2, mid+1, high);
+
+  \item $//$ Merging step of the common prefixes
+  \item \textbf{return} \textbf{commonSequence}(left, right);
 \end{itemize}
 
 \vspace*{10px}
 \subsection{Recurrence \& Time Complexity (5 pts)}
+\begin{itemize}
+  \item The recurrence relation for this 
+    algorithm is $T(n) = 2T(\frac{n}{2}) + O(m)$
+    \begin{itemize}
+      \item The algorithm is called twice within the code
+      \item The array is split in half for each call
+      \item Making the branches 2T($\frac{n}{2}$), which would lead
+        to $n^{\log_{2} 2}$ = n$^{1}$ = n
+      \item The merge step is $\Theta(m)$, meaning the leaves would be $\Theta(m)$
+      \item Combining the two we get the time complexity of $\Theta(n \cdot m)$
+    \end{itemize}
+\end{itemize}
 
 \newpage
 \section{Modified Merge Sort (20 pts)}
-\begin{itemize}
-  \item Base case: Array fewer than 4 elements, then sort, and return
-  \item Recursive step: For arrays with more than 4 elements.
-\end{itemize}
-
-\begin{algorithm}[H]
-  \caption{Modified Merge Sort}
-  \KwIn{Array A of size n}
-  \KwOut{Sorted array A}
-  \If {n $<$ 4} {%
-    Sort(A)\;
-    \Return\;
-  }
-  mid = n / 2\;
-  B = A[0..mid-1]\;
-  C = A[mid..n-1]\;
-  ModifiedMergeSort(B)\;
-  ModifiedMergeSort(C)\;
-  Merge(B, C, A)\;
-  
-\end{\begin{algorithm}[H]
-  \caption{Modified Merge Sort}
-  \KwIn{Array A of size n}
-  \KwOut{Sorted array A}
-  \If {n $<$ 4} {%
-    Sort(A)\;
-    \Return\;
-  }
-  mid = n / 2\;
-  B = A[0..mid-1]\;
-  C = A[mid..n-1]\;
-  ModifiedMergeSort(B)\;
-  ModifiedMergeSort(C)\;
-  Merge(B, C, A)\;}
 
 \vspace*{10px}
 \subsection{Recurrence Relation (10 pts)}
+\begin{itemize}
+  \item The recurrence relation for 
+    this algorithm is $T(n) = 4T(\frac{n}{4}) + \Theta(n)$
+    \begin{itemize}
+      \item We call the algorithm 4 times with $\frac{n}{4}$ elements
+      \item The $\Theta(n)$ comes from the merge step
+      \item Each merge step is $\Theta(n)$
+      \item Typical merge sort would have $T(n) = 2T(\frac{n}{2}) + \Theta(n)$
+      \item Although this algorithm has 4 recursive calls,
+        the merge step is the same
+    \end{itemize}
+\end{itemize}
 
 \vspace*{10px}
 \subsection{Solve the Recurrence (10 pts)}
 
+\begin{itemize}
+  \item Using master's theorem, we can solve the recurrence
+  \item For the recurrence $T(n) = aT(\frac{n}{b}) + f(n)$ \Rightarrow $T(n) = 4T(\frac{n}{4}) + \Theta(n)$
+  \item a = 4, b = 4, f(n) = n
+  \item $n^{\log_{4} 4}$ = $n^{1}$ = n
+  \item Since $f(n) = \Theta(n)$, we can conclude that
+    the time complexity of this algorithm is $\Theta(n \log n)$
+\end{itemize}
+
 \vspace*{10px}
 \subsection{Compare (5 pts)}
+\begin{itemize}
+  \item The time complexity of the ModifiedMergeSort is $\Theta(n \log n)$
+  \item The time complexity of the MergeSort is $\Theta(n \log n)$
+  \item Both algorithms have the same time complexity
+  \item The difference between the two algorithms is the number of recursive calls.
+    Which is offset since they make an equal amount of splits as they do calls.
+  \item When you have the same amount of splits as calls, the time complexity is the same
+\end{itemize}
 
 \newpage
 \section{Molecular Matching (15 points)}
+Micheal runs a drug discovery start-up, he hopes to one day make a breakthrough. Ziyang has a 
+machine learning model that represents all possible molecules in a 2D coordinate system.
+Micheal figures that if he tries two molecules very close in the coordinate space, he'll waste time.
+He wants to find teh closest two moledcules and remove one of them.
+
+Formally given a set of points {$P_1, P_2, ... , P_n$} where each point is a 2D coordinate,
+is represented by $P_i = (x_i, y_i)$.
+
+\begin{equation*}
+  d(P_i, P_j) = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2}
+\end{equation*}
+
+Write an algorithm to return Euclidean distances between the two closest points in your data set.
+\begin{itemize}
+  \item Must be $O(n \log n)$
+  \item Assume no two points have the exact same coordinates
+\end{itemize}
+
+\begin{itemize}
+  \item \textbf{Algorithm}:
+    \begin{itemize}
+      \item \textbf{Objective}: Find the closest two points in the data set
+      \item \textbf{Input}: Set of points {$P_1, P_2, ... , P_n$}
+      \item \textbf{Output}: Euclidean distance between the two closest points
+      \item \textbf{Method}:
+        \begin{itemize}
+          \item Sort the points by their x-coordinate
+          \item Divide the points into two halves
+          \item Recursively find the smallest distances in each half
+          \item Find the smallest distance between the two halves
+          \item Return the smallest distance
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+  \item \textbf{Recurrence Relation}:
+    \begin{itemize}
+      \item $T(n) = 2T(\frac{n}{2}) + \Theta(n \log n)$
+      \item The $\Theta(n \log n)$ comes from the merge step
+      \item The merge step is $\Theta(n \log n)$
+      \item The algorithm is called twice with $\frac{n}{2}$ elements
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+  \item \textbf{Solve the Recurrence}:
+    \begin{itemize}
+      \item Using master's theorem, we can solve the recurrence
+      \item For the recurrence $T(n) = aT(\frac{n}{b}) + f(n)$ \Rightarrow $T(n) = 2T(\frac{n}{2}) + \Theta(n \log n)$
+      \item a = 2, b = 2, f(n) = n
+      \item $n^{\log_{2} 2}$ = $n^{1}$ = n
+      \item Since $f(n) = \Theta(n)$, we can conclude that
+        the time complexity of this algorithm is $\Theta(n \log n)$
+    \end{itemize}
+  \item \textbf{euclideanDistance}(Point p1,Point p2 )
+    \begin{itemize}
+      \item \textbf{return} sqrt( (p1.x - p2.x)**2 + (p1.y - p2.y)**2 )
+    \end{itemize}
+\end{itemize}
+
+\pagebreak
+
+\begin{itemize}
+  \item \textbf{ClosestPoints} (Points P[][], int n)
+    \begin{itemize}
+      \item sort(P, n) $//$ Sort points by x-coordinate
+      \item \textbf{return} ClosestPointsRec(P, 0 ,n) $//$ Holds points, start, and end
+    \end{itemize}
+  \item $//$ Function to find the smallest distance in the strip area
+  \item \textbf{stripClose}(strip, dist)
+    \begin{itemize}
+      \item minDist = dist
+      \item sort(strip, strip.size())
+      \item \textbf{for} i = 0 to strip.size()
+        \begin{itemize}
+          \item \textbf{for} j = i+1 to strip.size() \textbf{AND} (strip[j].y - strip[i].y) $<$ min
+        \begin{itemize}
+          \item minDist = min(dist, euclideanDistance(strip[i], strip[j]))
+        \end{itemize}
+        \end{itemize}
+      \item \textbf{return} minDist
+    \end{itemize}
+
+  \item $//$ NOTE: Brute force method is only ever used when the data set is small
+  \item \textbf{bruteForce}(Points P[], int start, int end)
+    \begin{itemize}
+      \item min = $\infty$
+      \item \textbf{for} i = start to end
+        \begin{itemize}
+          \item \textbf{for} j = i+1 to end
+            \begin{itemize}
+              \item min = min(min, euclideanDistance(P[i], P[j]))
+            \end{itemize}
+        \end{itemize}
+      \item \textbf{return} min
+    \end{itemize}
+
+  \item $//$ Recursive function to find the smallest distance
+  \item \textbf{ClosestPointsRec} (Points P[], int start, int end)
+    \begin{itemize}
+      \item \textbf{if} ((end - start) $\leq$ 3) \textbf{return} bruteForce(P, start, end)
+      \item mid = (start + (start - end)) /  2
+      \item Point midPoint = P[mid]
+      \item double distLeft = ClosestPointsRec(P, left, mid)
+      \item double distRight = ClosestPointsRec(P, mid + 1, end)
+      \item double dist = min(distLeft, distRight)
+
+      \item $//$ Find the smallest distance between the two halves.
+        Declare this new array.
+      \item Point strip[]
+
+      \item \textbf{for} i = start to end 
+        \begin{itemize}
+          \item \textbf{if} (abs(P[i].x - midPoint.x) < d)
+            \begin{itemize}
+              \item strip.pushBack(P[i])
+            \end{itemize}
+        \end{itemize}
+      \item \textbf{return} min(dist, stripClose(strip, j, dist))
+    \end{itemize}
+\end{itemize}
 
 
 \end{document}

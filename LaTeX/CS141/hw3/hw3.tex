@@ -84,7 +84,6 @@ Given two strings A and B, of length $m$ and $n$, we can defined the distance be
 \Fn{\FMain{$A$, $B$}}{
     Let \( m \) be the length of \( A \) \;
     Let \( n \) be the length of \( B \) \;
-    Create a 2D array \( dp \) of size \( (m+1) \times (n+1) \) \;
     Create a 2D array \( dp \) of size \( [m+1] [n+1] \) \;
 
 
@@ -115,6 +114,19 @@ Given two strings A and B, of length $m$ and $n$, we can defined the distance be
 }
 \end{algorithm}
 
+\begin{itemize}
+  \item The size of the dynamic programming table is \( (m+1) \times (n+1) \).
+  \item The dimensionality of the table would be 2D
+  \item Recurrence Relationship:
+\end{itemize}
+
+\begin{math}
+  f(n) = \begin{cases}
+    0 & \text{if } n = 0 \\
+    1 & \text{if } n = 1 \\
+    f(n-1) + f(n-2) & \text{if } n > 1
+  \end{cases}
+\end{math}
 
 
 \newpage
@@ -130,6 +142,90 @@ Design a \textbf{recursive version} of dynamic programming algorithm (top-down) 
     \end{enumerate}
 
 \end{enumerate}
+
+\begin{algorithm}[H]
+\caption{Matrix Chain Order}
+\KwIn{A matrix chain of length \( m \)}
+\KwOut{The minimum number of operations to multiply the matrix chain}
+
+\SetKwFunction{FMain}{MatrixChainOrder}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FMain{$p$}}{
+  \Comment {Let $p$ be the array of dimensions of the matrices}
+
+    $n$ = length of $p - 1$ \;
+    Let $m$[1..n,1,..n] and $s$[1..n-1,2..n-1] be new tables \;
+
+    \For{$i = 1$ \textbf{to} $n$}{
+        \( m[i][i] = 0 \) \;
+    }
+    \For{$l = 2$ \textbf{to} $n$}{
+      \For{$i = 1$ \textbf{to} $n - l + 1$}{
+        $j = i + l - 1$ \;
+        $m[i][j] = \infty$ \;
+        \For{$k = i$ \textbf{to} $j - 1$}{
+          $q = m[i][k] + m[k+1][j] + p_{i-1} * p_{k} * p_{j}$ \;
+          \If{$q < m[i][j]$}{
+            \Comment $m$ is the minimum number of operations to multiply the matrix chain
+
+            $m[i][j] = q$ \;
+            \Comment $s$ is the matrix output
+
+            $s[i][j] = k$ \;
+          }
+        }
+      }
+    }
+    \Return{$m$ and $s$} \;
+}
+\end{algorithm}
+
+
+\pagebreak
+\begin{enumerate}
+  \item Three matrices (A, B, and C) with dimensions 
+    $10 \times 50 \times 5 \times 100$, respectively.
+    \begin{itemize}
+      \item $p = [10, 50, 5, 100]$
+      \item $n = 3$
+      \item $m$ =
+        $\begin{Bmatrix}
+          0 & 2500 & 7500 \\
+          0 & 0 & 25000 \\
+          0 & 0 & 0 \\
+        \end{Bmatrix}$
+      \item $s$ =
+        $\begin{Bmatrix}
+          0 & 1 & 1 \\
+          0 & 0 & 2 \\
+          0 & 0 & 0 \\
+        \end{Bmatrix}$
+    \end{itemize}
+  \item Four matrices (A, B, C, and D) with dimensions
+    $20 \times 5 \times 10 \times 30 \times 10$, respectively.
+    \begin{itemize}
+      \item $p = [20, 5, 10, 30, 10]$
+      \item $n = 4$
+      \item $m$ =
+        $\begin{Bmatrix}
+          0 & 1000 & 2500 & 4500 \\
+          0 & 0 & 1500 & 3500 \\
+          0 & 0 & 0 & 3000 \\
+          0 & 0 & 0 & 0
+        \end{Bmatrix}$
+
+      \item $s$ =
+        $\begin{Bmatrix}
+          0 & 1 & 2 & 3 \\
+          0 & 0 & 2 & 3 \\
+          0 & 0 & 0 & 3 \\
+          0 & 0 & 0 & 0
+        \end{Bmatrix}$
+
+    \end{itemize}
+\end{enumerate}
+
+\pagebreak
 
 \section{The Largest Square Block. (20 points)}
 Let A be a $n$ x $m$ matrix of 0's and 1's. \textbf{Design a dynamic programming \textit{O(nm)} time algorithm} for finding the largest square block of A that contains 1's only. When designing the dynamic programming algorithm, please describe the size and dimensionality of the dynamic programming table, and explicitly formulate the recurrence relationship. 

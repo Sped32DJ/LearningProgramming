@@ -494,7 +494,62 @@ For instance, if A = \{4, 5, 17, 23, 11, 2\} and T = 35 the algorithm should ret
 
 When designing the dynamic programming algorithm, please describe the size and dimensionality of the dynamic programming table, and explicitly formulate the recurrence relationship. 
 
+\begin{algorithm}[H]
+\caption{Subset Sum}
+\KwIn{Array A and integer T}
+\KwOut{boolean whether or not there exists a subset of A whose total sum is exactly T}
 
+\SetKwFunction{FMain}{SubsetSum}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FMain{$A, T$}}{
+  Let $dp$ be the matrix
+
+  $n$ = length of $A$
+  
+  $dp$[$n$][$k$] = $False$
+
+  \Comment{Base case; empty subset sums to 0}
+
+  $dp$[0][0] = $True$
+
+  \Comment{backtracking table; initialize with 0s}
+
+  \For{$i = 1$ \textbf{to} $n+1$}{
+    \For{$j = 0$ \textbf{to} $k+1$}{
+      \If{$A[i-1] \leq j$}{
+        $dp$[$i$][$j$] = $dp$[$i-1$][$j$] \textbf{or} $dp$[$i-1$][$j-A[i-1]$]
+      } \Else{
+        $dp$[$i$][$j$] = $dp$[$i-1$][$j$]
+      }
+    }
+  }
+  \Return{$dp[n][T]$}
+}
+\end{algorithm}
+
+\begin{itemize}
+  \item The size of the dynamic programming table is $n \times T$.
+  \item The dimensionality of the table would be 2D
+  \item Recurrence Relationship:
+    $dp$ = $\begin{cases}
+      True & \text{if } i = 0 \text{ and } j = 0\\
+      False & \text{if } i = 0 \text{ and } j > 0 \\
+      dp[i-1][j] \textbf{ or } dp[i-1][j-A[i-1]] & \text{if } i > 0 \text{ and } j > A[i-1] \\
+      dp[i-1][j] & \text{otherwise}
+    \end{cases}$
+  \item The time complexity of the dynamic programming implementation is $O(n \cdot T)$
+    \begin{itemize}
+      \item There are $O$($n \cdot T$) states in the DP table
+      \item $n$ is the number of elements in the array
+      \item $T$ is the target sum
+      \item Each state takes $O(1)$ time to compute
+    \end{itemize}
+  \item The space complexity of the dynamic programming implementation is $O(n \cdot T)$
+    \begin{itemize}
+      \item The space complexity is the same as the time complexity
+      \item The space complexity is the size of the DP table
+    \end{itemize}
+\end{itemize}
 
 \end{document}
 

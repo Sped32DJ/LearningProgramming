@@ -228,10 +228,68 @@ Design a \textbf{recursive version} of dynamic programming algorithm (top-down) 
 \pagebreak
 
 \section{The Largest Square Block. (20 points)}
-Let A be a $n$ x $m$ matrix of 0's and 1's. \textbf{Design a dynamic programming \textit{O(nm)} time algorithm} for finding the largest square block of A that contains 1's only. When designing the dynamic programming algorithm, please describe the size and dimensionality of the dynamic programming table, and explicitly formulate the recurrence relationship. 
+Let A be a $n$ x $m$ matrix of 0's and 1's. 
+\textbf{Design a dynamic programming \textit{O(nm)} time algorithm} for 
+finding the largest square block of A that contains 1's only. 
+When designing the dynamic programming algorithm, please describe the size and dimensionality 
+of the dynamic programming table, and explicitly formulate the recurrence relationship. 
+
 
 \noindent\textbf{Hint:} Define the dynamic programming table l(i, j) be the length of the side of the largest square block of 1's whose bottom right corner is A[i, j].
 
+
+\begin{algorithm}[H]
+\caption{Largest Square Block}
+\KwIn{$A$ be a matrix of 0's and 1's with dimensions $n \times m$}
+\KwOut{The length of the side of the largest square block of 1's}
+
+\SetKwFunction{FMain}{LargestSquareBlock}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FMain{$A$}}{
+  Let $A$ be the matrix of 0's and 1's
+
+  Let $l(i, j)$ be the length of the side of the largest square block of 1's whose bottom right corner is A[i, j]
+
+  \Comment{Let $n$ be the number of rows in $A$}
+
+  $n$ = A.length()
+  \Comment{Let $m$ be the number of columns in $A$}
+
+  $m$ = A[0].length()
+
+  \Comment{Fill DP table}
+
+  \For{$i = 0$ \textbf{to} $n$}{
+    \For{$j = 0$ \textbf{to} $m$}{
+      \If{$A[i][j] = 0$}{
+        $l(i, j) = 0$
+      }
+      \ElseIf{$i = 0$ or $j = 0$}{
+        $l(i, j) = 1$
+      }
+      \Else{
+        \Comment{Recurrence Relationship:}
+
+        $l(i, j) = \min(l(i-1, j), l(i, j-1), l(i-1, j-1)) + 1$
+      }
+    }
+  }
+  \Return{$l(n-1, m-1)$} \;
+
+}
+\end{algorithm}
+
+\begin{itemize}
+  \item The size of the dynamic programming table is $n \times m$.
+  \item The dimensionality of the table would be 2D
+  \item Recurrence Relationship:
+  \item $l(i, j)$ = $\begin{cases}
+    0 & \text{if } A[i, j] = 0 \\
+    \min(l(i-1, j), l(i, j-1), l(i-1, j-1)) + 1 & \text{if } A[i, j] = 1
+  \end{cases}$
+\end{itemize}
+
+\pagebreak
 
 \section{RNG (20 points) }
 
@@ -243,6 +301,57 @@ When designing the dynamic programming algorithm, please describe the size and d
         ...
     \end{cases}
     \]
+
+\begin{algorithm}[H]
+\caption{RNG}
+\KwIn{$n$ enumerated random number generators 
+each with m possible outputs, numbered from 1 to m, and a desired sum $ds$}
+\KwOut{The number of ways our random number generators can reach a desired sum $ds$}
+
+\SetKwFunction{FMain}{RNG}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FMain{$n, m, ds$}}{
+  Let $dp$ be the matrix
+  
+  \Comment{Initialize DP table with 0s}
+
+  \For{$i = 0$ \textbf{to} $n$}{
+    \For{$j = 0$ \textbf{to} $ds$}{
+      $dp$[$i$][$j$] = 0
+    }
+  }
+
+  \Comment{base case; if sum is 0, there is 1 way to achieve it}
+
+  $dp$[0][0] = 1
+
+  \For{$i = 0$ \textbf{to} $n$}{
+    \For{$j = 0$ \textbf{to} $m$}{
+      \For{$k = 0$ \textbf{to} $ds$}{
+        \If{$k \geq j$}{
+          $dp$[$i$][$k$] += $dp$[$i-1$][$k-j$]
+        }
+      }
+    }
+  }
+  \Comment{Return the number of ways to achieve the desired sum}
+
+  \Return{$dp$[$n$][$ds$] \;}
+
+}
+\end{algorithm}
+
+\begin{itemize}
+  \item The size of the dynamic programming table is $n \times ds$.
+  \item The dimensionality of the table would be 2D
+  \item Recurrence Relationship:
+  \item $dp$[$i$][$j$] = 
+    $\begin{cases}
+      1 & \text{if } j = 0 \text{ and } i = 0 \\
+    0 & \text{if } i = 0 \text{ and } j > 0 \\
+    dp$[$i-1$][$j$] + dp$[$i$][$j-1$] & \text{if } i > 0 \text{ and } j > 0
+  \end{cases}$
+\end{itemize}
 
 \newpage
 \section{Auctioning Server Space (20 points)}
@@ -257,7 +366,126 @@ The drug discovery startup is not working out, Michael and Xianghu are starting 
     \item Describe how you could change the algorithm to give the actual divisions to maximize profit
 \end{enumerate}
 
+\begin{algorithm}[H]
+\caption{Auctioning Server Space}
+\KwIn{$n$ units of server space, $k$ servers per rack, and a given array $P[1...n]$}
+\KwOut{Calculate the maximum amount of money Michael and Xianghu will make}
 
+\SetKwFunction{FMain}{MaxProfit}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FMain{$n, k, P $}}{
+  Let $dp$ \textbf{and} parent be the matrix
+  
+  \Comment{Initialize DP table with 0s}
+
+  \For{$i = 0$ \textbf{to} $n+1$}{
+    \For{$j = 0$ \textbf{to} $k+1$}{
+      $dp$[$i$][$j$] = $- \infty$
+    }
+  }
+
+  \Comment{Initialize parent table with 0s; backtracking table}
+
+  \For{$i = 0$ \textbf{to} $n+1$}{
+    \For{$j = 0$ \textbf{to} $k+1$}{
+      $parent$[$i$][$j$] = $0$
+    }
+  }
+
+  \Comment{base case}
+
+  $dp$[0][0] = 0
+
+
+
+  \For{$i = 0$ \textbf{to} $n$}{
+    \For{$j = 0$ \textbf{to} $m$}{
+      maxV = $-\infty$
+
+      maxServer = 0
+      \Comment{s can be from 1 to $(j - i + 1)$}
+
+      \For {$s = 1$ \textbf{to} $(j - i + 1)$}{
+
+        prevJ = $j-s$
+
+        \If{$dp[i-1][prevJ] + P[s] $ > $maxV$ \textbf{and} $prevJ \geq 0$}{
+
+          $maxV$ = $dp[i-1][prevJ] + P[s]$
+
+          $maxServer$ = $s$
+
+          dp[i][j] = $maxV$
+
+          parent[i][j] = $prevJ$
+
+          \Comment{Recurrence Relationship:}
+
+          $maxV$ = max($maxV, dp[i-1][prevJ] + P[s]$)
+        }
+
+        \Comment{Recurrence Relationship:}
+
+        $maxV$ = max($maxV, dp[i-1][j-s] + P[s]$)
+      }
+    }
+  }
+  \Comment{Return the maximun profit}
+
+  \If{$dp$[$n$][$k$] == $-\infty$}{
+    \Return{0}
+  }
+
+  let $servers$ be a matrix holding the servers
+
+  currJ = $n$
+
+  \For{$i = n$ \textbf{to} $1$}{
+    $servers$[$i$] = $currJ - parent$[$i$][$currJ$]
+    $currJ$ = $parent$[$i$][$currJ$]
+  }
+  \Comment{Return the maximun profit and the servers}
+
+  \Return{$dp$[$k$][$n$], servers[] \;}
+
+}
+\end{algorithm}
+
+\pagebreak
+
+\begin{enumerate}
+  \item The alogorithm is provided above
+  \item The time complexity of a brute-force solution that does not use dynamic programming
+    would be\\
+    $O$
+    $\begin{pmatrix}
+      n-1 \\
+      k-1 \end{pmatrix}$
+
+    \begin{itemize}
+      \item This is because all combinations of $k$ servers summing to $n$ must be checked.
+        Which can be calculated using stars and bars formula.
+      \item This would make the time complexity factorial once you break apart the combinations.
+    \end{itemize}
+  \item The time complexity of the dynamic programming implementation is $O(k\cdot n^{2})$
+    \begin{itemize}
+      \item There are $O$($k \cdot n$) states in the DP table
+      \item Each state takes $O(n)$ time to compute
+      \item Then reference to the previous state takes $O(1)$ time
+    \end{itemize}
+  \item Modifying the algorithm to output the necessary divisions to maximize profit,
+    we can add a backtracking table to keep track of the previous state.
+    Allowing us to backtrack from the final state to the initial state
+    that were previously used to maximize profit.
+    \begin{itemize}
+      \item The backtracking table is initialized to 0s.
+      \item The backtracking table is updated in the same loop as the dynamic programming table.
+      \item The backtracking table is used to backtrack from the
+        final state to the initial state to preserve the necessary divisions that will maximize profit.
+    \end{itemize}
+\end{enumerate}
+
+\pagebreak
 \section{Subset Sum (20 points)  }
 Let $A = \left\{a_1 , a_2 ,. . . , a_n \right\}$ and be a set of n positive integer and let \textit{T} be another integer. \textbf{Design a dynamic programming algorithm} that determines whether there exists a \textit{subset of A} whose total sum is \textit{exactly T}. Analyze the time complexity
 of your solution.

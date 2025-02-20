@@ -1,3 +1,0 @@
-/home/danny/projects/LearningProgramming/C/pico2W/blink/_deps/picotool-subbuild/CMakeFiles/picotool-populate.dir
-/home/danny/projects/LearningProgramming/C/pico2W/blink/_deps/picotool-subbuild/CMakeFiles/edit_cache.dir
-/home/danny/projects/LearningProgramming/C/pico2W/blink/_deps/picotool-subbuild/CMakeFiles/rebuild_cache.dir

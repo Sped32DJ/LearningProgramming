@@ -42,6 +42,7 @@ public:
     r[i] = q; // Updates the DP table with the max value
     return q; // Returns the max value
   }
+
   int rodCutBottomUpRef(int price[], int n) {
     int val[n + 1];
     val[0] = 0;

@@ -24,6 +24,14 @@ public:
       return max(LCSNaive(s1, s2, m - 1, n), LCSNaive(s1, s2, m, n - 1));
     }
   }
+
+  // Below is the top down approach with memoization
+  int longestCommonSubsequence(string text1, string text2) {
+    int m = text1.size();
+    int n = text2.size();
+    vector<vector<int>> memo(m + 1, vector<int>(n + 1, -1));
+    return LCS(text1, text2, m, n, memo);
+  }
   int LCS(string s1, string s2, int m, int n, vector<vector<int>> &memo) {
     // Base case; either string empty
     if (m == 0 || n == 0)
@@ -31,17 +39,39 @@ public:
 
     // We already know the answer
     // No need to recalculate
-    if (memo[m][n] > 0)
+    if (memo[m][n] != -1)
       return memo[m][n];
 
     // The last two chars do match!
-    if (s1[m - 1] == s2[n - 1])
-      return 1 + LCS(s1, s2, m - 1, n - 1, memo);
+    if (s1[m - 1] == s2[n - 1]) {
+      memo[m][n] = 1 + LCS(s1, s2, m - 1, n - 1, memo);
+    } else {
 
-    // Last resort, 2 cases
-    // pop last char from string 1
-    // pop last char from string 2
-    return memo[m][n] =
-               max(LCS(s1, s2, m - 1, n, memo), LCS(s1, s2, m, n - 1, memo));
+      // Last resort, 2 cases
+      // pop last char from string 1
+      // pop last char from string 2
+      memo[m][n] =
+          max(LCS(s1, s2, m - 1, n, memo), LCS(s1, s2, m, n - 1, memo));
+    }
+    return memo[m][n];
+  }
+  // Bottom up Approach
+  int LCSBottomUp(string s1, string s2) {
+    int n = s1.size();
+    int m = s2.size();
+    int dp[n + 1][m + 1];
+    memset(dp, 0, sizeof(dp)); // Initialize all values to 0
+
+    for (int i = 1; i <= n; ++i) {
+      for (int j = 1; j <= m; ++j) {
+        if (s1.at(i - 1) == s2.at(j - 1)) {
+          dp[i][j] = dp[i - 1][j - 1] + 1;
+        } else {
+          dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+      }
+    }
+
+    return dp[n][m];
   }
 };

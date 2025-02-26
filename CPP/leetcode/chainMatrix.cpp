@@ -7,6 +7,7 @@ public:
   // This is given
   // i is the first matrix
   // j is the last matrix
+  // TopDown Order arrangement
   int matMultTD(int p[], int i, int j) {
     // base case, there is only one matrix
     if (i >= j)

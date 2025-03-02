@@ -18,11 +18,11 @@ void setup() {
 }
 
 void loop() {
-  handleButtonPress();
-  handleLEDState();
+  Button_Tick();
+  LED_Tick();
 }
 
-void handleButtonPress() {
+void Button_Tick() {
   bool buttonState = digitalRead(buttonPin);
 
   if (buttonState == LOW && lastButtonState == HIGH) {
@@ -35,7 +35,7 @@ void handleButtonPress() {
   lastButtonState = buttonState;
 }
 
-void handleLEDState() {
+void LED_Tick() {
   unsigned long currentMillis = millis();
 
   switch (ledState) {

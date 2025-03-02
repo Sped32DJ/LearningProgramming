@@ -278,7 +278,7 @@ Justification:
         \end{itemize}
       \item Merge(X, low, mid, high);
       \item \textbf{return} count;
-    \end{itemize}
+\end{itemize}
 \end{itemize}
 
 \vspace*{10px}
@@ -366,7 +366,7 @@ function \textbf{longestCommonSequence}(string s1, string s2, int low, int high)
 
 \begin{itemize}
   \item Using master's theorem, we can solve the recurrence
-  \item For the recurrence $T(n) = aT(\frac{n}{b}) + f(n)$ \Rightarrow $T(n) = 4T(\frac{n}{4}) + \Theta(n)$
+  %\item For the recurrence $T(n) = aT(\frac{n}{b}) + f(n)$ \Rightarrow $T(n) = 4T(\frac{n}{4}) + \Theta(n)$
   \item a = 4, b = 4, f(n) = n
   \item $n^{\log_{4} 4}$ = $n^{1}$ = n
   \item Since $f(n) = \Theta(n)$, we can conclude that
@@ -435,7 +435,7 @@ Write an algorithm to return Euclidean distances between the two closest points 
   \item \textbf{Solve the Recurrence}:
     \begin{itemize}
       \item Using master's theorem, we can solve the recurrence
-      \item For the recurrence $T(n) = aT(\frac{n}{b}) + f(n)$ \Rightarrow $T(n) = 2T(\frac{n}{2}) + \Theta(n \log n)$
+  %    \item For the recurrence $T(n) = aT(\frac{n}{b}) + f(n)$ \Rightarrow $T(n) = 2T(\frac{n}{2}) + \Theta(n \log n)$
       \item a = 2, b = 2, f(n) = n
       \item $n^{\log_{2} 2}$ = $n^{1}$ = n
       \item Since $f(n) = \Theta(n)$, we can conclude that

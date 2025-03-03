@@ -195,25 +195,73 @@ Boundary: $DP[i][0] = 0$ and $DP[0][j] = 0$ \\
 \noindent\textbf{Recurrence:} \\
 DP[i][j] = $\min$
 $\begin{cases}
-  % Insertion cheapest, cost 1
-  DP[i-1][j] \\
-  % Remove cheapest, cost 1
-  
-  % Modification cheapest, cost 1
-  
-  % No change, cost 0
+  % Same chartacter, cost 0
+  DP[i-1][j-1] & \text{if } (A[i] == B[j])\\
+  % Either insert or delete
+  %min(DP[i-1][j] + 1, DP[i][j-1] + 1)  & \text{otherwise}
+  DP[i-1][j] + 1 & \text{if } (A[i] \neq B[j])\\ 
+  DP[i][j-1] + 1 & \text{if } (A[i] \neq B[j])\\ 
 \end{cases}$
 
 \noindent\textbf{Time Complexity:} \\
+\begin{itemize}
+  \item Each cell in the table is filled in constant time.
+  \item Given that the algorithm fills an $(n+1) \times (m+1)$ table, 
+    making the time complexity is $O(nm)$.
+\end{itemize}
 
 \newpage
 \section{Part B (10 Points)}
 \noindent\textbf{Recurrence:} \\
+DP[i][j] = $\min$
+$\begin{cases}
+  % Same chartacter, cost 0
+  DP[i-1][j-1] & \text{if } (A[i] == B[j])\\
+  % Deletion
+  DP[i-1][j] + C_D & \text{if } (A[i] \neq B[j])\\
+  % Insertion
+  DP[i][j-1] + C_I & \text{if } (A[i] \neq B[j])\\
+  % Modification
+  DP[i-1][j-1] + C_M & \text{if } (A[i] \neq B[j])
+\end{cases}$
+
 \noindent\textbf{Time Complexity:} \\
+\begin{itemize}
+  \item Each cell in the table is filled in constant time.
+  \item Given that the algorithm fills an $(n+1) \times (m+1)$ table, 
+    making the time complexity is $O(nm)$.
+  \item Despite the added cost of modification, the time complexity remains the same.
+    Since the table is filled in constant time, the time complexity is not affected.
+\end{itemize}
 
 \newpage
 \section{Tipping the Scales (20 points)}
 \noindent\textbf{Algorithm:} \\
+Describe the algorithm here: \\
+\begin{itemize}
+  \item Input: Array B[] size $n$ of balance thresholds and array W[] size $n$ of stone weights.
+  \item Output: Maximum number of balances that can be tipped.
+\end{itemize}
+
+\begin{enumerate}
+  \item Sort $B[]$ and $W[]$ increasing order
+  \item Init $count$ = 0
+  \item Init $i = 1$ (index for balances), $j = 1$ (index for stones)
+  \item While $i$ \leq $n$ and $j$ \leq $n$ do:
+    \begin{enumerate}
+      \item If $W[j]$ \leq $B[i]$ then:
+        \begin{enumerate}
+          \item Assign $j$ to balance $i$
+          \item Increment $i$
+          \item Increment $i$ and $j$
+        \end{enumerate}
+        Else:
+        \begin{enumerate}
+          \item Increment $j$ // Stone too light, try next one
+        \end{enumerate}
+    \end{enumerate}
+  \item Return $count$
+\end{enumerate}
 \noindent\textbf{Greedy Choice:} \\
 \noindent\textbf{Optimal Substructure:} \\
 

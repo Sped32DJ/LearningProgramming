@@ -263,7 +263,53 @@ Describe the algorithm here: \\
   \item Return $count$
 \end{enumerate}
 \noindent\textbf{Greedy Choice:} \\
+\begin{itemize}
+  \item Why this choice is the best choice for the subproblem.
+    \begin{itemize}
+      \item Suppose balance $B[i]$ is the one with the smallest threshold.
+      \item Let $w[j]$ be the smallest stone weight 
+        that satisfies $W[j]$ \geq $B[i]$.
+        % TODO: Go through this again
+      \item If an optimal solution used a heavier stone $W[k]$ (with $k>j$) to to tip
+        $B[i]$, then $W[j]$ (which is lighter but still satisfies the threshold)
+        would be available.
+    \end{itemize}
+  \item Argument:
+    \begin{itemize}
+      \item Given we replace stone $W[k]$ in the optimal solition with $W[j]$
+      \item Since $W[j]$ is lighter ($W[j] \leq W[k]$), and still meets
+        the threshold $B[i]$ is still valid. But using lighter stone for $B[i]$
+        may allow for heavier stones to be saved for balacnes with higher requirements.
+    \end{itemize}
+  \item Conclusion:
+    \begin{itemize}
+      \item This shows there is an optimal solution that uses the lightest stone
+        that meets the threshold for each balance.
+    \end{itemize}
+\end{itemize}
 \noindent\textbf{Optimal Substructure:} \\
+Explanation and proof of optimal substructure: \\
+\begin{itemize}
+  \item Decomposition
+    \begin{itemize}
+      \item Once you assign stone $W[j]$ to balance $B[i]$.
+        The remining subproblem is to assing the remaining stones to the remaining balances.
+    \end{itemize}
+  \item Inductive Argument:
+    \begin{itemize}
+      \item Suppose the optimal solution is to assign stone $W[j]$ to balance $B[i]$.
+      \item By making greedy assignment for balance $B[i]$, that impluies
+        the exitance of an optimal solution for the remaining $n-1$ balances and stones; the sub-problem.
+      \item If not, we can assume a better solution for the remaining subproblem.
+      \item Combining the greedy solution for balance $B[i]$ with the optimal solution for the remaining subproblem
+        gives a better solution than the original "optimal" solution, causing a contradiction.
+    \end{itemize}
+  \item Conclusion:
+    \begin{itemize}
+      \item The optimal solution for the problem can be built from the optimal solution of the subproblems.
+        Furter proving the problem contains an optimal substructure.
+    \end{itemize}
+\end{itemize}
 
 \newpage
 \section{High Throughput (20 points)}

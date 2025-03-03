@@ -82,7 +82,7 @@ Boundary: $DP[i][0] = 0$ and $DP[0][j] = 0$ \\
   \item Given budget $j$, the maximum value that can be obtained by including the first $i$ items.
 \end{itemize}
 \noindent\textbf{Dimensions:} \\
-The dimensionality of $DP[i][j]$ is 2 dimensional.
+The dimensionality of $DP[i][j]$ is 2-dimensional.
 \begin{enumerate}
   \item The first dimension $i$ represents the number of items that can be included in the knapsack.
   \item The second dimension $j$ represents the weight of the knapsack.
@@ -206,8 +206,9 @@ $\begin{cases}
 \noindent\textbf{Time Complexity:} \\
 \begin{itemize}
   \item Each cell in the table is filled in constant time.
-  \item Given that the algorithm fills an $(n+1) \times (m+1)$ table, 
+  \item Given that the algorithm fills a $(n+1) \times (m+1)$ table, 
     making the time complexity is $O(nm)$.
+
 \end{itemize}
 
 \newpage
@@ -228,7 +229,7 @@ $\begin{cases}
 \noindent\textbf{Time Complexity:} \\
 \begin{itemize}
   \item Each cell in the table is filled in constant time.
-  \item Given that the algorithm fills an $(n+1) \times (m+1)$ table, 
+  \item Given that the algorithm fills a $(n+1) \times (m+1)$ table, 
     making the time complexity is $O(nm)$.
   \item Despite the added cost of modification, the time complexity remains the same.
     Since the table is filled in constant time, the time complexity is not affected.
@@ -264,22 +265,22 @@ Describe the algorithm here: \\
 \end{enumerate}
 \noindent\textbf{Greedy Choice:} \\
 \begin{itemize}
-  \item Why this choice is the best choice for the subproblem.
+  \item Why this choice is the best choice for the sub-problem.
     \begin{itemize}
       \item Suppose balance $B[i]$ is the one with the smallest threshold.
       \item Let $w[j]$ be the smallest stone weight 
         that satisfies $W[j]$ \geq $B[i]$.
         % TODO: Go through this again
-      \item If an optimal solution used a heavier stone $W[k]$ (with $k>j$) to to tip
+      \item If an optimal solution used a heavier stone $W[k]$ (with $k>j$) to tip
         $B[i]$, then $W[j]$ (which is lighter but still satisfies the threshold)
         would be available.
     \end{itemize}
   \item Argument:
     \begin{itemize}
-      \item Given we replace stone $W[k]$ in the optimal solition with $W[j]$
+      \item Given we replace stone $W[k]$ in the optimal solution with $W[j]$
       \item Since $W[j]$ is lighter ($W[j] \leq W[k]$), and still meets
         the threshold $B[i]$ is still valid. But using lighter stone for $B[i]$
-        may allow for heavier stones to be saved for balacnes with higher requirements.
+        may allow for heavier stones to be saved for balances with higher requirements.
     \end{itemize}
   \item Conclusion:
     \begin{itemize}
@@ -287,33 +288,47 @@ Describe the algorithm here: \\
         that meets the threshold for each balance.
     \end{itemize}
 \end{itemize}
+
+\pagebreak
 \noindent\textbf{Optimal Substructure:} \\
 Explanation and proof of optimal substructure: \\
 \begin{itemize}
   \item Decomposition
     \begin{itemize}
       \item Once you assign stone $W[j]$ to balance $B[i]$.
-        The remining subproblem is to assing the remaining stones to the remaining balances.
+        The remaining sub-problem is to assign the remaining stones to the remaining balances.
     \end{itemize}
   \item Inductive Argument:
     \begin{itemize}
       \item Suppose the optimal solution is to assign stone $W[j]$ to balance $B[i]$.
-      \item By making greedy assignment for balance $B[i]$, that impluies
-        the exitance of an optimal solution for the remaining $n-1$ balances and stones; the sub-problem.
-      \item If not, we can assume a better solution for the remaining subproblem.
-      \item Combining the greedy solution for balance $B[i]$ with the optimal solution for the remaining subproblem
+      \item By making greedy assignment for balance $B[i]$, that implies
+        the existance of an optimal solution for the remaining $n-1$ balances and stones; the sub-problem.
+      \item If not, we can assume a better solution for the remaining sub-problem.
+      \item Combining the greedy solution for balance $B[i]$ with the optimal solution for the remaining sub-problem
         gives a better solution than the original "optimal" solution, causing a contradiction.
     \end{itemize}
   \item Conclusion:
     \begin{itemize}
-      \item The optimal solution for the problem can be built from the optimal solution of the subproblems.
-        Furter proving the problem contains an optimal substructure.
+      \item The optimal solution for the problem can be built from the optimal solution of the sub-problems.
+        Further proving the problem contains an optimal substructure.
     \end{itemize}
 \end{itemize}
 
 \newpage
 \section{High Throughput (20 points)}
 \noindent\textbf{Algorithm:} \\
+\begin{enumerate}
+  \item Provide greedy Algorithm that runs in $O(nlogn)$ time and minimizes total queue times
+    \begin{itemize}
+      \item Sort the tasks t[] of length n. $O(nlogn)$
+      \item Then operate each tasks from 1 to n. $O(n)$
+    \end{itemize}
+  \item Provide correctness by showing greedy choice and optimal substructure properties.
+    \begin{itemize}
+      \item The greedy algorithm is correct
+    \end{itemize}
+\end{enumerate}
+
 \noindent\textbf{Greedy Choice:} \\
 \noindent\textbf{Optimal Substructure:} \\
 

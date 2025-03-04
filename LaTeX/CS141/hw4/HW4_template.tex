@@ -120,7 +120,7 @@ The dimensionality of $DP[i][j]$ is 2-dimensional.
 }
 \end{algorithm}
 
-\newpage
+\pagebreak
 \subsection{Part B (10 Points)}
 New problem statement, instead of being limited to 0 or 1 item, now we can have 0, 1, or 2 of the item.
 We want to have the maximum value of the items without exceeding the weight limit of the Knapsack.\\
@@ -211,8 +211,7 @@ $\begin{cases}
 
 \end{itemize}
 
-\newpage
-\section{Part B (10 Points)}
+\subsection{Part B (10 Points)}
 \noindent\textbf{Recurrence:} \\
 DP[i][j] = $\min$
 $\begin{cases}
@@ -317,25 +316,39 @@ Explanation and proof of optimal substructure: \\
 \newpage
 \section{High Throughput (20 points)}
 \noindent\textbf{Algorithm:} \\
-\begin{enumerate}
-  \item Provide greedy Algorithm that runs in $O(nlogn)$ time and minimizes total queue times
-    \begin{itemize}
-      \item Sort the tasks t[] of length n. $O(nlogn)$
-      \item Then operate each tasks from 1 to n. $O(n)$
-    \end{itemize}
-  \item Provide correctness by showing greedy choice and optimal substructure properties.
-    \begin{itemize}
-      \item Given you complete the tasks in $t[i]$, i = 0 to n, the rate at which you complete classes
-        decreases
-      \item Given you complete the tasks in $t[i]$, i = n to 0, the rate at which you complete classes
-        increases
-      \item Both are equally optimal solutions since they take identical time.
-        They are performing n tasks all with a expected $t[i]$ for any value given of i.
-    \end{itemize}
-\end{enumerate}
+   Provide greedy Algorithm that runs in $O(nlogn)$ time and minimizes total queue times
+    \begin{enumerate}
+      \item Sort the tasks t[] of length n.  // $O(nlogn)$
+      \item Init $T_{sum} = 0$
+      \item In a for loop $t[i]$ i = 1 to $n$ do: // $O(n)$
+        $T_{sum} += t[i]$ \\
+      \item \textbf{return} $T_{sum}$
+    \end{enumerate}
 
 \noindent\textbf{Greedy Choice:} \\
+
+  Provide correctness by showing greedy choice and optimal substructure properties.
+    \begin{itemize}
+      \item \textbf{Claim:} In an optimal solution, the task with the shortest time should be scheduled first.
+      \item \textbf{Proof:} Suppose there exists an optimal solution where the task with the shortest time is not scheduled first.
+        Lets assume $t[i]$ is the task with the shortest time that is not scheduled first.
+        \begin{itemize}
+          \item $t[j]$ contributes its full runtime to waiting for every task that is scheduled before it, including $t[i]$.
+          \item If we schedule $t[i]$ first, every task that occurs after $t[i]$ 
+            will have to wait for $t[i]$ to finish rather than $t[j]$.
+          \item This would reduce the wait time for all the following task by $t[j] - t[i]$.
+          \item Given that the wait time for tasks is reduced, the total wait time is minimized. Making this an optimal solution and better
+            than the original solution.
+        \end{itemize}
+    \end{itemize}
+
 \noindent\textbf{Optimal Substructure:} \\
+\begin{itemize}
+  \item \textbf{Claim:} After the greedy choice, the remaining sub-problem is the 
+    same problem that will result in an optimal soluition given we use the the same greedy choice on the sub-problem.
+  \item \textbf{Proof:} Once we schedule the shortest tasks, from the sub-problem of remaining tasks.
+    We would grab the next shortest tasks to schedule it at after the previous shortest task and so on.
+\end{itemize}
 
 \newpage
 \section{Task Scheduling (20 points)}

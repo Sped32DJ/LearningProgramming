@@ -325,7 +325,12 @@ Explanation and proof of optimal substructure: \\
     \end{itemize}
   \item Provide correctness by showing greedy choice and optimal substructure properties.
     \begin{itemize}
-      \item The greedy algorithm is correct
+      \item Given you complete the tasks in $t[i]$, i = 0 to n, the rate at which you complete classes
+        decreases
+      \item Given you complete the tasks in $t[i]$, i = n to 0, the rate at which you complete classes
+        increases
+      \item Both are equally optimal solutions since they take identical time.
+        They are performing n tasks all with a expected $t[i]$ for any value given of i.
     \end{itemize}
 \end{enumerate}
 

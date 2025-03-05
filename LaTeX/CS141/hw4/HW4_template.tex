@@ -345,13 +345,19 @@ Explanation and proof of optimal substructure: \\
 \noindent\textbf{Optimal Substructure:} \\
 \begin{itemize}
   \item \textbf{Claim:} After the greedy choice, the remaining sub-problem is the 
-    same problem that will result in an optimal soluition given we use the the same greedy choice on the sub-problem.
+    same problem that will result in an optimal solution given we use the same greedy choice on the sub-problem.
   \item \textbf{Proof:} Once we schedule the shortest tasks, from the sub-problem of remaining tasks.
     We would grab the next shortest tasks to schedule it at after the previous shortest task and so on.
 \end{itemize}
 
 \newpage
 \section{Task Scheduling (20 points)}
+\begin{enumerate}
+  \item The number of overlaps for each task
+  \item Sorting the tasks in increasing number of overlaps, then breaking the ties arbitrarily.
+  \item Pick task $i$ with the smallest number of overlaps, schedule it, then remove it. Also remove tasks that conflict with task $i$.
+  \item Repeat step 3 until no task remains
+\end{enumerate}
 
 
 \end{document}

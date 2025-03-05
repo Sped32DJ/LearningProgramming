@@ -320,8 +320,8 @@ Explanation and proof of optimal substructure: \\
     \begin{enumerate}
       \item Sort the tasks t[] of length n.  // $O(nlogn)$
       \item Init $T_{sum} = 0$
-      \item In a for loop $t[i]$ i = 1 to $n$ do: // $O(n)$
-        $T_{sum} += t[i]$ \\
+      \item In a for loop $t[i]$ i = 1 to $n$ do: // $O(n)$ \\
+        $T_{sum} += t[i]$
       \item \textbf{return} $T_{sum}$
     \end{enumerate}
 
@@ -352,6 +352,7 @@ Explanation and proof of optimal substructure: \\
 
 \newpage
 \section{Task Scheduling (20 points)}
+\textbf{Algorithm:} \\
 \begin{enumerate}
   \item The number of overlaps for each task
   \item Sorting the tasks in increasing number of overlaps, then breaking the ties arbitrarily.
@@ -359,6 +360,78 @@ Explanation and proof of optimal substructure: \\
   \item Repeat step 3 until no task remains
 \end{enumerate}
 
+\textbf{Claim:}
+\begin{itemize}
+  \item The greedy choice of taking the minimun-overlap is not optimal.
+  \item We are only computing the number of overlaps once, and not updating the number of overlaps after each task is scheduled.
+  \item It does not really take into account the number of overlaps that are removed after each task is scheduled.
+%  \item Neither does it consider the "cost" of choosing an interval when it comes to building a conflict-free schedule.
+\end{itemize}
+
+\textbf{Proof by counter example:}
+
+\begin{tikzpicture}[xscale=1.5, yscale=1.0]
+
+  % Draw horizontal time axis
+  \draw[->] (0,0) -- (6,0) node[right] {Time};
+  \foreach \x in {1,1.5,2,2.5,3,3.5,4,4.5,5}
+    \draw (\x,0) -- (\x,-0.2) node[below] {\x};
+
+  % Draw intervals on separate horizontal levels:
+  % A: [1, 1.5] at y=1, overlap count 2
+  \draw[thick, blue] (1,1) -- (1.5,1) node[midway, above] {A};
+  \node at (1.75,1) {2};
+
+  % B: [1, 2] at y=2, overlap count 3
+  \draw[thick, red] (1,2) -- (2,2) node[midway, above] {B};
+  \node at (2.25,2) {3};
+
+  % C: [2, 3] at y=3, overlap count 4
+  \draw[thick, green!70!black] (2,3) -- (3,3) node[midway, above] {C};
+  \node at (3.25,3) {4};
+
+  % D: [3, 4] at y=4, overlap count 3
+  \draw[thick, purple] (3,4) -- (4,4) node[midway, above] {D};
+  \node at (4.25,4) {3};
+
+  % J: [3.5, 4.5] at y=4.5, overlap count 3
+  \draw[thick, violet] (3.5,4.5) -- (4.5,4.5) node[midway, above] {J};
+  \node at (4.75,4.5) {3};
+
+  % E: [4, 5] at y=5, overlap count 2
+  \draw[thick, orange] (4,5) -- (5,5) node[midway, above] {E};
+  \node at (5.25,5) {2};
+
+  % F: [1, 4.5] at y=6, overlap count 8
+  \draw[thick, black] (1,6) -- (4.5,6) node[midway, above] {F};
+  \node at (4.75,6) {8};
+
+  % G: [1.5, 2.5] at y=7, overlap count 4
+  \draw[thick, cyan] (1.5,7) -- (2.5,7) node[midway, above] {G};
+  \node at (2.75,7) {4};
+
+  % H: [2.5, 3.5] at y=8, overlap count 3
+  \draw[thick, magenta] (2.5,8) -- (3.5,8) node[midway, above] {H};
+  \node at (3.75,8) {3};
+
+  % I: [2, 3.5] at y=9, overlap count 4
+  \draw[thick, brown] (2,9) -- (3.5,9) node[midway, above] {I};
+  \node at (3.75,9) {4};
+
+\end{tikzpicture}
+
+\begin{itemize}
+  \item (The number represents the amount of conflicts; Like A would have 2 conflicts)
+  \item Given that D, J, H all have the same amount of conflicts. That means it can chose any of these decisions arbitrarily.
+  \item The optimal solution would include C,D,E. But the issue is that C has a conflict counter of 4 and will not be added
+    onto the solution until after this decision is made.
+  \item Since the conflicts are not updated after each task is scheduled, the greedy algorithm could choose H or D.
+    Arbitrarily, choosing H would mean we can't have the optimal solution of C,D,E. 
+    Instead we would have H, then E. Since H overlaps D and C, but D and C don't 
+    overlap each other (making C then D part of the optimal solution).
+  \item Non optimal solutions with a low conflict counter will be chosen over the 
+    optimal solutions that include tasks with higher conflict counters.
+\end{itemize}
 
 \end{document}
 

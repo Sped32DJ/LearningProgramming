@@ -124,11 +124,16 @@ Since both the greedy choice and optimal substructure properties hold, the Rever
       \item It finds a solution with minimal pours.
       \item It can also conclude that no solution exists since it exhaustively traverses the entire state space.
     \end{itemize}
-    \item This problem does have a solution, there are two approaches by doing a single pour: \\ 
+    \item This problem does have a solution
       \begin{enumerate}
-      \item You transfer two weights from $B$ to $A$, resulting in $B$ = 2/4 and $A$ = 2/10.
-      \item You transfer five weights from $C$ to $A$, resulting in $C$ = 2/7 and  $A$ = 5/10.
-      \item More approaches exist, but these are the two most optimal solutions (if the number of pours is a concern).
+        \item We begin with the initial state of ($A,B,C$) = (0/10,4/4,7/7).
+        \item Pour from $C$ to $A$ to get (7/10,4/4,0/7).
+        \item Pour from $B$ to $C$ to get (7/10,0/4,4/7).
+        \item Pour from $C$ to $A$ to get (10/10,0/4,1/7).
+        \item Pour from $A$ to $B$ to get (6/10,4/4,1/7).
+        \item Pour from $B$ to $C$ to get (6/10,0/4,5/7). % 6
+        \item Pour from $A$ to $B$ to get (2/10,4/4,5/7).
+        \item Pour from $B$ to $C$ to get (2/10,2/4,7/7).
       \end{enumerate}
 \end{enumerate}
 

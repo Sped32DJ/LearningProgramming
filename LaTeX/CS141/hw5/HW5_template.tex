@@ -230,6 +230,63 @@ for tree={align=center, l sep=20pt, s sep=15pt, edge={->}, parent anchor=south, 
 % Bonus Qs
 \newpage
 \section{Infrastructure (10 point bonus)}
+\begin{algorithm}[H]
+  \textbf{1. Checking Feasibility in Linear Time}\\
+  The route is feasible if every highways (edge) on the route has a length $l_e$ < $L$. 
+  With graph $G$ we can make $G'$ where we remove all edges that do not satisfy the constraint.
+  After removing the edges, we can check if the $s$ (source) and $t$ (target) are connected in $G'$.
+
+  \textbf{Algorithm:}
+  \begin{enumerate}
+    \item Filter Edges:
+      \begin{itemize}
+        \item For every edge $e$ in $E$, remove $e$ if $l_e$ > $L$.
+        \item This step should take O($m$) time. Given m = |E|
+      \end{itemize}
+    \item Check Connectivity:
+      \begin{itemize}
+        \item Using BFS starting from $s$ to see if $t$ is reachable.
+        \item Graph traversal algorithms take O($n$ + $m$) time.
+      \end{itemize}
+    \item Return Result:
+      \begin{itemize}
+        \item If $t$ is reachable from $s$, then the route is feasible.
+        \item Otherwise, the route is not feasible.
+      \end{itemize}
+  \end{enumerate}
+
+  \textbf{2. Finding the Shortest Path}\\
+
+
+\caption{Min Fuel Capacity}
+\KwIn{Graph $G$ = ($V$, $E$) with edge weights $l_e$ and source $s$ and target $t$}
+\KwOut{The minimum fuel capacity $L$ needed to travel from $s$ to $t$}
+
+\SetKwFunction{FMain}{MinFuelCap}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FMain{$n$, $w$}}{
+  \For{Each vertex in $V$}{
+    d(v) = \infty{}\;
+  }
+  d(s) = 0\;
+
+  Let $q$ be an empty priority queue\;
+  Insert $s$ into $q$\;
+
+  \While{$q$ is not empty}{
+    Let $u$ be the vertex with the minimum distance in $q$\;
+    Remove $u$ from $q$\;
+    \For{each vertex $v$ adjacent to $u$}{
+      \If{d(v) > max(d(u), $l_{uv}$)}{
+        d(v) = max(d(u), $l_{uv}$)\;
+        Insert $v$ into $q$\;
+      }
+    }
+  }
+
+  \Return d(t)\;
+}
+\end{algorithm}
 
 \newpage
 \section{Boolean Matrix (10 point bonus)}

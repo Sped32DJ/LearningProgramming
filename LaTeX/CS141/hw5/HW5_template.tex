@@ -173,6 +173,60 @@ for tree={align=center, l sep=20pt, s sep=15pt, edge={->}, parent anchor=south, 
 
 \newpage
 \section{Bipartite Graphs (20 points)}
+
+\begin{algorithm}[H]
+\caption{BFS Bipartite}
+%\KwIn{A list of items $i$ and a budget $j$}
+\KwIn{Graph G = (V,E) represented as an adjacency list}
+\KwOut{(set1,set2) if $G$ is bipartite, otherwise None}
+
+\SetKwFunction{FMain}{BFS Bipartite}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FMain{$n$, $w$}}{
+
+  \Comment{Set 1 holds the nodes with color R, and set 2 holds the nodes with color B}
+
+
+  Let $set1$ and $set2$ be two empty sets\;
+
+  \Comment{The nodes can have three colors: R (red), B (blue), and N (None)}
+
+  Let $s$ be any vertex in $V$\;
+  $s$.color = R\;
+  add $s$ to $set1$\;
+
+  Let q be an empty queue\;
+  q.enqueue($s$)\;
+
+  \Comment{BFS traversal of the graph}
+
+  \While{q is not empty}{
+    Let $u$ be q.dequeue()\;
+    \For{each vertex $v$ adjacent to $u$}{
+      \If{$v$.color == N}{
+        \If{$u$.color == R}{
+          $v$.color = B\;
+          add $v$ to $set2$\;
+        }
+        \Else{
+          $v$.color = R\;
+          add $v$ to $set1$\;
+        }
+        q.enqueue($v$)\;
+      }
+      \ElseIf{$v$.color == $u$.color}{
+        \Comment{If the adjacent nodes have the same color, then the graph is not bipartite}
+        \Return{None}\;
+      }
+    }
+  }
+
+  \Comment{BFS reaches this stage, the graph is bipartite}
+
+  \Return{$(set1, set2)$} \;
+}
+\end{algorithm}
+
 % Bonus Qs
 \newpage
 \section{Infrastructure (10 point bonus)}

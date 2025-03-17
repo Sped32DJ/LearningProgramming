@@ -270,14 +270,13 @@ for tree={align=center, l sep=20pt, s sep=15pt, edge={->}, parent anchor=south, 
   \Comment{BFS reaches this stage, the graph is bipartite}
 
   \Return{$(set1, set2)$} \;
->>>>>>> refs/remotes/origin/main
 }
 \end{algorithm}
 
 % Bonus Qs
 \newpage
 \section{Infrastructure (10 point bonus)}
-\begin{algorithm}[H]
+
   \textbf{1. Checking Feasibility in Linear Time}\\
   The route is feasible if every highways (edge) on the route has a length $l_e$ < $L$. 
   With graph $G$ we can make $G'$ where we remove all edges that do not satisfy the constraint.
@@ -305,6 +304,7 @@ for tree={align=center, l sep=20pt, s sep=15pt, edge={->}, parent anchor=south, 
   \textbf{2. Finding the Shortest Path}\\
 
 
+\begin{algorithm}[H]
 \caption{Min Fuel Capacity}
 \KwIn{Graph $G$ = ($V$, $E$) with edge weights $l_e$ and source $s$ and target $t$}
 \KwOut{The minimum fuel capacity $L$ needed to travel from $s$ to $t$}

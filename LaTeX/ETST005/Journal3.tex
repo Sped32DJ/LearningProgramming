@@ -1,0 +1,106 @@
+\documentclass[12pt]{article}
+
+%
+%Margin - 1 inch on all sides
+%
+\usepackage[letterpaper]{geometry}
+\usepackage{times}
+\usepackage{lmodern}
+\geometry{top=1.0in, bottom=1.0in, left=1.0in, right=1.0in}
+
+%
+%Doublespacing
+%
+\usepackage{setspace}
+\doublespacing
+
+%
+%Rotating tables (e.g. sideways when too long)
+%
+\usepackage{rotating}
+
+
+%
+%Fancy-header package to modify header/page numbering (insert last name)
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{Topete \thepage}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%To make sure we actually have header 0.5in away from top edge
+%12pt is one-sixth of an inch. Subtract this from 0.5in to get headsep value
+\setlength\headsep{0.333in}
+
+%
+%Works cited environment
+%(to start, use \begin{workscited...}, each entry preceded by \bibent)
+% - from Ryan Alcock's MLA style file
+%
+\newcommand{\bibent}{\noindent \hangindent 40pt}
+\newenvironment{workscited}{\newpage \begin{center} Works Cited \end{center}}{\newpage }
+
+
+%
+%Begin document
+%
+\begin{document}
+\begin{flushleft}
+
+%%%%First page name, class, etc
+Danny Topete\\
+Professor Miyake\\
+ETST 005\\
+\today\\
+
+
+%%%%Title
+\begin{center}
+Reading Journal 3
+\end{center}
+
+
+%%%%Changes paragraph indentation to 0.5in
+\setlength{\parindent}{0.5in}
+%%%%Begin body of paper here
+
+For this Journal, I will focus on the week 8 readings with a focus on \textit{Brown} by Nitasha Tamar Sharma
+and the reading \textit{Terrorism} by Rajini Srikanth. These readings highlight the connection between
+the meaning of words and the historical contexts in which they are used.
+In the case of \textit{Brown}, Sharma discusses how the term
+to describe people of color has changed over time, particularly in the context of the United States.
+Then the reading \textit{Terrorism} by Srikanth discusses the term has originated in the French Revolution and how more recently
+
+"Since 9/11, both the Wars on Terror and the Arab Spring have shifted
+yet again the always under-construction lines of "Brown," so that it now
+refers to people from the Middle East and North Africa and more broadly to the religion of Islam...
+Thus, "Brown" as a reference to a people's phenotype, like "Black," is not merely descriptive or U.S. based - it
+is political and global." (Sharma, 19)
+
+
+\newpage
+
+
+%%%%Works cited
+\begin{workscited}
+
+\bibent
+Allen, R.L. \textit{The American Farm Book; or Compend of Ameri can Agriculture; Being a Practical Treatise on Soils, Manures, Draining, Irrigation, Grasses, Grain, Roots, Fruits, Cotton, Tobacco, Sugar Cane, Rice, and Every Staple Product of the United States with the Best Methods of Planting, Cultivating, and Prep aration for Market.} New York: Saxton, 1849. Print.
+
+\bibent
+Baker, Gladys L., Wayne D. Rasmussen, Vivian Wiser, and Jane M. Porter. \textit{Century of Service: The First 100 Years of the United States Department of Agriculture.}[Federal Government], 1996. Print.
+
+\bibent
+Danhof, Clarence H. \textit{Change in Agriculture: The Northern United States, 1820-1870.} Cambridge: Harvard UP, 1969. Print.
+
+
+\end{workscited}
+
+\end{flushleft}
+\end{document}
+\}

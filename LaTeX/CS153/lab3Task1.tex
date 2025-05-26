@@ -1,0 +1,69 @@
+\documentclass{article}
+
+\title{Lab 3 Task 1}
+\date{May 23, 2025}
+\author{Danny Topete\\ CS 153, Prof. Song}
+
+\begin{document}
+\maketitle
+
+\begin{itemize}
+  \item Explain how $walkphdir$ defined in $vm.c$ works.
+    Specifically, what are $PDX$, $PTX$, $PTE\_E$, $PTE\_ADDR$,
+    $PTE\_W$, and $PTE\_U$?
+    \begin{itemize}
+      \item $walkphdir$ is a function that locates the Page Table Entry (PTE)
+        for a given Virtual Address (va) in a given page
+        directory (pgdir).
+        If the relevant page is not found, it allocates the memory for a
+        new page table.
+      \item $PTE\_E$, Checks if the page table is present
+      \item $PDX$, Extracts the page directory index
+      \item $PTX$, extracts the page table index
+      \item $PTE\_P$, Page Table Entry Present, indicates if the page is present in memory
+      \item $PTE\_W$, PTE Writable, indicates if page is writable
+      \item $PTE\_U$, PTE User flag, indicates if page is accessible from user mode
+      \item $PTE\_ADDR$, extracts the physical address of the page table entry
+    \end{itemize}
+
+    \begin{enumerate}
+      \item Find Page Directory Entry,
+
+        \begin{verbatim}
+        pde = &pgdir[PDX(va)];
+        \end{verbatim}
+
+      \item Check if Page Table Exists
+
+        \begin{verbatim}
+if(*pde & PTE_P){
+  pgtab = (pte_t*)P2V(PTE_ADDR(*pde));
+}
+        \end{verbatim}
+
+      \item Allocate a New Page Table if needed
+        \begin{verbatim}
+else {
+  if(!alloc || (pgtab = (pte_t*)kalloc()) == 0)
+    return 0;
+  memset(pgtab, 0, PGSIZE);
+  *pde = V2P(pgtab) | PTE_P | PTE_W | PTE_U;
+}        \end{verbatim}
+
+\item Return the Address of the PTE
+  \begin{verbatim}
+  return &pgtab[PTX(va)];
+  \end{verbatim}
+
+    \end{enumerate}
+
+  \item Reason about $struct kmap$ and $setupkvm$,
+    explain how $P2V$ and $V2P$ work?
+    Specifically, why add and subtract $KERNBASE$ can convert physical address
+    to/from kernel virtual address?
+  \item Based on the above understanding, explain how $uva2ka$ maps user
+    virtual address to kernel address.
+\end{itemize}
+
+\end{document}
+

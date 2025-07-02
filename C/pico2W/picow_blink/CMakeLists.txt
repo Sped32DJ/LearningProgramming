@@ -7,7 +7,7 @@ target_link_libraries(picow_blink
         )
 
 # create map/bin/hex file etc.
-pico_add_extra_outputs(picow_blink)
+#pico_add_extra_outputs(picow_blink)
 
 # add url via pico_set_program_url
 example_auto_set_url(picow_blink)
@@ -27,7 +27,7 @@ target_compile_definitions(picow_blink_slow_clock PRIVATE
         )
 
 # create map/bin/hex file etc.
-pico_add_extra_outputs(picow_blink_slow_clock)
+#pico_add_extra_outputs(picow_blink_slow_clock)
 
 # add url via pico_set_program_url
 example_auto_set_url(picow_blink_slow_clock)
@@ -48,7 +48,7 @@ target_compile_definitions(picow_blink_fast_clock PRIVATE
         )
 
 # create map/bin/hex file etc.
-pico_add_extra_outputs(picow_blink_fast_clock)
+#pico_add_extra_outputs(picow_blink_fast_clock)
 
 # add url via pico_set_program_url
 example_auto_set_url(picow_blink_fast_clock)

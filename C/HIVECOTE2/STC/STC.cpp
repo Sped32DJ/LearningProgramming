@@ -1,5 +1,74 @@
 #include <climits>
+#include <vector>
 using namespace std;
+
+class Shapelet {
+public:
+  int dim;
+  int start;
+  int length;
+  vector<float> values;
+  float gain;
+  Shapelet(int dim, int start, int length, vector<float> values, float gain)
+    : dim(dim), start(start), length(length), values(values), gain(gain) {}
+};
+
+typedef vector<vector<vector<float>>> TimeSeriesData; // 3D vector: [n_instances][n_dims][series_length]
+
+class Dataset{
+public:
+  TimeSeriesData X;
+  vector<int> y;
+  int n_instances;
+  int n_dims;
+  int series_length;
+
+  Dataset(const TimeSeriesData& data, vector<int> labels) : X(data), y(labels) {
+    n_instances = data.size();
+    n_dims = data[0].size();
+    series_length = data[0][0].size();
+  }
+};
+
+class ShapeletTransform {
+public:
+
+  int n_shaplet_samples;
+  int max_shaplets;
+  vector<Shapelet> selected_shapelets;
+
+  ShapeletTransform(int n_shaplet_samples, int max_shaplets)
+    : n_shaplet_samples(n_shaplet_samples), max_shaplets(max_shaplets) {}
+
+  // Placeholder for shapelet extraction logic
+  // This should populate selected_shapelets based on the dataset
+  void fit(const Dataset& dataset);
+
+  vector<vector<float>> transform(const Dataset& dataset);
+
+private:
+  float shapeletDistance(const vector<float>& series, const Shapelet& shapelet);
+
+
+};
+
+class KNNClassifier {
+public:
+  int k;
+  vector<vector<float>> x_data;
+  vector<int> y_train;
+
+  KNNClassifier(int k) : k(k) {}
+
+  void fit(const vector<vector<float>>& X, const vector<int>& y) {
+    x_data = X;
+    y_train = y;
+  }
+
+  vector<int> predict(const vector<vector<float>>& X);
+};
+
+
 
 class ShapletTransformClassifier{
 private:
@@ -26,7 +95,18 @@ private:
   //list transformed_data_; // List of shape of ndarray
 
 
+  // Initializing all the parameters
+  void init();
 
+  void fit();
+
+  void predict();
+
+  void predict_proba();
+
+  void getTrainProb();
+
+  void getTestParams();
 
 
 };

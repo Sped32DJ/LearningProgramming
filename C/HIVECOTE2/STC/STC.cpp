@@ -238,19 +238,19 @@ public:
   // Parameters
 
   // TODO: What does it mean to be number of shaplet samplse?
-  int n_shaplet_samples = 10000; // default value: 10000
-  int max_shaplets = INT_MAX; // default value: None
-  int max_shaplet_length = INT_MAX; // default value: None
+  int n_shaplet_samples; // default value: 10000
+  int max_shaplets; // default value: None
+  int max_shaplet_length; // default value: None
   // BaseEstimator estimator = 0; // default value: None
-  int transform_limit_in_minutes = INT_MAX; // default value: None
-  int time_limit_in_minutes = 0;
-  int contract_max_n_shaplets = INT_MAX; // default value: np.inf
-  bool save_transformed_data = false; // default value: False
-  int n_jobs = 1; // default value: 1
+  int transform_limit_in_minutes; // default value: None
+  int time_limit_in_minutes;
+  int contract_max_n_shaplets; // default value: np.inf
+  bool save_transformed_data; // default value: False
+  int n_jobs; // default value: 1
 
   // NOTE: Is this the number of decision trees?
-  int batch_size = 100; // default value: 100
-  int random_state = 0; // default value: 0  TODO: What are the states
+  int batch_size; // default value: 100
+  int random_state ; // default value: 0  TODO: What are the states
 
   // Attributes
   //list classes_; // list of classifiers
@@ -261,6 +261,35 @@ public:
   int series_length_;
   //list transformed_data_; // List of shape of ndarray
 
+  ShapletTransformClassifier(int n_shapelet_samples = 10000,
+                             int max_shapelets = INT_MAX,
+                             int max_shapelet_length = INT_MAX,
+                             int transform_limit_in_minutes = INT_MAX,
+                             int time_limit_in_minutes = 0,
+                             int contract_max_n_shapelets = INT_MAX,
+                             bool save_transformed_data = false,
+                             int n_jobs = 1,
+                             int batch_size = 100,
+                             int random_state = 0) :
+    n_shaplet_samples(n_shapelet_samples),
+    max_shaplets(max_shapelets),
+    max_shaplet_length(max_shapelet_length),
+    transform_limit_in_minutes(transform_limit_in_minutes),
+    time_limit_in_minutes(time_limit_in_minutes),
+    contract_max_n_shaplets(contract_max_n_shapelets),
+    save_transformed_data(save_transformed_data),
+    n_jobs(n_jobs),
+    batch_size(batch_size) {}
+
+
+
+// Get clarification on the classes
+//        X : 3D np.array of shape = [n_instances, n_dimensions, series_length]
+//            The training data.
+//        y : array-like, shape = [n_instances]
+//            The class labels.
+  void fit(ShapletTransformClassifier, vector<int> X, y){}
+=======
   ShapeletTransformClassifier(int n_shaplet_samples, int max_shaplets, int max_shaplet_length,
                               int transform_limit_in_minutes, int time_limit_in_minutes,
                               int contract_max_n_sh) : n_shaplet_samples(n_shaplet_samples),

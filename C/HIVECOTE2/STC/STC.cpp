@@ -4,7 +4,9 @@
 #include <stdexcept>
 #include <iostream>
 #include <cmath>
-#include <algorithm>
+#include <map>
+#include <any>
+#include <optional>
 
 using namespace std;
 
@@ -23,39 +25,124 @@ struct Shapelet {
 // May need to depricate since not requried if we know
 // our input if Fitted
 class BaseEstimator {
+private:
+  bool isFitted = false; // Flag to check if the estimator is fitted
 protected:
-  bool isFitted; // Flag to check if the estimator is fitted
-public:
-  BaseEstimator() : isFitted(false) {}
-
-  bool checkIsFitted() const {
-    return isFitted;
+  void setFitted() noexcept {
+    isFitted = true;
   }
+public:
+//  BaseEstimator(const BaseEstimator&) = default;
+//  BaseEstimator& operator=(const BaseEstimator&) = delete;
+//  BaseEstimator() = default;
+//  virtual ~BaseEstimator() = default;
 
-
-  void checkIsFitted(const string& methodName = "") {
+  bool checkIsFitted(const string& methodName = "") const {
     if(!isFitted) {
       throw runtime_error("This " + methodName + " method can only be called after the model is fitted.");
+
+      if(methodName.empty()) {
+        return false; // If no method name is provided, just return false
+      } else {
+        throw runtime_error("This " + methodName + " method can only be called after the model is fitted.");
+      }
     }
   }
+};
 
+enum class ConversionCase {
+  Case1_ScitypeSupported,
+  Case2_HigherScitype,
+  Case3,Vectorize
+};
+
+struct DataObj {
+  vector<vector<double>> data; // Assuming data is a 2D vector of doubles
+  DataObj(const vector<vector<double>>& data) : data(data) {}
+public:
+  string scitype() const {
+    // Return the scitype of the data
+    // This is a placeholder; actual implementation will depend on the data structure
+    return "DataObj"; // Example scitype
+  }
+  string mtype() const {
+    // Return the mtype of the data
+    // This is a placeholder; actual implementation will depend on the data structure
+    return "DataObj"; // Example mtype
+  }
+};
+
+struct Metadata {
+std::map<std::string, std::any> values;
+};
+
+struct CheckResult {
+  DataObj X_inner;
+  std::optional<DataObj> y_inner;
+  std::optional<Metadata> metadata; // engaged iff return_metadata == true
 
 };
 
 
-
 class BaseTransformer : public BaseEstimator {
+protected:
+  virtual std::vector<std::string> ALLOWED_INPUT_SCITYPES() const {
+    return {"DataObj"}; // Example allowed input scitypes
+  }
+
+  template<typename T>
+  T getTag(const std::string& key) const;
+
+  string detangleClassname() const noexcept {
+    return "BaseTransformer"; // Return the class name
+  }
+
 public:
   vector<vector<double>> transform(const vector<vector<double>>& X) {
+    // Below are AI assumptions about the input data
+    auto X_inner = X; // Assuming X is a 2D vector of doubles
+    auto y_inner = vector<int>(); // Placeholder for labels, if needed
+    auto metadata = vector<string>(); // Placeholder for metadata, if needed
+
     // Check if the transformer is fitted, else, throw an error
+    // TODO: Give it a variable
     checkIsFitted();
 
-    // Input checking
+
+    // Input checking and conversion  for X/y
+    checkX_Y(X_inner, y_inner, metadata);
 
 
     // Placeholder for transformation logic
     // This should return a transformed version of X
     return vector<vector<double>>(); // Return an empty vector for now
+  }
+
+  CheckResult _check_X_y(std::optional<DataObj> X_in, std::optional<DataObj> y_in = std::nullopt,
+                         bool return_metadata = false) const {
+    // Check if X_in and y_in are provided
+    if (!X_in.has_value()) {
+      return {DataObj({}), y_in, return_metadata ? std::optional<Metadata>{Metadata{}} : std::nullopt};}
+    }
+
+  // This line skips conversion if it is turned off
+  //  if(getConfig())
+
+  metadata = dict();
+  metadata["_converter_store_X"] = dict();
+
+
+    // Check if the input data is of a supported scitype
+    auto scitype = X_in->scitype();
+    if (std::find(ALLOWED_INPUT_SCITYPES().begin(), ALLOWED_INPUT_SCITYPES().end(), scitype) == ALLOWED_INPUT_SCITYPES().end()) {
+      throw runtime_error("Unsupported input scitype: " + scitype);
+    }
+
+    // Return the check result
+    return CheckResult{*X_in, y_in, return_metadata ? std::make_optional(Metadata{}) : std::nullopt};
+  }
+
+  void checkX_Y(const vector<vector<double>>& X, const vector<int>& y, const vector<string>& metadata) {
   }
 
 };

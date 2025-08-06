@@ -1,13 +1,13 @@
 #include <climits>
 #include <vector>
-#include <string>
 #include <stdexcept>
 #include <iostream>
 #include <cmath>
-#include <algorithm>
+#include "base.cpp"
 
 using namespace std;
 
+// LGTM
 struct Shapelet {
   int seriesID; // [0]
   int startPos; // [1]
@@ -20,45 +20,10 @@ struct Shapelet {
 // vector<Shapelet> loadShapelets(const string& path);
 // RotationForestModel loadRotationForestModel(const string& path);
 
-// May need to depricate since not requried if we know
+// May need to deprecate since not required if we know
 // our input if Fitted
-class BaseEstimator {
-protected:
-  bool isFitted; // Flag to check if the estimator is fitted
-public:
-  BaseEstimator() : isFitted(false) {}
-
-  bool checkIsFitted() const {
-    return isFitted;
-  }
 
 
-  void checkIsFitted(const string& methodName = "") {
-    if(!isFitted) {
-      throw runtime_error("This " + methodName + " method can only be called after the model is fitted.");
-    }
-  }
-
-
-};
-
-
-
-class BaseTransformer : public BaseEstimator {
-public:
-  vector<vector<double>> transform(const vector<vector<double>>& X) {
-    // Check if the transformer is fitted, else, throw an error
-    checkIsFitted();
-
-    // Input checking
-
-
-    // Placeholder for transformation logic
-    // This should return a transformed version of X
-    return vector<vector<double>>(); // Return an empty vector for now
-  }
-
-};
 
 struct Tree {
   vector<double> thresholds;
@@ -330,7 +295,6 @@ public:
 //    return self._estimator.predict(X_t);
     Shapelet Xt = BaseTransformer.transform(X);
     return BaseEstimator.predict(Xt);
-
 
   }
 

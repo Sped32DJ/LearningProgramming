@@ -112,10 +112,40 @@ public:
     // Input checking and conversion  for X/y
     checkX_Y(X_inner, y_inner, metadata);
 
+    // Check if we need to vectorize
+//    if(isVectorizeNeeded(X_inner)) {
+//      X_inner = vectorize(X_inner);
+//    }
+    // if no vectorization is needed, call _transform directly
+    if(vectorizeNeeded(X_inner)) {
+      X_inner = _vectorize(X_inner);
+    } else {
+      X_inner = _transform(X_inner);
+    }
+
+    configs = getConfig();
+    input_conv = configs("input_conversion"); // State machine for input conversion
+    output_conv = configs("output_conversion"); // State machine for output conversion
+
+    if(X.empty() || Xt.empty()) {
+      X_out = Xt;
+    } else if(input_conv == ConversionCase::Case1_ScitypeSupported &&
+              output_conv == ConversionCase::Case1_ScitypeSupported) {
+      X_out = Xt;
+    } else if(input_conv == ConversionCase::Case2_HigherScitype &&
+              output_conv == ConversionCase::Case1_ScitypeSupported) {
+      X_out = inverse_convert(Xt, X);
+    } else if(input_conv == ConversionCase::Case3_Vectorize &&
+              output_conv == ConversionCase::Case1_ScitypeSupported) {
+      X_out = inverse_vectorize(Xt, X);
+    } else {
+      throw runtime_error("Unsupported conversion case in transform.");
+    }
+
 
     // Placeholder for transformation logic
     // This should return a transformed version of X
-    return vector<vector<double>>(); // Return an empty vector for now
+    return X_out; // Return an empty vector for now
   }
 
   CheckResult _check_X_y(std::optional<DataObj> X_in, std::optional<DataObj> y_in = std::nullopt,
@@ -376,7 +406,6 @@ public:
 //        y : array-like, shape = [n_instances]
 //            The class labels.
   void fit(ShapletTransformClassifier, vector<int> X, y){}
-=======
   ShapeletTransformClassifier(int n_shaplet_samples, int max_shaplets, int max_shaplet_length,
                               int transform_limit_in_minutes, int time_limit_in_minutes,
                               int contract_max_n_sh) : n_shaplet_samples(n_shaplet_samples),

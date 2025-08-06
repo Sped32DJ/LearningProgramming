@@ -3,7 +3,13 @@
 #include <stdexcept>
 #include <iostream>
 #include <cmath>
+<<<<<<< HEAD
 #include "base.cpp"
+=======
+#include <map>
+#include <any>
+#include <optional>
+>>>>>>> 6708b2ed45e621cffbadf9383c084cf48596e80f
 
 using namespace std;
 
@@ -22,8 +28,163 @@ struct Shapelet {
 
 // May need to deprecate since not required if we know
 // our input if Fitted
+<<<<<<< HEAD
 
 
+=======
+class BaseEstimator {
+private:
+  bool isFitted = false; // Flag to check if the estimator is fitted
+protected:
+  void setFitted() noexcept {
+    isFitted = true;
+  }
+public:
+//  BaseEstimator(const BaseEstimator&) = default;
+//  BaseEstimator& operator=(const BaseEstimator&) = delete;
+//  BaseEstimator() = default;
+//  virtual ~BaseEstimator() = default;
+
+  bool checkIsFitted(const string& methodName = "") const {
+    if(!isFitted) {
+      throw runtime_error("This " + methodName + " method can only be called after the model is fitted.");
+
+      if(methodName.empty()) {
+        return false; // If no method name is provided, just return false
+      } else {
+        throw runtime_error("This " + methodName + " method can only be called after the model is fitted.");
+      }
+    }
+  }
+};
+
+enum class ConversionCase {
+  Case1_ScitypeSupported,
+  Case2_HigherScitype,
+  Case3,Vectorize
+};
+
+struct DataObj {
+  vector<vector<double>> data; // Assuming data is a 2D vector of doubles
+  DataObj(const vector<vector<double>>& data) : data(data) {}
+public:
+  string scitype() const {
+    // Return the scitype of the data
+    // This is a placeholder; actual implementation will depend on the data structure
+    return "DataObj"; // Example scitype
+  }
+  string mtype() const {
+    // Return the mtype of the data
+    // This is a placeholder; actual implementation will depend on the data structure
+    return "DataObj"; // Example mtype
+  }
+};
+
+struct Metadata {
+std::map<std::string, std::any> values;
+};
+
+struct CheckResult {
+  DataObj X_inner;
+  std::optional<DataObj> y_inner;
+  std::optional<Metadata> metadata; // engaged iff return_metadata == true
+
+};
+
+
+class BaseTransformer : public BaseEstimator {
+protected:
+  virtual std::vector<std::string> ALLOWED_INPUT_SCITYPES() const {
+    return {"DataObj"}; // Example allowed input scitypes
+  }
+
+  template<typename T>
+  T getTag(const std::string& key) const;
+
+  string detangleClassname() const noexcept {
+    return "BaseTransformer"; // Return the class name
+  }
+
+public:
+  vector<vector<double>> transform(const vector<vector<double>>& X) {
+    // Below are AI assumptions about the input data
+    auto X_inner = X; // Assuming X is a 2D vector of doubles
+    auto y_inner = vector<int>(); // Placeholder for labels, if needed
+    auto metadata = vector<string>(); // Placeholder for metadata, if needed
+
+    // Check if the transformer is fitted, else, throw an error
+    // TODO: Give it a variable
+    checkIsFitted();
+
+
+    // Input checking and conversion  for X/y
+    checkX_Y(X_inner, y_inner, metadata);
+
+    // Check if we need to vectorize
+//    if(isVectorizeNeeded(X_inner)) {
+//      X_inner = vectorize(X_inner);
+//    }
+    // if no vectorization is needed, call _transform directly
+    if(vectorizeNeeded(X_inner)) {
+      X_inner = _vectorize(X_inner);
+    } else {
+      X_inner = _transform(X_inner);
+    }
+
+    configs = getConfig();
+    input_conv = configs("input_conversion"); // State machine for input conversion
+    output_conv = configs("output_conversion"); // State machine for output conversion
+
+    if(X.empty() || Xt.empty()) {
+      X_out = Xt;
+    } else if(input_conv == ConversionCase::Case1_ScitypeSupported &&
+              output_conv == ConversionCase::Case1_ScitypeSupported) {
+      X_out = Xt;
+    } else if(input_conv == ConversionCase::Case2_HigherScitype &&
+              output_conv == ConversionCase::Case1_ScitypeSupported) {
+      X_out = inverse_convert(Xt, X);
+    } else if(input_conv == ConversionCase::Case3_Vectorize &&
+              output_conv == ConversionCase::Case1_ScitypeSupported) {
+      X_out = inverse_vectorize(Xt, X);
+    } else {
+      throw runtime_error("Unsupported conversion case in transform.");
+    }
+
+
+    // Placeholder for transformation logic
+    // This should return a transformed version of X
+    return X_out; // Return an empty vector for now
+  }
+
+  CheckResult _check_X_y(std::optional<DataObj> X_in, std::optional<DataObj> y_in = std::nullopt,
+                         bool return_metadata = false) const {
+    // Check if X_in and y_in are provided
+    if (!X_in.has_value()) {
+      return {DataObj({}), y_in, return_metadata ? std::optional<Metadata>{Metadata{}} : std::nullopt};}
+    }
+
+  // This line skips conversion if it is turned off
+  //  if(getConfig())
+
+  metadata = dict();
+  metadata["_converter_store_X"] = dict();
+
+
+    // Check if the input data is of a supported scitype
+    auto scitype = X_in->scitype();
+    if (std::find(ALLOWED_INPUT_SCITYPES().begin(), ALLOWED_INPUT_SCITYPES().end(), scitype) == ALLOWED_INPUT_SCITYPES().end()) {
+      throw runtime_error("Unsupported input scitype: " + scitype);
+    }
+
+    // Return the check result
+    return CheckResult{*X_in, y_in, return_metadata ? std::make_optional(Metadata{}) : std::nullopt};
+  }
+
+  void checkX_Y(const vector<vector<double>>& X, const vector<int>& y, const vector<string>& metadata) {
+  }
+
+};
+>>>>>>> 6708b2ed45e621cffbadf9383c084cf48596e80f
 
 struct Tree {
   vector<double> thresholds;
@@ -254,7 +415,6 @@ public:
 //        y : array-like, shape = [n_instances]
 //            The class labels.
   void fit(ShapletTransformClassifier, vector<int> X, y){}
-=======
   ShapeletTransformClassifier(int n_shaplet_samples, int max_shaplets, int max_shaplet_length,
                               int transform_limit_in_minutes, int time_limit_in_minutes,
                               int contract_max_n_sh) : n_shaplet_samples(n_shaplet_samples),

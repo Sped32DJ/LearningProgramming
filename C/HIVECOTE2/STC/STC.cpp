@@ -3,17 +3,14 @@
 #include <stdexcept>
 #include <iostream>
 #include <cmath>
-<<<<<<< HEAD
-#include "base.cpp"
-=======
 #include <map>
 #include <any>
 #include <optional>
->>>>>>> 6708b2ed45e621cffbadf9383c084cf48596e80f
 
 using namespace std;
 
 // LGTM
+// NOTE: Should probably be a map<string, string>
 struct Shapelet {
   int seriesID; // [0]
   int startPos; // [1]
@@ -23,15 +20,19 @@ struct Shapelet {
   Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel)
     : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
 };
+
+enum class ConversionCase {
+  Case1_ScitypeSupported,
+  Case2_HigherScitype,
+  Case3_Vectorize
+};
 // vector<Shapelet> loadShapelets(const string& path);
 // RotationForestModel loadRotationForestModel(const string& path);
 
 // May need to deprecate since not required if we know
 // our input if Fitted
-<<<<<<< HEAD
 
 
-=======
 class BaseEstimator {
 private:
   bool isFitted = false; // Flag to check if the estimator is fitted
@@ -58,11 +59,6 @@ public:
   }
 };
 
-enum class ConversionCase {
-  Case1_ScitypeSupported,
-  Case2_HigherScitype,
-  Case3,Vectorize
-};
 
 struct DataObj {
   vector<vector<double>> data; // Assuming data is a 2D vector of doubles
@@ -91,6 +87,11 @@ struct CheckResult {
 
 };
 
+enum class ConfigSM {
+  input_conversion,
+  ouptput_conversion
+};
+
 
 class BaseTransformer : public BaseEstimator {
 protected:
@@ -106,55 +107,71 @@ protected:
   }
 
 public:
-  vector<vector<double>> transform(const vector<vector<double>>& X) {
+  vector<vector<double>> transform( vector<vector<double>>& X) {
     // Below are AI assumptions about the input data
-    auto X_inner = X; // Assuming X is a 2D vector of doubles
+    vector<vector<double>> X_inner; // Assuming X is a 2D vector of doubles
     auto y_inner = vector<int>(); // Placeholder for labels, if needed
-    auto metadata = vector<string>(); // Placeholder for metadata, if needed
+    auto metadata_ = int(); // Placeholder for metadata, if needed
+    bool return_metadata; // Flag to indicate if metadata should be returned
+    auto y = vector<int>(); // FIX: What is in this?
 
     // Check if the transformer is fitted, else, throw an error
-    // TODO: Give it a variable
-    checkIsFitted();
+    // May not be required
+    // checkIsFitted();
 
 
-    // Input checking and conversion  for X/y
-    checkX_Y(X_inner, y_inner, metadata);
+    // Input checking and conversion  for X/y,
+    // checkX_Y(X, y, return_metadata);
+    X_inner = X;
+    y_inner = y;
+
 
     // Check if we need to vectorize
 //    if(isVectorizeNeeded(X_inner)) {
 //      X_inner = vectorize(X_inner);
 //    }
+
     // if no vectorization is needed, call _transform directly
-    if(vectorizeNeeded(X_inner)) {
-      X_inner = _vectorize(X_inner);
-    } else {
+//    if(vectorizeNeeded(X_inner))
+//      X_inner = _vectorize(X_inner);
+//     else
+    // TODO: Write _transform to handle the transformation logic
       X_inner = _transform(X_inner);
-    }
 
-    configs = getConfig();
-    input_conv = configs("input_conversion"); // State machine for input conversion
-    output_conv = configs("output_conversion"); // State machine for output conversion
 
+    // Obtain configs to control I/O control
+    // TODO: write getConfig() to return a map of configs
+    // Maybe I won't do this since there is a long level of abstraction
+    map<string, string> configs = getConfig();
+    string input_conv = configs["input_conversion"];
+    string output_conv = configs["output_conversion"];
+
+    vector<vector<double>> X_out;
+    vector<vector<double>> Xt;
+
+    // Converting output to mtype
     if(X.empty() || Xt.empty()) {
-      X_out = Xt;
-    } else if(input_conv == ConversionCase::Case1_ScitypeSupported &&
-              output_conv == ConversionCase::Case1_ScitypeSupported) {
-      X_out = Xt;
-    } else if(input_conv == ConversionCase::Case2_HigherScitype &&
-              output_conv == ConversionCase::Case1_ScitypeSupported) {
-      X_out = inverse_convert(Xt, X);
-    } else if(input_conv == ConversionCase::Case3_Vectorize &&
-              output_conv == ConversionCase::Case1_ScitypeSupported) {
-      X_out = inverse_vectorize(Xt, X);
+       X_out = Xt;
+    } else if(input_conv == "on" &&
+              output_conv == "on") {
+     // X_out = _convertOutput(Xt,metadata_);
+      X_out = Xt; // For now
     } else {
-      throw runtime_error("Unsupported conversion case in transform.");
+      X_out = Xt;
     }
-
 
     // Placeholder for transformation logic
     // This should return a transformed version of X
     return X_out; // Return an empty vector for now
   }
+
+  map<string, string> getConfig() const {
+    // NOTE: This is a placeholder; actual implementation will depend on the configuration structure
+    return {{"input_conversion", "on"},
+            {"output_conversion", "on"}};
+  }
+
+
 
   CheckResult _check_X_y(std::optional<DataObj> X_in, std::optional<DataObj> y_in = std::nullopt,
                          bool return_metadata = false) const {
@@ -166,25 +183,45 @@ public:
   // This line skips conversion if it is turned off
   //  if(getConfig())
 
-  metadata = dict();
-  metadata["_converter_store_X"] = dict();
-
-
-    // Check if the input data is of a supported scitype
-    auto scitype = X_in->scitype();
-    if (std::find(ALLOWED_INPUT_SCITYPES().begin(), ALLOWED_INPUT_SCITYPES().end(), scitype) == ALLOWED_INPUT_SCITYPES().end()) {
-      throw runtime_error("Unsupported input scitype: " + scitype);
-    }
+  // med is stores an empty dictionary
+//  Metadata med = dict();
+//  med.state["_converter_store_X"] = dict();
+//
+//
+//    // Check if the input data is of a supported scitype
+//    auto scitype = X_in->scitype();
+//    if (std::find(ALLOWED_INPUT_SCITYPES().begin(), ALLOWED_INPUT_SCITYPES().end(), scitype) == ALLOWED_INPUT_SCITYPES().end()) {
+//      throw runtime_error("Unsupported input scitype: " + scitype);
+//    }
 
     // Return the check result
     return CheckResult{*X_in, y_in, return_metadata ? std::make_optional(Metadata{}) : std::nullopt};
-  }
 
-  void checkX_Y(const vector<vector<double>>& X, const vector<int>& y, const vector<string>& metadata) {
-  }
 
+  // TODO: Pure skeleton, prefer this to be a state machine
+  void CheckX_Y(const vector<vector<double>>& X, const vector<int>& y, const vector<string>& metadata) {
+     switch (ConversionCase){
+       case ConversionCase::Case1_ScitypeSupported:
+         // Check if X is a supported scitype
+         if (X.empty() || X[0].empty()) {
+           throw runtime_error("Input data X is empty or not properly formatted.");
+         }
+         break;
+       case CanversionCase::Case2_HigherScitype:
+         // Check if X is a higher scitype
+         if (X.empty() || X[0].empty()) {
+           throw runtime_error("Input data X is empty or not properly formatted.");
+         }
+         break;
+       case ConversionCase::Case3_Vectorize:
+         // Check if X can be vectorized
+         if (X.empty() || X[0].empty()) {
+           throw runtime_error("Input data X is empty or not properly formatted.");
+         }
+         break;
+     }
+  }
 };
->>>>>>> 6708b2ed45e621cffbadf9383c084cf48596e80f
 
 struct Tree {
   vector<double> thresholds;
@@ -199,14 +236,14 @@ struct Tree {
     // This is a placeholder; actual implementation will depend on the tree structure
   }
 
-  int predict(const vector<double>& features) const {
-    int node = 0;
-    while(childrenLeft[node] >= 0){
-      int f = featureIndices[node];
-      node = (features[f] <= thresholds[node]) ? childrenLeft[node] : childrenRight[node];
-    }
-    return classVotes[node]; // Return the class vote at the leaf node
-  }
+//  int wpredict(const vector<double>& features) const {
+//    int node = 0;
+//    while(childrenLeft[node] >= 0){
+//      int f = featureIndices[node];
+//      node = (features[f] <= thresholds[node]) ? childrenLeft[node] : childrenRight[node];
+//    }
+//    return classVotes[node]; // Return the class vote at the leaf node
+//  }
 };
 
 struct RotationForestModel {
@@ -355,8 +392,6 @@ public:
 
 private:
   float shapeletDistance(const vector<float>& series, const Shapelet& shapelet);
-
-
 };
 
 class ShapeletTransformClassifier {
@@ -387,7 +422,7 @@ public:
   int series_length_;
   //list transformed_data_; // List of shape of ndarray
 
-  ShapletTransformClassifier(int n_shapelet_samples = 10000,
+  ShapeletTransformClassifier(int n_shapelet_samples = 10000,
                              int max_shapelets = INT_MAX,
                              int max_shapelet_length = INT_MAX,
                              int transform_limit_in_minutes = INT_MAX,
@@ -409,11 +444,11 @@ public:
 
 
 
-// Get clarification on the classes
-//        X : 3D np.array of shape = [n_instances, n_dimensions, series_length]
-//            The training data.
-//        y : array-like, shape = [n_instances]
-//            The class labels.
+  // Get clarification on the classes
+  //        X : 3D np.array of shape = [n_instances, n_dimensions, series_length]
+  //            The training data.
+  //        y : array-like, shape = [n_instances]
+  //            The class labels.
   void fit(ShapletTransformClassifier, vector<int> X, y){}
   ShapeletTransformClassifier(int n_shaplet_samples, int max_shaplets, int max_shaplet_length,
                               int transform_limit_in_minutes, int time_limit_in_minutes,

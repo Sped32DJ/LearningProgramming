@@ -1,10 +1,14 @@
 #include <iostream>
+#include <sys/types.h>
 #include <vector>
 #include <cmath>
 #include <string>
 #include <stdexcept>
 #include <map>
 #include <climits>
+#include <iostream>
+#include <random>
+#include <optional>
 
 using namespace std;
 
@@ -121,6 +125,7 @@ public:
     vector<vector<double>> Xt;
 
     // Converting output to mtype
+    // TODO: Figure out how to implement _transform
     if(X.empty() || Xt.empty()) {
        X_out = Xt;
     } else if(input_conv == "on" &&
@@ -149,6 +154,114 @@ public:
             {"output_conversion", "on"}};
   }
 
+
+};
+
+struct Tree {
+  vector<double> thresholds;
+  vector<int> featureIndices; // Indices of features used in the tree
+  vector<int> childrenLeft;
+  vector<int> childrenRight;
+  vector<int> classVotes;
+
+  Tree(const vector<int>& structure, const vector<double>& pcaMatrix)
+    : thresholds(structure.size()), featureIndices(structure.size()), childrenLeft(structure.size()), childrenRight(structure.size()), classVotes(structure.size()) {
+    // Initialize the tree structure based on the provided structure and PCA matrix
+    // This is a placeholder; actual implementation will depend on the tree structure
+  }
+
+//  int wpredict(const vector<double>& features) const {
+//    int node = 0;
+//    while(childrenLeft[node] >= 0){
+//      int f = featureIndices[node];
+//      node = (features[f] <= thresholds[node]) ? childrenLeft[node] : childrenRight[node];
+//    }
+//    return classVotes[node]; // Return the class vote at the leaf node
+//  }
+};
+
+// NOTE: This holds rng, part of predict
+// All hardcoded for now
+class RandomState {
+  u_int64_t choice = 0x7F590B777640; // holds 12 hexadecimal digits = 48 bit value
+  mt19937 seed; // print(rng) = RandomState(MT19937), not sure what this means
+};
+
+// Global function to check the random state
+// TODO: Check this function, how would I really do this?
+mt19937 checkRandomState(uint32_t seed) {
+  if(!seed){
+    return mt19937(random_device{}()); // Use a random device if seed is 0
+  } else {
+    return mt19937(seed); // Use the provided seed
+  }
+}
+
+// NOTE: This holds predict
+class RotationForest : public BaseEstimator {
+  int numTrees;
+  vector<int> rotRows;
+  vector<int> treeDimOffset;
+  vector<vector<double>> rotationMatrices; // Rotation matrices for each tree
+  vector<Tree> trees;
+  //  RandomState rng; // Random state for reproducibility
+
+  // TODO: Finish below
+  vector<int> predict(const vector<vector<double>>& X) {
+    // Check if the model is fitted (avoiding)
+    // CheckIfitted(X) // We can skip this for now
+    mt19937 rng = checkRandomState(random_state_); // NOTE: We can skip the checks
+    vector<vector<double>> probas = predict_proba(X); // Get the predicted probabilities
+
+    vector<int> y_pred(X.size(), 0); // Initialize predictions
+
+    for(const auto& prob : probas) {
+      double max_prob = -1.0;
+      vector<size_t> best_idxs;
+      for(size_t i = 0;  i < prob.size(); ++i) {
+        if(prob.at(i) == max_prob) {
+          best_idxs.push_back(i); // Store indices of the maximum probabilities
+        }
+      }
+
+      uniform_int_distribution<size_t> dist(0, best_idxs.size() - 1);
+      int chosen = best_idxs[dist(rng)]; // Randomly choose one of the best indices
+      //y_pred.push_back(classes_[chosen]); // Assign the chosen index to the prediction vector
+      y_pred.push_back(chosen); // Assign the chosen index to the prediction vector
+    }
+
+    return y_pred; // Return the predicted classes
+  }
+
+
+  // May need to check this
+  vector<vector<double>> predict_proba(const vector<vector<double>>& X) {
+    size_t n_instances = X.size();
+    size_t n_classes = classes_.size();
+
+    if(n_instances == 1 ) {
+      return vector<vector<double>>(n_classes, vector<double>(1, 1.0)); // Return a vector of zeros if n_instances is 1
+    }
+    vector<vector<double>> X_norm = normalizeAndTransform(X);
+
+    vector<vector<double>> sum_proba(n_instances, vector<double>(n_classes, 0.0));
+
+    for(int i = 0; i < n_estimators_; ++i){
+      auto prob = predict_proba_for_estimator(X_norm, i);
+      for(size_t r = 0; r < n_instances; ++r) {
+        for(size_t c = 0; c < n_classes; ++c) {
+          sum_proba[r][c] += prob[r][c];
+        }
+      }
+    }
+
+    for(auto&row : sum_proba) {
+      for(auto& val : row) {
+        val /= static_cast<double>(n_estimators_); // Average the probabilities across all estimators
+      }
+    }
+    return sum_proba; // Return the averaged probabilities
+   }
 
 };
 
@@ -210,69 +323,9 @@ public:
   //list transformed_data_; // List of shape of ndarray
   //ShapeletTransformClassifier _transformer;
   RandomShapeletTransform _transformer;
+  RotationForest _estimator; // Assuming RotationForest is a class that implements the classifier
+  RandomState rng;
 
-//  ShapeletTransformClassifier(int n_shapelet_samples = 10000,
-//                             int max_shapelets = INT_MAX,
-//                             int max_shapelet_length = INT_MAX,
-//                             int transform_limit_in_minutes = INT_MAX,
-//                             int time_limit_in_minutes = 0,
-//                             int contract_max_n_shapelets = INT_MAX,
-//                             bool save_transformed_data = false,
-//                             int n_jobs = 1,
-//                             int batch_size = 100,
-//                             int random_state = 0) :
-//    n_shaplet_samples(n_shapelet_samples),
-//    max_shaplets(max_shapelets),
-//    max_shaplet_length(max_shapelet_length),
-//    transform_limit_in_minutes(transform_limit_in_minutes),
-//    time_limit_in_minutes(time_limit_in_minutes),
-//    contract_max_n_shaplets(contract_max_n_shapelets),
-//    save_transformed_data(save_transformed_data),
-//    n_jobs(n_jobs),
-//    batch_size(batch_size) {}
-
-
-
-  // Get clarification on the classes
-  //        X : 3D np.array of shape = [n_instances, n_dimensions, series_length]
-  //            The training data.
-  //        y : array-like, shape = [n_instances]
-  //            The class labels.
-//..  ShapeletTransformClassifier(int n_shaplet_samples, int max_shaplets, int max_shaplet_length,
-//..                              int transform_limit_in_minutes, int time_limit_in_minutes,
-//..                              int contract_max_n_sh) : n_shaplet_samples(n_shaplet_samples),
-//..    max_shaplets(max_shaplets), max_shaplet_length(max_shaplet_length),
-//..    transform_limit_in_minutes(transform_limit_in_minutes),
-//..    time_limit_in_minutes(time_limit_in_minutes) {}
-
-//  ShapeletTransformClassifier() {
-//  int n_shaplet_samples = 10000; // default value: 10000
-//  int max_shaplets = 0; // default value: None
-//  int max_shaplet_length = 0; // default value: None
-//  // BaseEstimator estimator = 0; // default value: None
-//  int transform_limit_in_minutes = 0; // default value: None
-//  int time_limit_in_minutes = 0;
-//  int contract_max_n_shaplets = INT_MAX; // default value: np.inf
-//  bool save_transformed_data = false; // default value: False
-//  int n_jobs = 1; // default value: 1
-//  int batch_size = 100; // default value: 100
-//  int random_state = 0; // default value: NONE  TODO: What are the states
-//  }
-
-
-  // fit (train portion)
-  // For now, we will call the python code
-  // to train the model, then C++ the inference portion
-//  void fit(ShapeletTransformClassifier, vector<int> X, y){}
-
-  // Focus on predict (inference) portion)
-  // X: 3D np.array of shape = [n_instances, n_dimensions, series_length]
-  //  the data to make predictions for./
-  // Returns
-  // y : array-like, shape = [n_instances]
-  // Predicted class labels.
-  // more like Vector predict(const Tensor3D& X)
-//  int _predict(const Tensor3D& X) {
   int _predict(const vector<vector<double>>& X) {
     // Change type
 //    int X_t = self._transform.transform(X).to_numpy()
@@ -282,30 +335,10 @@ public:
     return _estimator.predict(Xt);
 
   }
-
-  // TODO: Finish below
-  int predict(const vector<vector<double>>& X) {
-    // Check if the model is fitted (avoiding)
-    int rng = checkRandomState(this->random_state);
-    return _predict(X);
-  }
-
-  // TODO: Finish below, start it from the bottom
-  int checkRandomState(int random_state) {
-    if(seed.isNone(random_state) || seed.isNPRand()) {
-      random_state = 0; // Default value if None
-    } else if(random_state < 0) {
-      throw invalid_argument("Random state must be a non-negative integer.");
-    }
-    return random_state; // For now, just return the state
-  }
-
-  void predict_proba();
-
-  void getTrainProb();
-
-  void getTestParams();
-
-
 };
+
+int main(){
+  cout << "I love STC" << endl;
+  return 0;
+}
 

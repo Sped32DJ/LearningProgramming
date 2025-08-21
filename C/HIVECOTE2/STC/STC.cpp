@@ -304,6 +304,16 @@ struct RotationForestModel {
     return predictClass(x, *this);
   }
 
+  // TODO: Finish below, start it from the bottom
+  int checkRandomState(int seed) {
+    if(seed.isNone(random_state) || seed.isNPRand()) {
+      random_state = 0; // Default value if None
+    } else if(random_state < 0) {
+      throw invalid_argument("Random state must be a non-negative integer.");
+    }
+    return random_state; // For now, just return the state
+  }
+
 //  vector<double> applyRotation(const vector<double>& data, const vector<vector<double>>& rotationMatrix) {
 //    vector<double> transformedData(rotationMatrix.size(), 0.0);
 //    for (size_t i = 0; i < rotationMatrix.size(); ++i) {

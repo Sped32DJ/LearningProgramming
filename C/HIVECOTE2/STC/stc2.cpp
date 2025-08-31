@@ -237,7 +237,8 @@ class RotationForest : public BaseEstimator {
   // May need to check this
   vector<vector<double>> predict_proba(const vector<vector<double>>& X) {
     size_t n_instances = X.size();
-    size_t n_classes = classes_.size();
+    size_t n_classes = classes_.size(); // classes_ is a forest, matrix of trees
+    // class is a tree
 
     if(n_instances == 1 ) {
       return vector<vector<double>>(n_classes, vector<double>(1, 1.0)); // Return a vector of zeros if n_instances is 1
@@ -247,7 +248,7 @@ class RotationForest : public BaseEstimator {
     vector<vector<double>> sum_proba(n_instances, vector<double>(n_classes, 0.0));
 
     for(int i = 0; i < n_estimators_; ++i){
-      auto prob = predict_proba_for_estimator(X_norm, i);
+      vector<vector<double>> prob = predict_proba_for_estimator(X_norm, i);
       for(size_t r = 0; r < n_instances; ++r) {
         for(size_t c = 0; c < n_classes; ++c) {
           sum_proba[r][c] += prob[r][c];
@@ -261,7 +262,11 @@ class RotationForest : public BaseEstimator {
       }
     }
     return sum_proba; // Return the averaged probabilities
-   }
+  }
+
+  vector<vector<double>> predict_proba_for_estimator(vector<vector<double>> X, RotationForest clf, auto pcas,auto groups ){
+
+  }
 
 };
 

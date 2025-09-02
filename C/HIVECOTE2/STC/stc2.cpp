@@ -22,16 +22,6 @@ struct Shapelet {
     : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
 };
 
-// NOTE: May deprecate, because this is intense
-struct Tensor3D {
-  vector<vector<vector<double>>> data;
-  int dim1, dim2, dim3;
-
-  Tensor3D(int d1, int d2, int d3) : dim1(d1), dim2(d2), dim3(d3) {
-    data.resize(d1, vector<vector<double>>(d2, vector<double>(d3)));
-  }
-};
-
 // NOTE: May deprecate, Not too sure about below
 typedef vector<vector<vector<float>>> TimeSeriesData; // 3D vector: [n_instances][n_dims][series_length]
 struct Dataset{
@@ -297,6 +287,17 @@ public:
         n_jobs(n_jobs),
         batch_size(batch_size),
         random_state(random_state) {}
+
+  vector<vector<double>> _transform(vector<vector<double>> X){
+    // What ever this does, this is python
+    auto output = np.zeros((X.size(), this.n_shapelets));
+
+    for(size_t i = 0; i < X.size(); ++i) {
+      for(size_t j = 0; j < n_shapelets; ++j) {
+        output[i][j] = computeDistance(X[i], shapelets[j]); // Placeholder for distance computation
+      }
+    }
+  }
 };
 
 class ShapeletTransformClassifier : BaseTransformer {
@@ -326,7 +327,6 @@ public:
   int n_dims_;
   int series_length_;
   //list transformed_data_; // List of shape of ndarray
-  //ShapeletTransformClassifier _transformer;
   RandomShapeletTransform _transformer;
   RotationForest _estimator; // Assuming RotationForest is a class that implements the classifier
   RandomState rng;

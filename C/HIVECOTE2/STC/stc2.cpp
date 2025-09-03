@@ -9,18 +9,9 @@
 #include <iostream>
 #include <random>
 #include <optional>
+#include <thread>
 
 using namespace std;
-
-struct Shapelet {
-  int seriesID; // [0]
-  int startPos; // [1]
-  int length; // [2]
-  vector<double> values; // [3]
-  int classLabel; // [4]
-  Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel)
-    : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
-};
 
 // NOTE: May deprecate, Not too sure about below
 typedef vector<vector<vector<float>>> TimeSeriesData; // 3D vector: [n_instances][n_dims][series_length]
@@ -30,8 +21,8 @@ struct Dataset{
   int n_instances;
   int n_dims;
   int series_length;    // Takes a 3D tensor, returns a 2D matrix of primitive features
-    std::vector<std::vector<double>> transform(
-        const std::vector<std::vector<std::vector<double>>>& X
+    vector<vector<double>> transform(
+        const vector<vector<vector<double>>>& X
     );
 
   Dataset(const TimeSeriesData& data, vector<int> labels) : X(data), y(labels) {
@@ -224,12 +215,13 @@ class RotationForest : public BaseEstimator {
   }
 
 
-  // May need to check this
+  // FIX: May need to check this
   vector<vector<double>> predict_proba(const vector<vector<double>>& X) {
     size_t n_instances = X.size();
     size_t n_classes = classes_.size(); // classes_ is a forest, matrix of trees
     // class is a tree
 
+    // Treat case of single class seen in fit
     if(n_instances == 1 ) {
       return vector<vector<double>>(n_classes, vector<double>(1, 1.0)); // Return a vector of zeros if n_instances is 1
     }
@@ -260,6 +252,28 @@ class RotationForest : public BaseEstimator {
 
 };
 
+struct Shapelet {
+  int seriesID; // shapelet[0]
+  int startPos; // shapelet[1]
+  int length; // shapelet[2]
+  vector<double> values; // shapelet[3]
+  int classLabel; // shapelet[4]
+  Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel)
+    : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
+};
+
+double computeDistance(const vector<double>& series, const Shapelet& shapelet) {
+  // Placeholder for actual distance computation logic
+  // This could be Euclidean distance, DTW, etc.
+  double distance = 0.0;
+  for(size_t i = 0; i < min(series.size(), shapelet.values.size()); ++i) {
+    distance += pow(series[i] - shapelet.values[i], 2);
+  }
+  return distance;
+  //return sqrt(distance);
+}
+
+
 class RandomShapeletTransform : BaseTransformer {
 public:
     int n_shapelet_samples;
@@ -270,6 +284,7 @@ public:
     int n_jobs;
     int batch_size;
     int random_state;
+    vector<Shapelet> shapelets; // Vector to hold the shapelets
 
     RandomShapeletTransform(int n_shapelet_samples,
                             int max_shapelets,
@@ -289,14 +304,38 @@ public:
         random_state(random_state) {}
 
   vector<vector<double>> _transform(vector<vector<double>> X){
+    if(shapelets.empty()) {
+      throw runtime_error("Shapelets is an empty vector.");
+    }
     // What ever this does, this is python
-    auto output = np.zeros((X.size(), this.n_shapelets));
+    // output[i][j] = distance(X[i], shapelets[j])
+    vector<vector<double>> output(X.size(), shapelets.size(), 0.0);
 
-    for(size_t i = 0; i < X.size(); ++i) {
-      for(size_t j = 0; j < n_shapelets; ++j) {
-        output[i][j] = computeDistance(X[i], shapelets[j]); // Placeholder for distance computation
+    auto worker = [&](size_t start, size_t end) {
+      for(size_t i = start; i < end; ++i) {
+        for(size_t j = 0; j < shapelets.size(); ++j) {
+          output[i][j] = computeDistance(X[i], shapelets[j]); // Placeholder for distance computation
+        }
+      }
+    };
+
+    if(n_jobs <= 1){
+      worker(0, X.size());
+    }else {
+      vector<thread> threads;
+      size_t batch_size = (X.size() + n_jobs - 1 )/ n_jobs;
+      //size_t batch_size = (X.size()) / n_jobs;
+      for(int i = 0; i < n_jobs; ++i) {
+        size_t start = i * batch_size;
+        //size_t end = (i == n_jobs - 1) ? X.size() : (i + 1) * batch_size;
+        size_t end = min(start - batch_size, X.size());
+        threads.emplace_back(worker, start, end);
+      }
+      for(auto& t : threads) {
+        t.join();
       }
     }
+
   }
 };
 

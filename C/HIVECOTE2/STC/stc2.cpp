@@ -262,7 +262,18 @@ struct Shapelet {
     : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
 };
 
-void _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet, double& best_dist, int& best_pos){
+void _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet, vector<double>& sorted_indices, double& length) {
+  //FIX: Definition
+  vector<double> subseq = series[position : position + length];
+
+  double sum = 0.0;
+  double sum2 = 0.0;
+
+  for(double val : subseq) {
+    sum += val;
+    sum2 += val * val;
+  }
+  double mean = sum / length;
 }
 
 // Use _online_shapelet_distance

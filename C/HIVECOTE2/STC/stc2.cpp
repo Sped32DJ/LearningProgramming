@@ -262,9 +262,13 @@ struct Shapelet {
     : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
 };
 
-void _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet, vector<double>& sorted_indices, double& length) {
-  //FIX: Definition
-  vector<double> subseq = series[position : position + length];
+void _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet, vector<double>& sorted_indices, double& position, double& length) {
+
+  vector<double> subseq;
+  for(int i = position; i < position+length; ++i ){
+    subseq.push_back(series.at(i));
+  }
+
 
   double sum = 0.0;
   double sum2 = 0.0;
@@ -273,7 +277,38 @@ void _online_shapelet_distance(const vector<double>& series, const Shapelet& sha
     sum += val;
     sum2 += val * val;
   }
+
   double mean = sum / length;
+  double std = sqrt((sum2-mean*mean*length) / length);
+
+  if(std>0){
+    // Z-score normalization
+    for(int i = 0; i < length; ++i) {
+      subseq.at(i) = (subseq.at(i) - mean) / std;
+    }
+  } else {
+    // Replace subseq with zeros?
+    fill(subseq.begin(), subseq.end(), 0.0);
+  }
+
+  double best_dist = 0;
+
+  // TODO: Implement the real one
+  for(size_t i = 0; i < length; ++i) {
+    best_dist += pow(subseq[i] - shapelet.values[i], 2);
+  }
+
+  //TODO: Not very faithful to original
+  int i = 1;
+  vector<bool> traverse = {true, true};
+  vector<double> sums = {sum, sum};
+  vector<double> sums2 = {sum2, sum2};
+
+  while (traverse[0] || traverse[1]){
+    for (i = 0;i< 2;++i){
+      int mod = (n == 1) ? -1:1;
+    }
+  }
 }
 
 // Use _online_shapelet_distance

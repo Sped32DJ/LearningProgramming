@@ -256,12 +256,16 @@ struct Shapelet {
   int seriesID; // shapelet[0]
   int startPos; // shapelet[1]
   int length; // shapelet[2]
-  vector<double> values; // shapelet[3]
+  vector<double> values; // shapelet[3], TODO: figure out the size of vector, at least the max
   int classLabel; // shapelet[4]
   Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel)
     : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
 };
 
+void _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet, double& best_dist, int& best_pos){
+}
+
+// Use _online_shapelet_distance
 double computeDistance(const vector<double>& series, const Shapelet& shapelet) {
   // Placeholder for actual distance computation logic
   // This could be Euclidean distance, DTW, etc.

@@ -255,8 +255,41 @@ public:
 
 };
 
+// https://github.com/scikit-learn/scikit-learn/blob/b24c328a304a46369e45de052e7fa695fb072efc/sklearn/tree/_classes.py#L704
+// scitkit-learn/sklean/tree/_classes.py
+// NOTE: I may not implement this and leave it all to DTC
+class BaseDecisionTree : public BaseEstimator {
+};
+
+class DecisionTreeClassifier : public BaseDecisionTree {
+//  auto criterion, splitter, max_depth, min_samples_split,
+//       min_samples_leaf, min_weight_fraction_leaf, max_features,
+//       random_state, max_leaf_nodes, min_impurity_decrease,
+//       class_weight, ccp_alpha; // Parameters for the decision tree
+  enum class Criterion { GINI, ENTROPY, LOG_LOSS }; // default: GINI
+  enum class Splitter { BEST, RANDOM }; // default: BEST
+  int max_depth = INT_MAX; // default: None
+  double min_samples_split = 2; // default: 2; min number of samples required to split an internal node
+  double min_samples_leaf = 1; // default: 1; min number of samples required to be at a leaf node
+  double min_weight_fraction_leaf = 0.0; // default: 0.0; min weighted fraction of the sum total of weights required to be at a leaf node
+  double max_features = 1.0; // default: None; number of features to consider when looking for the best split
+  RandomState random_state; // default: None; random state for reproducibility
+  int max_leaf_nodes = INT_MAX; // default: None; grow a tree with max_leaf_nodes in best-first fashion
+  double min_impurity_decrease = 0.0; // default: 0.0; a node will be split if this split induces a decrease of the impurity greater than or equal to this value
+  //vector<dict> class_weight; // default: None; weights associated with classes {class_label: weight, class_label: weight, ...}
+  double ccp_alpha = 0.0; // default: 0.0; complexity parameter used for Minimal Cost-Complexity Pruning, non-negative float
+  vector<int> monotonic_cst; // default: None; list of monotonic constraints for each feature, 1 for increasing, -1 for decreasing, 0 for no constraint
+  // Attributes
+  vector<int> classes_; // list of class labels
+  vector<int> n_classes_; // number of classes
+  vector<int> n_features_; // number of features
+  vector<int> n_outputs_; // number of outputs
+  vector<int> feature_importances_; // importance of each feature
+  vector<Tree> trees_; // vector of trees in the forest
+};
+
 // NOTE: Probably already exists in HLS
-vector<double> z_normalize_series(const vector<double>& series){
+vector<double> z_normalise_series(const vector<double>& series){
   double sum = 0.0;
   // compute mean
   for(double val : series) {
@@ -309,7 +342,8 @@ struct Shapelet {
   vector<double> values; // shapelet[3] = s[3], TODO: figure out the size of vector, at least the max
   int classLabel; // shapelet[4] = s[4]
   vector<double> classes;  // shapelet[5] = self.classes_[s[5]] NOTE: May actually be int
-  // z_normalise_series(X[s[4], s[3], s[2] : s[2] + s[1]]) // shapelet[4]
+
+  vector<double> normalizedValues;  // shapelet[6] = z_normalise_series(X[s[4], s[3], s[2] : s[2] + s[1]])
   Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel, vector<double> classes)
     : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel), classes(classes) {}
 };

@@ -180,6 +180,7 @@ mt19937 checkRandomState(uint32_t seed) {
 
 // NOTE: This holds predict
 class RotationForest : public BaseEstimator {
+public:
   int numTrees;
   vector<int> rotRows;
   vector<int> treeDimOffset;
@@ -191,7 +192,7 @@ class RotationForest : public BaseEstimator {
   vector<int> predict(const vector<vector<double>>& X) {
     // Check if the model is fitted (avoiding)
     // CheckIfitted(X) // We can skip this for now
-    mt19937 rng = checkRandomState(random_state_); // NOTE: We can skip the checks
+    mt19937 rng = checkRandomState(random_state); // NOTE: We can skip the checks
     vector<vector<double>> probas = predict_proba(X); // Get the predicted probabilities
 
     vector<int> y_pred(X.size(), 0); // Initialize predictions
@@ -246,34 +247,96 @@ class RotationForest : public BaseEstimator {
     return sum_proba; // Return the averaged probabilities
   }
 
-  vector<vector<double>> predict_proba_for_estimator(vector<vector<double>> X, RotationForest clf, auto pcas,auto groups ){
+  // (ndarray X, DecisionTreeClassifier clf, list pcas, list groups)
+  // TODO: Build CLF class
+  vector<vector<double>> predict_proba_for_estimator(vector<vector<double>> X, DecisionTreeClassifier clf, vector<double> pcas, vector<double> groups ){
 
   }
 
 };
 
+// NOTE: Probably already exists in HLS
+vector<double> z_normalize_series(const vector<double>& series){
+  double sum = 0.0;
+  // compute mean
+  for(double val : series) {
+    sum += val;
+  }
+
+  double mean = sum / series.size();
+
+  // Compute standard deviation
+  double sq_sum = 0.0;
+  for(double val : series) {
+    sq_sum += (val - mean) * (val - mean);
+  }
+  double stddev = sqrt(sq_sum / series.size());
+
+  // Normalize the series
+  vector<double> arr(series.size());
+  if(stddev > 0) {
+    for(size_t i = 0; i < series.size(); ++i) {
+      arr[i] = (series[i] - mean) / stddev;
+    }
+  } else {
+    // If stddev is zero, fill with zeros
+    fill(arr.begin(), arr.end(), 0.0);
+  }
+
+  return arr;
+}
+
+// From Fit()
+//        self.shapelets = [
+//            (
+//                s[0],
+//                s[1],
+//                s[2],
+//                s[3],
+//                s[4],
+//                self.classes_[s[5]],
+//                z_normalise_series(X[s[4], s[3], s[2] : s[2] + s[1]]),
+//            )
+//            for class_shapelets in shapelets
+//            for s in class_shapelets
+//            if s[0] > 0
+//        ]
+//        NOTE: This is defined inside fit(), making self.classes_[s[5]], possible
 struct Shapelet {
-  int seriesID; // shapelet[0]
-  int startPos; // shapelet[1]
-  int length; // shapelet[2]
-  vector<double> values; // shapelet[3], TODO: figure out the size of vector, at least the max
-  int classLabel; // shapelet[4]
-  Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel)
-    : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel) {}
+  int seriesID; // shapelet[0] = s[0]
+  int startPos; // shapelet[1] = s[1]
+  int length; // shapelet[2] = s[2]
+  vector<double> values; // shapelet[3] = s[3], TODO: figure out the size of vector, at least the max
+  int classLabel; // shapelet[4] = s[4]
+  vector<double> classes;  // shapelet[5] = self.classes_[s[5]] NOTE: May actually be int
+  // z_normalise_series(X[s[4], s[3], s[2] : s[2] + s[1]]) // shapelet[4]
+  Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel, vector<double> classes)
+    : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel), classes(classes) {}
 };
 
-void _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet, vector<double>& sorted_indices, double& position, double& length) {
-
+// _online_shapelet_distance(series[shapelet[3]], shapelet[6], self._sorted_indices[n], shapelet[2], shapelet[1] )
+// _online_shapelet_distance(series(shapelet.values), )
+//
+//     for i, series in enumerate(X):
+//        if i != inst_idx:
+//            distance = _online_shapelet_distance(
+//                series[dim], shapelet, sorted_indices, position, length
+//            )
+//        else:
+//            distance = 0
+// TODO: Just make sure shapelet was correctly used
+double _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet,
+                                 vector<double>& sorted_indices, double& position, int& length) {
   vector<double> subseq;
+  // Subseq = series[pos : pos+length]
   for(int i = position; i < position+length; ++i ){
     subseq.push_back(series.at(i));
   }
 
-
   double sum = 0.0;
   double sum2 = 0.0;
 
-  for(double val : subseq) {
+  for(double val : series) {
     sum += val;
     sum2 += val * val;
   }
@@ -281,48 +344,65 @@ void _online_shapelet_distance(const vector<double>& series, const Shapelet& sha
   double mean = sum / length;
   double std = sqrt((sum2-mean*mean*length) / length);
 
-  if(std>0){
+  if(std > 0){
     // Z-score normalization
+    // z = (X - mean) / std
     for(int i = 0; i < length; ++i) {
-      subseq.at(i) = (subseq.at(i) - mean) / std;
+      subseq.at(i) = (subseq.at(i ) - mean) / std;
     }
   } else {
-    // Replace subseq with zeros?
-    fill(subseq.begin(), subseq.end(), 0.0);
+    // Fill subseq with 0s
+    for(int i = 0; i < length; ++i){
+      subseq.at(i) = 0;
+    }
   }
 
-  double best_dist = 0;
-
-  // TODO: Implement the real one
-  for(size_t i = 0; i < length; ++i) {
-    best_dist += pow(subseq[i] - shapelet.values[i], 2);
+  double best_dist = 0.0;
+  // Fix this to where it works properly with shapelets
+  for(int j = 0; j < length; ++j) {
+    best_dist += pow(shapelet.values[j] - subseq[j] , 2);
   }
 
-  //TODO: Not very faithful to original
   int i = 1;
   vector<bool> traverse = {true, true};
   vector<double> sums = {sum, sum};
   vector<double> sums2 = {sum2, sum2};
 
   while (traverse[0] || traverse[1]){
-    for (i = 0;i< 2;++i){
-      int mod = (n == 1) ? -1:1;
+    for (int n = 0 ; n < 2 ; ++n){
+      int mod = (n == 0 ? -1 : 1);
+      int pos = position + mod * i;
+      traverse.at(n) = (n == 0 ? pos >= 0 : pos <= (int)series.size() - length);
+      if(!traverse.at(n)) continue;
+
+      double start = series.at(pos - n);
+      double end = series.at(pos - n + length);
+
+      sums.at(n) += mod*end - mod*start;
+      sums2.at(n) += mod*end*end - mod*start*start;
+
+      mean = sums.at(n) / length;
+      std = sqrt((sums2.at(n) - mean*mean*length) / length);
+
+      double dist = 0.0;
+      double eps = 1e-8; // Numerical eps, to avoid division by zero
+      bool use_std = (std > eps);
+
+      for(int j = 0; j < length; ++j){
+        double val = use_std ? (series.at(pos + sorted_indices.at(j)) - mean) / std :  0.0;
+        double temp = shapelet.values.at(sorted_indices.at(j)) - val;
+        dist += temp*temp;
+
+        if(dist > best_dist) break;
+      }
+
+      best_dist = (dist > best_dist) ? dist : best_dist;
     }
+    ++i;
   }
+  //return best_dist / length;
+  return 1 / length * best_dist;
 }
-
-// Use _online_shapelet_distance
-double computeDistance(const vector<double>& series, const Shapelet& shapelet) {
-  // Placeholder for actual distance computation logic
-  // This could be Euclidean distance, DTW, etc.
-  double distance = 0.0;
-  for(size_t i = 0; i < min(series.size(), shapelet.values.size()); ++i) {
-    distance += pow(series[i] - shapelet.values[i], 2);
-  }
-  return distance;
-  //return sqrt(distance);
-}
-
 
 class RandomShapeletTransform : BaseTransformer {
 public:
@@ -393,7 +473,7 @@ class ShapeletTransformClassifier : BaseTransformer {
 public:
   // Parameters
 
-  // TODO: What does it mean to be number of shaplet samplse?
+  // TODO: What does it mean to be number of shaplet samples?
   int n_shaplet_samples; // default value: 10000
   int max_shaplets; // default value: None
   int max_shaplet_length; // default value: None
@@ -409,7 +489,8 @@ public:
   int random_state ; // default value: 0  TODO: What are the states
 
   // Attributes
-  //list classes_; // list of classifiers
+  // NOTE: Req for shapelets, not sure if vector<double>
+  vector<double> classes_; // list of classifiers
   int n_classes_; // number of classes
   int fit_time_; // time taken to fit the model
   int n_instances_;

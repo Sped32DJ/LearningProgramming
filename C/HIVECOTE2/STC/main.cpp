@@ -27,79 +27,7 @@ struct Shapelet {
 };
 
 double _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet,
-                                 vector<double>& sorted_indices, int& position, int& length);
-
-vector<vector<double>> _transform (vector<vector<double>>& X) {
-  // Holds our output
-  // output should be 8 columns, 22 rows; TODO: Figure out where these #'s come from
-  vector<vector<double>> output(X.size(), vector<double>(X.at(0).size(), 0.0));
-  cout << "output: " << output.size() << " " << output[0].size() << endl;
-
-  // AI generated sample shapelet
-  Shapelet shapelet(0, 0, 5, vector<double>{1.0, 2.0, 3.0, 4.0, 5.0}, 0, vector<double>{0.0});
-  vector<Shapelet> shapelets = {shapelet}; // Add more shapelets as needed
-
-  // This is the parallel part
-  // Goes through every time series
-  for (size_t i = 0; i < X.size(); ++i) {
-    const vector<double> &series = X[i];
-    vector<double> dist(shapelets.size());
-    vector<double> sorted_indices(shapelet.length); // or shapelets.size()?
-    for (size_t j = 0; j < shapelets.size(); ++j) {
-      Shapelet currShape = shapelets[j]; // shapelets[j];
-      _online_shapelet_distance(shapelet.values, shapelet,
-                                sorted_indices,
-                                shapelet.startPos, shapelet.length);
-    }
-  }
-  return output;
-};
-
-vector<vector<double>> transform (vector<vector<double>>& Xt) {
-  // Holds our output
-  vector<vector<double>> Xt_new;
-  return Xt_new;
-};
-
-vector<vector<double>> fillX (vector<vector<double>>& X);
-
-int main(){
-
-  // Below code for setting parameters (from test.py) for Transform
-  // RandomShapeletTransform _transform
-  int batch_size = 20;
-  int max_shapelets = 10;
-  int num_shapelets_samples = 100;
-  int time_limit_in_minutes = 0;
-
-  // Input of our trained data, ndarray [22][24]
-  // TODO: Where do these numbers come from?
-  // 22 vectors each holding 24 elements of data
-  vector<vector<double>> X(22, vector<double>(24, 0.0));
-  X = fillX(X);
-  cout << "X: " << X.size() << " " << X[0].size() << endl;
-
-
-  // Transforming our input data, [24][9]
-  // Sample of an index: small decimal values
-  //  [4.50453845e-02 3.34424780e-02 3.28272484e-02 4.80882944e-02
-  //  3.50738746e-02 5.75993352e-02 3.25588740e-02 4.57999218e-02
-  //  1.34327924e-02]]
-  vector<vector<double>> Xt;
-  // TODO: Test this against the real input and expected output
-  Xt = _transform(X);
-  Xt = transform(Xt);
-  transform(Xt); // Changes the format of our data
-
-
-
-
-  cout << "I love STC" << endl;
-  return 0;
-}
-
-double _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet,
-                                 vector<double>& sorted_indices, double& position, int& length) {
+                                 vector<double>& sorted_indices, int& position, int& length) {
   vector<double> subseq(length);
   // Subseq = series[pos : pos+length]
   for(int i = 0; i < length; ++i ){
@@ -176,9 +104,93 @@ double _online_shapelet_distance(const vector<double>& series, const Shapelet& s
     }
     ++i;
   }
-  return best_dist / length;
+  return best_dist / static_cast<double>(length);
   //return 1 / length * best_dist; // This was in the original code (???) // Check results
 }
+
+vector<vector<double>> _transform (vector<vector<double>>& X) {
+  // Holds our output
+  // output should be 8 columns, 22 rows; TODO: Figure out where these #'s come from
+  vector<vector<double>> output(X.size(), vector<double>(X.at(0).size(), 0.0));
+  cout << "output: " << output.size() << " " << output[0].size() << endl;
+
+  // AI generated sample shapelet
+  Shapelet shapelet(0, 0, 5, vector<double>{1.0, 2.0, 3.0, 4.0, 5.0}, 0, vector<double>{0.0});
+  vector<Shapelet> shapelets = {shapelet}; // Add more shapelets as needed
+
+  // This is the parallel part
+  // Goes through every time series
+  for (size_t i = 0; i < X.size(); ++i) {
+    const vector<double> &series = X[i];
+    vector<double> dist(shapelets.size());
+    vector<double> sorted_indices(shapelet.length); // or shapelets.size()?
+    for (size_t j = 0; j < shapelets.size(); ++j) {
+      Shapelet currShape = shapelets[j]; // shapelets[j];
+      _online_shapelet_distance(shapelet.values, shapelets[j],
+                                shapelet.normalizedValues,
+                                shapelet.startPos, shapelet.length);
+    }
+  }
+  return output;
+};
+
+vector<vector<double>> transform (vector<vector<double>>& Xt) {
+  // Holds our output
+  vector<vector<double>> Xt_new;
+  return Xt_new;
+};
+
+vector<vector<double>> fillX (vector<vector<double>>& X);
+
+int main(){
+
+  // Below code for setting parameters (from test.py) for Transform
+  // RandomShapeletTransform _transform
+  int batch_size = 20;
+  int max_shapelets = 10;
+  int num_shapelets_samples = 100;
+  int time_limit_in_minutes = 0;
+
+  // Input of our trained data, ndarray [22][24]
+  // TODO: Where do these numbers come from?
+  // 22 vectors each holding 24 elements of data
+  vector<vector<double>> X(22, vector<double>(24, 0.0));
+  cout << "X declared";
+  X = fillX(X); // Fill X with data from sample
+  cout << " X filled "<< endl << "X: " << X.size() << " " << X[0].size() << endl;
+  for (int i = 0; i < X.size(); ++i) {
+    cout << "{";
+    for (int j = 0; j < X[i].size(); ++j) {
+      cout << X[i][j] << " ";
+    }
+    cout << "}" << endl;
+  }
+
+
+  // Transforming our input data, [24][9]
+  // Sample of an index: small decimal values
+  //  [4.50453845e-02 3.34424780e-02 3.28272484e-02 4.80882944e-02
+  //  3.50738746e-02 5.75993352e-02 3.25588740e-02 4.57999218e-02
+  //  1.34327924e-02]]
+  vector<vector<double>> Xt;
+  // TODO: Test this against the real input and expected output
+  Xt = _transform(X);
+  for (int i = 0; i < Xt.size(); ++i) {
+    for (int j = 0; j < Xt[i].size(); ++j) {
+      cout << Xt[i][j] << " ";
+    }
+    cout << endl;
+  }
+  //Xt = transform(Xt);
+  //transform(Xt); // Changes the format of our data
+
+
+
+
+  cout << "I love STC" << endl;
+  return 0;
+}
+
 
 vector<vector<double>> fillX (vector<vector<double>>& X) {
   // Data from input.txt

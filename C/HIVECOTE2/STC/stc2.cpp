@@ -49,6 +49,7 @@ public:
 };
 
 class BaseTransformer : public BaseEstimator {
+  // FIX: What is below?
 protected:
   virtual std::vector<std::string> ALLOWED_INPUT_SCITYPES() const {
     return {"DataObj"}; // Example allowed input scitypes
@@ -161,16 +162,19 @@ struct Tree {
 //  }
 };
 
+// FIX: All RandomState stuff is not developed and some random_state is an int
+// Requires a full makeover
 // NOTE: This holds rng, part of predict
 // All hardcoded for now
 class RandomState {
+public:
   u_int64_t choice = 0x7F590B777640; // holds 12 hexadecimal digits = 48 bit value
   mt19937 seed; // print(rng) = RandomState(MT19937), not sure what this means
 };
 
 // Global function to check the random state
 // TODO: Check this function, how would I really do this?
-mt19937 checkRandomState(uint32_t seed) {
+mt19937 checkRandomState(int seed) {
   if(!seed){
     return mt19937(random_device{}()); // Use a random device if seed is 0
   } else {
@@ -187,17 +191,22 @@ public:
   vector<vector<double>> rotationMatrices; // Rotation matrices for each tree
   vector<Tree> trees;
   //  RandomState rng; // Random state for reproducibility
+  int random_state; // Random state for reproducibility
 
-  // TODO: Finish below
+  // TODO: Finish below (needs makeover)
   vector<int> predict(const vector<vector<double>>& X) {
     // Check if the model is fitted (avoiding)
     // CheckIfitted(X) // We can skip this for now
-    mt19937 rng = checkRandomState(random_state); // NOTE: We can skip the checks
+
+    // Set up random number generator
+    mt19937 rng(random_state); // NOTE: We can skip the checks
+
+    // Get predicted probabilities estimates
     vector<vector<double>> probas = predict_proba(X); // Get the predicted probabilities
 
     vector<int> y_pred(X.size(), 0); // Initialize predictions
 
-    for(const auto& prob : probas) {
+    for(const vector<double>& prob : probas) {
       double max_prob = -1.0;
       vector<size_t> best_idxs;
       for(size_t i = 0;  i < prob.size(); ++i) {
@@ -341,8 +350,7 @@ struct Shapelet {
   int length; // shapelet[2] = s[2]
   vector<double> values; // shapelet[3] = s[3], TODO: figure out the size of vector, at least the max
   int classLabel; // shapelet[4] = s[4]
-  vector<double> classes;  // shapelet[5] = self.classes_[s[5]] NOTE: May actually be int
-
+  vector<double> classes;  // shapelet[5] = self.classes_[s[5]] (numpy.ndarray)  NOTE: May actually be int
   vector<double> normalizedValues;  // shapelet[6] = z_normalise_series(X[s[4], s[3], s[2] : s[2] + s[1]])
   Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel, vector<double> classes)
     : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel), classes(classes) {}
@@ -359,12 +367,13 @@ struct Shapelet {
 //        else:
 //            distance = 0
 // TODO: Just make sure shapelet was correctly used
+//  @njit(fastmath=True, cache=True) // Not sure if there's a C++ equivalent
 double _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet,
                                  vector<double>& sorted_indices, double& position, int& length) {
-  vector<double> subseq;
+  vector<double> subseq(length);
   // Subseq = series[pos : pos+length]
-  for(int i = position; i < position+length; ++i ){
-    subseq.push_back(series.at(i));
+  for(int i = 0; i < length; ++i ){
+    subseq.at(i) = series.at(i + position);
   }
 
   double sum = 0.0;
@@ -434,11 +443,11 @@ double _online_shapelet_distance(const vector<double>& series, const Shapelet& s
     }
     ++i;
   }
-  //return best_dist / length;
-  return 1 / length * best_dist;
+  return best_dist / length;
+  //return 1 / length * best_dist; // This was in the original code (???) // Check results
 }
 
-class RandomShapeletTransform : BaseTransformer {
+class RandomShapeletTransform : public BaseTransformer {
 public:
     int n_shapelet_samples;
     int max_shapelets;
@@ -475,6 +484,7 @@ public:
     // output[i][j] = distance(X[i], shapelets[j])
     vector<vector<double>> output(X.size(), shapelets.size(), 0.0);
 
+    // FIX: Below is a placeholder
     auto worker = [&](size_t start, size_t end) {
       for(size_t i = start; i < end; ++i) {
         for(size_t j = 0; j < shapelets.size(); ++j) {

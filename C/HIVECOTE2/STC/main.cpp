@@ -6,35 +6,47 @@ using namespace std;
 
 // Shapelet is a tuple
 struct Shapelet {
+  // info_gain: float
+  //    Calculated info gain of this shapelet.
   // series_id: int
   //    index of series within the data (X) that was passed to fit.
   // start_pos: int
   //    Start pos from the original series that this shapelet was extracted from.
   // length: int
   //    length of shapelet.
-  // info_gain: float
-  //    Calculated info gain of this shapelet.
   // data: array-like
   //    The (z-normalised) shapelet data.
   float info_gain; // shapelet[0] = s[0]; range (-1.0, 1.0)
-  uint length; // shapelet[1] = s[1];
-  uint startPos; // shapelet[2] = s[2]; start pos from original series
-  uint shapeletDimension; // shapelet[3] = s[3]
-  uint index; // shapelet[4] = s[4]; index of instance the shapelet was extracted from in fit
-  uint classValue; // shapelet[5] = s[5]; np.str_{'1 || 2'}; class value of shapelet
-  vector<double> zNormalisedValues; // shapelet[5] = s[5]; z-normalized shapelet array
+  int length; // shapelet[1] = s[1]; uint
+  int startPos; // shapelet[2] = s[2]; start pos from original series; uint
+  int shapeletDimension; // shapelet[3] = s[3]; uint
+  int index; // shapelet[4] = s[4]; index of instance the shapelet was extracted from in fit; uint
+  char classValue; // shapelet[5] = self.classes_[s[5]]; NOTE: np.str_{'1 || 2'}; class value of shapelet, only holds 1 or 2
+  vector<double> zNormalisedValues; // shapelet[6] = z-normalise_series(X[s[4], s[3], s[2]: s[2] + s[1]]); z-normalized shapelet array
 
 
   // Real: float (range: 0.0-1.0) info_gain, int (length), int, int, int, np.str_{'1 || 2'}, vector<double> data(length)
   // (7 elements inside a shapelet)
-  //
+//    shapelets : list
+//        The stored shapelets and relating information after a dataset has been
+//        processed.
+//        Each item in the list is a tuple containing the following 7 items:
+//        (shapelet information gain, shapelet length, start position the shapelet was
+//        extracted from, shapelet dimension, index of the instance the shapelet was
+//        extracted from in fit, class value of the shapelet, The z-normalised shapelet
+//        array)  //
+  Shapelet(float ig, int len, int start, int dim, int idx, int cls, vector<double> values)
+    : info_gain(ig), length(len), startPos(start), shapeletDimension(dim), index(idx), classValue(cls), zNormalisedValues(values) {}
 
 };
 
-double _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet,
-                                 vector<double>& sorted_indices, int& position, int& length) {
-  vector<double> subseq(length);
+// vector<vector<int>> series, vector<double> shapelet,
+// vector<vector<uint>> sorted_indices (each vector<vector> has different size), vector<uint> position, vector<int> length
+double _online_shapelet_distance(const vector<double>& series, const vector<double>& shapelet,
+                                 int& sorted_indices, int& position, int& length) {
   // Subseq = series[pos : pos+length]
+  vector<double> subseq(length); // NOTE: Really should be vector<vector<uint>>
+  // This vector holds many vectors
   for(int i = 0; i < length; ++i ){
     subseq.at(i) = series.at(i + position);
   }
@@ -69,7 +81,7 @@ double _online_shapelet_distance(const vector<double>& series, const Shapelet& s
   //    best_dist += (i - n) ** 2
   double best_dist = 0.0;
   for(int j = 0; j < length; ++j){
-    best_dist += pow(shapelet.values[j] - subseq[j] , 2);
+    best_dist += pow(shapelet[j] - subseq[j] , 2);
   }
 
   int i = 1;
@@ -97,9 +109,10 @@ double _online_shapelet_distance(const vector<double>& series, const Shapelet& s
       double eps = 1e-8; // Numerical eps, to avoid division by zero
       bool use_std = (std > eps);
 
+      //TODO: Figure out below
       for(int j = 0; j < length; ++j){
         double val = use_std ? (series.at(pos + sorted_indices.at(j)) - mean) / std :  0.0;
-        double temp = shapelet.values.at(sorted_indices.at(j)) - val;
+        double temp = shapelet.at(sorted_indices.at(j)) - val;
         dist += temp*temp;
 
         if(dist > best_dist) break;
@@ -123,15 +136,21 @@ vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& 
   // Goes through every time series
   for (size_t i = 0; i < X.size(); ++i) {
     const vector<double> &series = X[i];
-    vector<double> dist(shapelets.size());
+    vector<double> dists(shapelets.size());
     Shapelet shapelet = shapelets[i]; // shapelets[i]
     vector<double> sorted_indices(shapelet.length); // or shapelets.size()?
     for (size_t j = 0; j < shapelets.size(); ++j) {
       Shapelet currShape = shapelets[j]; // shapelets[j];
-      _online_shapelet_distance(shapelet.values, shapelets[j],
-                                shapelet.normalizedValues,
-                                shapelet.startPos, shapelet.length);
+      // TODO: Inputs to _online_shapelet_distance
+      // dists[j] = _online_shapelet_distance(series[shapelet[3]], shapelet[6],
+      // self._sorted_indices[n],
+      // shapelet[2], shapelet[1]);
+      // def _online_shapelet_distance(series, shapelet, sorted_indices, position, length):
+      dists[j] = _online_shapelet_distance(series, shapelet,
+                                shapelet.zNormalisedValues, shapelet.startPos,
+                                shapelet.length);
     }
+    output[i] = dists;
   }
   return output;
 };
@@ -171,8 +190,7 @@ int main(){
 
   // NOTE: # of shapelets & shapelet content changes based on training from _predict()
   vector<Shapelet> shapelets(8); // This should be filled during training, # of shapelets changes
-  fillShapelets(shapelets); // TODO: Fill shapelets with real data from _predict
-  Shapelet shape(1.0, 16, 0, 0.0, 1, {1.0, 2.0}, {0.1, 0.2, 0.3, 0.4, 0.5});
+  shapelets = fillShapelets(shapelets);
 
 
   // Transforming our input data, [24][9]
@@ -201,6 +219,30 @@ int main(){
 }
 
 vector<Shapelet> fillShapelets (vector<Shapelet>& shapelets){
+  shapelets = {{1.0, 16, 0, 0, 6, '1', { 0.23141845, -0.37421933, -0.57879932, -0.72261298, -0.89478425,
+       -0.94542287, -0.94137178, -0.85629891, -0.72666407, -0.6415912 ,
+       -0.33573399,  0.3610533 ,  1.32723799,  1.79108767,  1.7424746 ,
+        1.56422669}}, {1.0, 12, 0, 0, 8, '1', { 1.21780253,  0.75151562, -0.15625572, -0.19593972, -0.93505408,
+       -1.06898756, -1.24260503, -0.80608111, -0.39435968, -0.21578171,
+        0.87552809,  2.17021836}}, {1.0, 9, 0, 0, 0, '1', { 2.112063  ,  1.01669156,  0.60731031,  0.11494639, -0.75360571,
+       -0.86978147, -0.91957108, -0.87531365, -0.43273933}}, {0.758276657193, 17, 0, 0, 7, '1', {-0.11467995, -0.38860902, -0.77764659, -0.849043  , -0.91461113,
+       -0.94083838, -0.93501011, -0.85778542, -0.79221729, -0.75579055,
+       -0.41775041,  0.50748876,  1.41670016,  1.59154851,  1.49683898,
+        1.50121019,  1.23019526}}, {0.758276657193, 15, 2, 0, 11, '2', {-0.90287427, -0.98773375, -0.98314675, -0.98773375, -0.95562476,
+       -0.7836123 , -0.62536084, -0.54967536, -0.006116  ,  0.35855041,
+        1.65208409,  1.79657455,  1.07182873,  0.98008876,  0.92275127}}, {0.758276657193, 15, 0, 0, 1, '1', {-0.05055647, -0.32904552, -0.59468123, -0.58611233, -0.67180127,
+       -0.83461025, -0.83461025, -0.84103692, -0.74463687, -0.56683232,
+       -0.03556091,  0.49571051,  1.7103512 ,  2.10237809,  1.78104457}}, {0.758276657193, 14, 3, 0, 12, '2', {-1.03837851, -1.04585911, -1.02591085, -1.02840438, -0.88627298,
+       -0.61198432, -0.51723005, -0.33021505,  0.35051954,  1.52996079,
+        1.68705339,  1.10107307,  0.834265  ,  0.98138347}}, {0.609986547011, 23, 0, 0, 18, '2', {-0.97622365, -1.04301122, -1.08057922, -1.12023434, -1.1682379 ,
+       -1.12649567, -1.11606012, -0.94909121, -0.73829296, -0.6715054 ,
+       -0.39809381, -0.0286751 ,  1.34255707,  1.37803796,  1.2382015 ,
+        1.12549749,  1.08584237,  1.13593305,  1.14010727,  1.31542462,
+        0.70390099,  0.20299427, -0.25199601}}, {0.49342260575999997, 19, 0, 0, 19, '2', {-0.90197863, -0.87549829, -0.97660504, -1.03197302, -1.00549268,
+       -1.05845336, -1.02715841, -0.76716963, -0.55773422, -0.47107129,
+       -0.23756285,  0.39555798,  1.48606648,  1.73161145,  1.10089792,
+        0.96608892,  0.89868442,  1.13460017,  1.19719006}}};
+  return shapelets;
 
 }
 

@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// Shapelet is a tuple
 struct Shapelet {
   // series_id: int
   //    index of series within the data (X) that was passed to fit.
@@ -15,15 +16,19 @@ struct Shapelet {
   //    Calculated info gain of this shapelet.
   // data: array-like
   //    The (z-normalised) shapelet data.
-  int seriesID; // shapelet[0] = s[0]
-  int startPos; // shapelet[1] = s[1]
-  int length; // shapelet[2] = s[2]
-  vector<double> values; // shapelet[3] = s[3], TODO: figure out the size of vector, at least the max
-  int classLabel; // shapelet[4] = s[4]
-  vector<double> classes;  // shapelet[5] = self.classes_[s[5]] (numpy.ndarray)  NOTE: May actually be int
-  vector<double> normalizedValues;  // shapelet[6] = z_normalise_series(X[s[4], s[3], s[2] : s[2] + s[1]])
-  Shapelet(int seriesID, int startPos, int length, vector<double> values, int classLabel, vector<double> classes)
-    : seriesID(seriesID), startPos(startPos), length(length), values(values), classLabel(classLabel), classes(classes) {}
+  float info_gain; // shapelet[0] = s[0]; range (-1.0, 1.0)
+  uint length; // shapelet[1] = s[1];
+  uint startPos; // shapelet[2] = s[2]; start pos from original series
+  uint shapeletDimension; // shapelet[3] = s[3]
+  uint index; // shapelet[4] = s[4]; index of instance the shapelet was extracted from in fit
+  uint classValue; // shapelet[5] = s[5]; np.str_{'1 || 2'}; class value of shapelet
+  vector<double> zNormalisedValues; // shapelet[5] = s[5]; z-normalized shapelet array
+
+
+  // Real: float (range: 0.0-1.0) info_gain, int (length), int, int, int, np.str_{'1 || 2'}, vector<double> data(length)
+  // (7 elements inside a shapelet)
+  //
+
 };
 
 double _online_shapelet_distance(const vector<double>& series, const Shapelet& shapelet,
@@ -108,21 +113,18 @@ double _online_shapelet_distance(const vector<double>& series, const Shapelet& s
   //return 1 / length * best_dist; // This was in the original code (???) // Check results
 }
 
-vector<vector<double>> _transform (vector<vector<double>>& X) {
+vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& shapelets) {
   // Holds our output
   // output should be 8 columns, 22 rows; TODO: Figure out where these #'s come from
   vector<vector<double>> output(X.size(), vector<double>(X.at(0).size(), 0.0));
   cout << "output: " << output.size() << " " << output[0].size() << endl;
-
-  // AI generated sample shapelet
-  Shapelet shapelet(0, 0, 5, vector<double>{1.0, 2.0, 3.0, 4.0, 5.0}, 0, vector<double>{0.0});
-  vector<Shapelet> shapelets = {shapelet}; // Add more shapelets as needed
 
   // This is the parallel part
   // Goes through every time series
   for (size_t i = 0; i < X.size(); ++i) {
     const vector<double> &series = X[i];
     vector<double> dist(shapelets.size());
+    Shapelet shapelet = shapelets[i]; // shapelets[i]
     vector<double> sorted_indices(shapelet.length); // or shapelets.size()?
     for (size_t j = 0; j < shapelets.size(); ++j) {
       Shapelet currShape = shapelets[j]; // shapelets[j];
@@ -141,23 +143,24 @@ vector<vector<double>> transform (vector<vector<double>>& Xt) {
 };
 
 vector<vector<double>> fillX (vector<vector<double>>& X);
+vector<Shapelet> fillShapelets (vector<Shapelet>& shapelets);
 
 int main(){
 
   // Below code for setting parameters (from test.py) for Transform
   // RandomShapeletTransform _transform
   int batch_size = 20;
-  int max_shapelets = 10;
+  int max_shapelets = 10; // Not relevant since _predict is the shapelet generator
   int num_shapelets_samples = 100;
   int time_limit_in_minutes = 0;
 
   // Input of our trained data, ndarray [22][24]
   // TODO: Where do these numbers come from?
-  // 22 vectors each holding 24 elements of data
-  vector<vector<double>> X(22, vector<double>(24, 0.0));
+  // 22 vectors each holding 24 elements of data. NOTE: Data never changes
+  vector<vector<double>> X(22, vector<double>(24, 0.0)); // Filled during training
   cout << "X declared";
   X = fillX(X); // Fill X with data from sample
-  cout << " X filled "<< endl << "X: " << X.size() << " " << X[0].size() << endl;
+  cout << "-> X filled "<< endl << "X: " << X.size() << " " << X[0].size() << endl;
   for (int i = 0; i < X.size(); ++i) {
     cout << "{";
     for (int j = 0; j < X[i].size(); ++j) {
@@ -165,6 +168,11 @@ int main(){
     }
     cout << "}" << endl;
   }
+
+  // NOTE: # of shapelets & shapelet content changes based on training from _predict()
+  vector<Shapelet> shapelets(8); // This should be filled during training, # of shapelets changes
+  fillShapelets(shapelets); // TODO: Fill shapelets with real data from _predict
+  Shapelet shape(1.0, 16, 0, 0.0, 1, {1.0, 2.0}, {0.1, 0.2, 0.3, 0.4, 0.5});
 
 
   // Transforming our input data, [24][9]
@@ -174,13 +182,14 @@ int main(){
   //  1.34327924e-02]]
   vector<vector<double>> Xt;
   // TODO: Test this against the real input and expected output
-  Xt = _transform(X);
+  Xt = _transform(X, shapelets);
   for (int i = 0; i < Xt.size(); ++i) {
     for (int j = 0; j < Xt[i].size(); ++j) {
       cout << Xt[i][j] << " ";
     }
     cout << endl;
   }
+  // NOTE: Xt changes based on trained shapelets
   //Xt = transform(Xt);
   //transform(Xt); // Changes the format of our data
 
@@ -191,6 +200,9 @@ int main(){
   return 0;
 }
 
+vector<Shapelet> fillShapelets (vector<Shapelet>& shapelets){
+
+}
 
 vector<vector<double>> fillX (vector<vector<double>>& X) {
   // Data from input.txt

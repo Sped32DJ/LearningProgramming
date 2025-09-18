@@ -127,21 +127,21 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
   //return 1 / length * best_dist; // This was in the original code (???) // Check results
 }
 
-vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& shapelets) {
+// NOTE: Currently crashing, try moving this into int main() rather than stack
+vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& shapelets, vector<vector<double>>& sorted_indices) {
   // Holds our output
   // output should be 8 columns, 22 rows; TODO: Figure out where these #'s come from
   vector<vector<double>> output(X.size(), vector<double>(X.at(0).size(), 0.0));
   cout << "output: " << output.size() << " " << output[0].size() << endl;
+  //TODO: Something with sorted indices
 
   // This is the parallel part
   // Goes through every time series
   for (size_t i = 0; i < X.size(); ++i) {
     const vector<double> &series = X[i];
     vector<double> dists(shapelets.size());
-    Shapelet shapelet = shapelets[i]; // shapelets[i]
-    vector<double> sorted_indices(shapelet.length); // or shapelets.size()?
     for (size_t j = 0; j < shapelets.size(); ++j) {
-      Shapelet currShape = shapelets[j]; // shapelets[j];
+      Shapelet shapelet = shapelets[j]; // shapelets[i]
       vector<double> sortedIndices(shapelet.length);
       // TODO: Inputs to _online_shapelet_distance
       // dists[j] = _online_shapelet_distance(series[shapelet[3]], shapelet[6],
@@ -150,10 +150,9 @@ vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& 
       // def _online_shapelet_distance(vector<uint> series, vector<double> shapelet,
       // vector<uint> sorted_indices, uint position, uint length):
       dists[j] = _online_shapelet_distance(series, shapelet.zNormalisedValues,
-                                           sorted_indices, shapelet.startPos,
+                                           sorted_indices[j], shapelet.startPos,
                                 shapelet.length);
     }
-    cout << "Crash check: " << i << "/" << X.size() << " iterations done" << endl;
     output[i] = dists;
   }
   return output;
@@ -167,6 +166,7 @@ vector<vector<double>> transform (vector<vector<double>>& Xt) {
 
 vector<vector<double>> fillX (vector<vector<double>>& X);
 vector<Shapelet> fillShapelets (vector<Shapelet>& shapelets);
+vector<vector<double>> fillSortedIndices(vector<vector<double>>& sorted_indices);
 
 int main(){
 
@@ -192,9 +192,13 @@ int main(){
     cout << "}" << endl;
   }
 
-  // NOTE: # of shapelets & shapelet content changes based on training from _predict()
-  vector<Shapelet> shapelets(8); // This should be filled during training, # of shapelets changes
+  // NOTE: # of shapelets & shapelet content changes based on training from _fit()
+  vector<Shapelet> shapelets(9); // This should be filled during training, # of shapelets changes
   shapelets = fillShapelets(shapelets);
+
+  // NOTE: Filling sorted_indices from _fit()
+  vector<vector<double>> sorted_indices(9); // This should be filled during training, # of shapelets changes
+  sorted_indices = fillSortedIndices(sorted_indices);
 
 
   // Transforming our input data, [24][9]
@@ -205,7 +209,7 @@ int main(){
   vector<vector<double>> Xt;
   // TODO: Test this against the real input and expected output
   cout << "\nCalling _transform" << endl;
-  Xt = _transform(X, shapelets);
+  Xt = _transform(X, shapelets, sorted_indices);
   cout << "Below Xt" << endl;
   for (int i = 0; i < Xt.size(); ++i) {
     for (int j = 0; j < Xt[i].size(); ++j) {
@@ -251,7 +255,7 @@ vector<Shapelet> fillShapelets (vector<Shapelet>& shapelets){
   return shapelets;
 }
 
-vector<vector<double>> fillSortedIndices( vector<vector<double>>& sorted_indices) {
+vector<vector<double>> fillSortedIndices(vector<vector<double>>& sorted_indices) {
   sorted_indices =
 {{13, 12,  5,  6,  4,  7, 11,  8,  3,  0,  9,  2,  1, 10}, {10, 11, 12,  9,  4,  2,  3,  5,  1,  0,  6,  8,  7}, {10,  9,  2,  3,  1,  4,  0,  5,  8,  6,  7}, {9, 0, 5, 6, 4, 3, 1, 7, 2, 8}, {12, 11, 13, 16,  5, 14,  6,  4,  3, 17,  7,  8,  2, 15,  1,  9,  0,
        10}, {13, 17, 12, 14,  3,  5,  4,  6, 15,  2, 16,  1,  7,  0,  8,  9, 11,

@@ -37,15 +37,16 @@ struct Shapelet {
 //        array)  //
   Shapelet(float ig, int len, int start, int dim, int idx, int cls, vector<double> values)
     : info_gain(ig), length(len), startPos(start), shapeletDimension(dim), index(idx), classValue(cls), zNormalisedValues(values) {}
+  Shapelet() : info_gain(0.0), length(0), startPos(0), shapeletDimension(0), index(0), classValue('0'), zNormalisedValues(vector<double>()) {}
 
 };
 
 // vector<vector<int>> series, vector<double> shapelet,
 // vector<vector<uint>> sorted_indices (each vector<vector> has different size), vector<uint> position, vector<int> length
 double _online_shapelet_distance(const vector<double>& series, const vector<double>& shapelet,
-                                 int& sorted_indices, int& position, int& length) {
+                                 vector<double>& sorted_indices, int& position, int& length) {
   // Subseq = series[pos : pos+length]
-  vector<double> subseq(length); // NOTE: Really should be vector<vector<uint>>
+  vector<double> subseq(length); // NOTE: Really should be vector<uint>
   // This vector holds many vectors
   for(int i = 0; i < length; ++i ){
     subseq.at(i) = series.at(i + position);
@@ -141,15 +142,18 @@ vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& 
     vector<double> sorted_indices(shapelet.length); // or shapelets.size()?
     for (size_t j = 0; j < shapelets.size(); ++j) {
       Shapelet currShape = shapelets[j]; // shapelets[j];
+      vector<double> sortedIndices(shapelet.length);
       // TODO: Inputs to _online_shapelet_distance
       // dists[j] = _online_shapelet_distance(series[shapelet[3]], shapelet[6],
       // self._sorted_indices[n],
       // shapelet[2], shapelet[1]);
-      // def _online_shapelet_distance(series, shapelet, sorted_indices, position, length):
-      dists[j] = _online_shapelet_distance(series, shapelet,
-                                shapelet.zNormalisedValues, shapelet.startPos,
+      // def _online_shapelet_distance(vector<uint> series, vector<double> shapelet,
+      // vector<uint> sorted_indices, uint position, uint length):
+      dists[j] = _online_shapelet_distance(series, shapelet.zNormalisedValues,
+                                           sorted_indices, shapelet.startPos,
                                 shapelet.length);
     }
+    cout << "Crash check: " << i << "/" << X.size() << " iterations done" << endl;
     output[i] = dists;
   }
   return output;
@@ -200,7 +204,9 @@ int main(){
   //  1.34327924e-02]]
   vector<vector<double>> Xt;
   // TODO: Test this against the real input and expected output
+  cout << "\nCalling _transform" << endl;
   Xt = _transform(X, shapelets);
+  cout << "Below Xt" << endl;
   for (int i = 0; i < Xt.size(); ++i) {
     for (int j = 0; j < Xt[i].size(); ++j) {
       cout << Xt[i][j] << " ";
@@ -219,32 +225,41 @@ int main(){
 }
 
 vector<Shapelet> fillShapelets (vector<Shapelet>& shapelets){
-  shapelets = {{1.0, 16, 0, 0, 6, '1', { 0.23141845, -0.37421933, -0.57879932, -0.72261298, -0.89478425,
-       -0.94542287, -0.94137178, -0.85629891, -0.72666407, -0.6415912 ,
-       -0.33573399,  0.3610533 ,  1.32723799,  1.79108767,  1.7424746 ,
-        1.56422669}}, {1.0, 12, 0, 0, 8, '1', { 1.21780253,  0.75151562, -0.15625572, -0.19593972, -0.93505408,
-       -1.06898756, -1.24260503, -0.80608111, -0.39435968, -0.21578171,
-        0.87552809,  2.17021836}}, {1.0, 9, 0, 0, 0, '1', { 2.112063  ,  1.01669156,  0.60731031,  0.11494639, -0.75360571,
-       -0.86978147, -0.91957108, -0.87531365, -0.43273933}}, {0.758276657193, 17, 0, 0, 7, '1', {-0.11467995, -0.38860902, -0.77764659, -0.849043  , -0.91461113,
-       -0.94083838, -0.93501011, -0.85778542, -0.79221729, -0.75579055,
-       -0.41775041,  0.50748876,  1.41670016,  1.59154851,  1.49683898,
-        1.50121019,  1.23019526}}, {0.758276657193, 15, 2, 0, 11, '2', {-0.90287427, -0.98773375, -0.98314675, -0.98773375, -0.95562476,
-       -0.7836123 , -0.62536084, -0.54967536, -0.006116  ,  0.35855041,
-        1.65208409,  1.79657455,  1.07182873,  0.98008876,  0.92275127}}, {0.758276657193, 15, 0, 0, 1, '1', {-0.05055647, -0.32904552, -0.59468123, -0.58611233, -0.67180127,
-       -0.83461025, -0.83461025, -0.84103692, -0.74463687, -0.56683232,
-       -0.03556091,  0.49571051,  1.7103512 ,  2.10237809,  1.78104457}}, {0.758276657193, 14, 3, 0, 12, '2', {-1.03837851, -1.04585911, -1.02591085, -1.02840438, -0.88627298,
-       -0.61198432, -0.51723005, -0.33021505,  0.35051954,  1.52996079,
-        1.68705339,  1.10107307,  0.834265  ,  0.98138347}}, {0.609986547011, 23, 0, 0, 18, '2', {-0.97622365, -1.04301122, -1.08057922, -1.12023434, -1.1682379 ,
-       -1.12649567, -1.11606012, -0.94909121, -0.73829296, -0.6715054 ,
-       -0.39809381, -0.0286751 ,  1.34255707,  1.37803796,  1.2382015 ,
-        1.12549749,  1.08584237,  1.13593305,  1.14010727,  1.31542462,
-        0.70390099,  0.20299427, -0.25199601}}, {0.49342260575999997, 19, 0, 0, 19, '2', {-0.90197863, -0.87549829, -0.97660504, -1.03197302, -1.00549268,
+  shapelets =
+{{1.0, 14, 0, 0, 6, '1', { 0.56073772, -0.16551479, -0.41083754, -0.58329215, -0.78975189,
+       -0.85047534, -0.84561747, -0.74360206, -0.58815002, -0.48613462,
+       -0.11936496,  0.71618976,  1.87479326,  2.4310201 }}, {1.0, 13, 3, 0, 1, '1', {-0.69528954, -0.77008279, -0.91218996, -0.91218996, -0.91779945,
+       -0.83365705, -0.67846106, -0.21474292,  0.24897522,  1.3091695 ,
+        1.65134861,  1.37087393,  1.35404545}}, {1.0, 11, 2, 0, 18, '2', {-0.61364035, -0.66904028, -0.73610335, -0.67778763, -0.66320871,
+       -0.42994585, -0.1354515 , -0.04214636,  0.33982157,  0.85591563,
+        2.77158682}}, {1.0, 10, 1, 0, 4, '1', { 1.63885465,  0.61457049, -0.05552194, -0.70646889, -0.95536036,
+       -1.07023335, -0.98407861, -0.30441342,  0.00191455,  1.82073688}}, {0.758276657193, 18, 1, 0, 0, '1', {-0.38321241, -0.53935769, -0.72715405, -1.05843526, -1.10274676,
+       -1.1217374 , -1.10485683, -0.93605112, -0.87274897, -0.53513755,
+        0.12320472,  1.41245835,  1.52851227,  1.40190799,  1.10649799,
+        0.65283264,  1.13814907,  1.017875  }}, {0.758276657193, 18, 0, 0, 11, '2', {-0.68157062, -0.85358665, -0.88005065, -0.961648  , -0.95723733,
+       -0.961648  , -0.93077333, -0.7653733 , -0.61320528, -0.54042927,
+       -0.01776519,  0.33288287,  1.57669105,  1.71562708,  1.01874164,
+        0.93052829,  0.87539495,  1.71342174}}, {0.609986547011, 8, 4, 0, 12, '2', {-0.90930622, -0.86494982, -0.87049437, -0.55445501,  0.0554455 ,
+        0.26613841,  0.68197966,  2.19564184}}, {0.531004406411, 16, 1, 0, 14, '2', {-0.76302713, -0.86397436, -0.9092976 , -0.87221495, -0.95050055,
+       -0.90311716, -0.81865111, -0.59615518, -0.51992973, -0.07699801,
+        0.54516653,  1.75447312,  1.8492399 ,  1.03960193,  0.96337648,
+        1.12200783}},
+      {0.49342260575999997, 19, 0, 0, 19, '2', {-0.90197863, -0.87549829, -0.97660504, -1.03197302, -1.00549268,
        -1.05845336, -1.02715841, -0.76716963, -0.55773422, -0.47107129,
        -0.23756285,  0.39555798,  1.48606648,  1.73161145,  1.10089792,
         0.96608892,  0.89868442,  1.13460017,  1.19719006}}};
   return shapelets;
-
 }
+
+vector<vector<double>> fillSortedIndices( vector<vector<double>>& sorted_indices) {
+  sorted_indices =
+{{13, 12,  5,  6,  4,  7, 11,  8,  3,  0,  9,  2,  1, 10}, {10, 11, 12,  9,  4,  2,  3,  5,  1,  0,  6,  8,  7}, {10,  9,  2,  3,  1,  4,  0,  5,  8,  6,  7}, {9, 0, 5, 6, 4, 3, 1, 7, 2, 8}, {12, 11, 13, 16,  5, 14,  6,  4,  3, 17,  7,  8,  2, 15,  1,  9,  0,
+       10}, {13, 17, 12, 14,  3,  5,  4,  6, 15,  2, 16,  1,  7,  0,  8,  9, 11,
+       10}, {7, 0, 2, 1, 6, 3, 5, 4}, {12, 11, 15, 13, 14,  4,  2,  5,  3,  1,  6,  0,  7, 10,  8,  9},
+      {13, 12, 18, 17, 14,  5,  3,  6,  4,  2, 15,  0, 16,  1,  7,  8,  9,
+       11, 10}};
+  return sorted_indices;
+};
 
 vector<vector<double>> fillX (vector<vector<double>>& X) {
   // Data from input.txt
@@ -338,4 +353,3 @@ vector<vector<double>> fillX (vector<vector<double>>& X) {
     317,  224,}};
     return X;
 };
-

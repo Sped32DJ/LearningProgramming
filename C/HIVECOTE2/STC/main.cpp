@@ -4,6 +4,8 @@
 
 using namespace std;
 
+// TODO: Change all instances of doubles that should be ints to ints
+
 // Shapelet is a tuple
 struct Shapelet {
   // info_gain: float
@@ -60,8 +62,8 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
     sum2 += val * val;
   }
 
-  double mean = sum / length;
-  double std = sqrt((sum2-mean*mean*length) / length);
+  double mean = sum / static_cast<double>(length);
+  double std = sqrt((sum2-mean*mean*static_cast<double>(length)) / static_cast<double>(length));
 
   if(std > 0){
     // Z-score normalization
@@ -103,8 +105,8 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
       sums.at(n) += mod*end - mod*start;
       sums2.at(n) += mod*end*end - mod*start*start;
 
-      mean = sums.at(n) / length;
-      std = sqrt((sums2.at(n) - mean*mean*length) / length);
+      mean = sums.at(n) / static_cast<double>(length);
+      std = sqrt((sums2.at(n) - mean*mean*static_cast<double>(length)) / static_cast<double>(length));
 
       double dist = 0.0;
       double eps = 1e-8; // Numerical eps, to avoid division by zero

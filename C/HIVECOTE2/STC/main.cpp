@@ -191,6 +191,8 @@ int main(){
     }
     cout << "}" << endl;
   }
+  // Opening length file
+  // int lengthFile =
 
   // NOTE: # of shapelets & shapelet content changes based on training from _fit()
   vector<Shapelet> shapelets(9); // This should be filled during training, # of shapelets changes
@@ -206,21 +208,21 @@ int main(){
   //  [4.50453845e-02 3.34424780e-02 3.28272484e-02 4.80882944e-02
   //  3.50738746e-02 5.75993352e-02 3.25588740e-02 4.57999218e-02
   //  1.34327924e-02]]
-  vector<vector<double>> Xt;
+  vector<vector<double>> Xt();
   // TODO: Test this against the real input and expected output
   cout << "\nCalling _transform" << endl;
   Xt = _transform(X, shapelets, sorted_indices);
   cout << "Below Xt" << endl;
   for (int i = 0; i < Xt.size(); ++i) {
+    cout << '{';
     for (int j = 0; j < Xt[i].size(); ++j) {
       cout << Xt[i][j] << " ";
     }
-    cout << endl;
+    cout << '}' << endl;
   }
   // NOTE: Xt changes based on trained shapelets
   //Xt = transform(Xt);
   //transform(Xt); // Changes the format of our data
-
 
 
 

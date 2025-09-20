@@ -208,7 +208,7 @@ int main(){
   //  [4.50453845e-02 3.34424780e-02 3.28272484e-02 4.80882944e-02
   //  3.50738746e-02 5.75993352e-02 3.25588740e-02 4.57999218e-02
   //  1.34327924e-02]]
-  vector<vector<double>> Xt();
+  vector<vector<double>> Xt;
   // TODO: Test this against the real input and expected output
   cout << "\nCalling _transform" << endl;
   Xt = _transform(X, shapelets, sorted_indices);

@@ -55,7 +55,7 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
   double sum = 0.0;
   double sum2 = 0.0;
 
-  for(double val : series) {
+  for(double val : subseq) {
     sum += val;
     sum2 += val * val;
   }
@@ -119,7 +119,7 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
         if(dist > best_dist) break;
       }
 
-      best_dist = (dist > best_dist) ? dist : best_dist;
+      best_dist = (dist < best_dist) ? dist : best_dist;
     }
     ++i;
   }

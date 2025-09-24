@@ -7,47 +7,10 @@ using namespace std;
 
 // TODO: Change all instances of doubles that should be ints to ints
 
-// Shapelet is a tuple
-struct Shapelet {
-  // info_gain: float
-  //    Calculated info gain of this shapelet.
-  // series_id: int
-  //    index of series within the data (X) that was passed to fit.
-  // start_pos: int
-  //    Start pos from the original series that this shapelet was extracted from.
-  // length: int
-  //    length of shapelet.
-  // data: array-like
-  //    The (z-normalised) shapelet data.
-  float info_gain; // shapelet[0] = s[0]; range (-1.0, 1.0)
-  int length; // shapelet[1] = s[1]; uint
-  int startPos; // shapelet[2] = s[2]; start pos from original series; uint
-  int shapeletDimension; // shapelet[3] = s[3]; uint
-  int index; // shapelet[4] = s[4]; index of instance the shapelet was extracted from in fit; uint
-  char classValue; // shapelet[5] = self.classes_[s[5]]; NOTE: np.str_{'1 || 2'}; class value of shapelet, only holds 1 or 2
-  vector<double> zNormalisedValues; // shapelet[6] = z-normalise_series(X[s[4], s[3], s[2]: s[2] + s[1]]); z-normalized shapelet array
-
-
-  // Real: float (range: 0.0-1.0) info_gain, int (length), int, int, int, np.str_{'1 || 2'}, vector<double> data(length)
-  // (7 elements inside a shapelet)
-//    shapelets : list
-//        The stored shapelets and relating information after a dataset has been
-//        processed.
-//        Each item in the list is a tuple containing the following 7 items:
-//        (shapelet information gain, shapelet length, start position the shapelet was
-//        extracted from, shapelet dimension, index of the instance the shapelet was
-//        extracted from in fit, class value of the shapelet, The z-normalised shapelet
-//        array)  //
-  Shapelet(float ig, int len, int start, int dim, int idx, int cls, vector<double> values)
-    : info_gain(ig), length(len), startPos(start), shapeletDimension(dim), index(idx), classValue(cls), zNormalisedValues(values) {}
-  Shapelet() : info_gain(0.0), length(0), startPos(0), shapeletDimension(0), index(0), classValue('0'), zNormalisedValues(vector<double>()) {}
-
-};
-
 // vector<vector<int>> series, vector<double> shapelet,
 // vector<vector<uint>> sorted_indices (each vector<vector> has different size), vector<uint> position, vector<int> length
 double _online_shapelet_distance(const vector<double>& series, const vector<double>& shapelet,
-                                 vector<double>& sorted_indices, int& position, int& length) {
+                                 vector<double>& sorted_indice, int& position, int& length) {
   // Subseq = series[pos : pos+length]
   vector<double> subseq(length); // NOTE: Really should be vector<uint>
   // This vector holds many vectors
@@ -115,8 +78,8 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
 
       //TODO: Figure out below
       for(int j = 0; j < length; ++j){
-        double val = use_std ? (series.at(pos + sorted_indices.at(j)) - mean) / std :  0.0;
-        double temp = shapelet.at(sorted_indices.at(j)) - val;
+        double val = use_std ? (series.at(pos + sorted_indice.at(j)) - mean) / std :  0.0;
+        double temp = shapelet.at(sorted_indice.at(j)) - val;
         dist += temp*temp;
 
         if(dist > best_dist) break;
@@ -131,7 +94,7 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
 }
 
 // NOTE: Currently crashing, try moving this into int main() rather than stack
-vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& shapelets, vector<vector<double>>& sorted_indices) {
+vector<vector<double>> _transform (vector<vector<double>>& X) {
   // Holds our output
   // output should be 8 columns, 22 rows; TODO: Figure out where these #'s come from
   vector<vector<double>> output(X.size(), vector<double>(X.at(0).size(), 0.0));
@@ -141,20 +104,20 @@ vector<vector<double>> _transform (vector<vector<double>>& X, vector<Shapelet>& 
   // This is the parallel part
   // Goes through every time series
   for (size_t i = 0; i < X.size(); ++i) {
-    const vector<double> &series = X[i];
+    vector<double> &series = X[i];
     vector<double> dists(shapelets.size());
+
     for (size_t j = 0; j < shapelets.size(); ++j) {
-      Shapelet shapelet = shapelets[j]; // shapelets[i]
-      vector<double> sortedIndices(shapelet.length);
+      Shapelet shape = shapelets[j]; // shapelets[i] TODO: Check if this should be j or i
+      vector<double> sortedIndices(shape.length);
       // TODO: Inputs to _online_shapelet_distance
       // dists[j] = _online_shapelet_distance(series[shapelet[3]], shapelet[6],
       // self._sorted_indices[n],
       // shapelet[2], shapelet[1]);
       // def _online_shapelet_distance(vector<uint> series, vector<double> shapelet,
       // vector<uint> sorted_indices, uint position, uint length):
-      dists[j] = _online_shapelet_distance(series, shapelet.zNormalisedValues,
-                                           sorted_indices[j], shapelet.startPos,
-                                shapelet.length);
+      dists[j] = _online_shapelet_distance(series, shape.zNormalisedValues,
+                                           sorted_indices[j], shape.startPos, shape.length);
     }
     output[i] = dists;
   }
@@ -203,7 +166,7 @@ int main(){
   vector<vector<double>> Xt;
   // TODO: Test this against the real input and expected output
   cout << "\nCalling _transform" << endl;
-  Xt = _transform(X, shapelets, sorted_indices);
+  Xt = _transform(X);
   cout << "Below Xt" << endl;
   for (int i = 0; i < Xt.size(); ++i) {
     cout << '{';

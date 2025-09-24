@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <iomanip> // For setprecision
 #include "output.h"
 
 using namespace std;
@@ -96,10 +97,9 @@ double _online_shapelet_distance(const vector<double>& series, const vector<doub
 // NOTE: Currently crashing, try moving this into int main() rather than stack
 vector<vector<double>> _transform (vector<vector<double>>& X) {
   // Holds our output
-  // output should be 8 columns, 22 rows; TODO: Figure out where these #'s come from
+  // output should be 8 columns, 22 rows;
   vector<vector<double>> output(X.size(), vector<double>(X.at(0).size(), 0.0));
   cout << "output: " << output.size() << " " << output[0].size() << endl;
-  //TODO: Something with sorted indices
 
   // This is the parallel part
   // Goes through every time series
@@ -108,7 +108,7 @@ vector<vector<double>> _transform (vector<vector<double>>& X) {
     vector<double> dists(shapelets.size());
 
     for (size_t j = 0; j < shapelets.size(); ++j) {
-      Shapelet shape = shapelets[j]; // shapelets[i] TODO: Check if this should be j or i
+      Shapelet shape = shapelets[j]; // shapelets[j]
       vector<double> sortedIndices(shape.length);
       // TODO: Inputs to _online_shapelet_distance
       // dists[j] = _online_shapelet_distance(series[shapelet[3]], shapelet[6],
@@ -142,7 +142,6 @@ int main(){
   int time_limit_in_minutes = 0;
 
   // Input of our trained data, ndarray [22][24]
-  // TODO: Where do these numbers come from?
   // 22 vectors each holding 24 elements of data. NOTE: Data never changes
   vector<vector<double>> X(22, vector<double>(24, 0.0)); // Filled during training
   cout << "X declared";
@@ -167,7 +166,7 @@ int main(){
   // TODO: Test this against the real input and expected output
   cout << "\nCalling _transform" << endl;
   Xt = _transform(X);
-  cout << "Below Xt" << endl;
+  cout << "Below Xt" << setprecision(8) << endl;
   for (int i = 0; i < Xt.size(); ++i) {
     cout << '{';
     for (int j = 0; j < Xt[i].size(); ++j) {

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1760996962.50588 "week4.tex" "week4.pdf" "week4" 1760996963.15402 0
+["pdflatex"] 1761169582.80234 "week4.tex" "week4.pdf" "week4" 1761169583.32561 0
   "/home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bold.luc" 1758061497.33231 128397 3d64569876988f0ea2d36440ce1a1ff1 ""
   "/home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-regular.luc" 1758061487.70539 127314 2a77d9f8905e723234085831cb339442 ""
   "/home/danny/.texlive/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-bold.luc" 1758061497.27431 128286 1fa77e329d9b541d812716dd3bc09cda ""
@@ -30,6 +30,8 @@
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy7.tfm" 1755987285 1120 2b3f9b25605010c69bc328bea6ac000f ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1755987285 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1755987285 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb" 1755987285 36741 fa121aac0049305630cf160b86157ee4 ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb" 1755987285 37912 77d683123f92148345f3fc36a38d9ab1 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1755987285 36281 c355509802a035cadc5f15869451dcee ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1755987285 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb" 1755987285 31809 8670ca339bf94e56da1fc21c80635e2a ""
@@ -95,8 +97,8 @@
   "/usr/share/texmf-dist/tex/luatex/luaotfload/luaotfload.lua" 1755987285 13566 16df94dd2de231b2bca0aaa0190941fe ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1759127920 5311557 9da84c45f5b388655502706482323571 ""
   "/var/lib/texmf/web2c/luahbtex/lualatex.fmt" 1759127902 5586448 ab4e9b21a4a4b4707b2d40aa9c1be35a ""
-  "week4.aux" 1760996963.02755 758 3efcc55b009773ed65e0011240b01686 "pdflatex"
-  "week4.tex" 1760996962.414 4309 06531739cc5134c4d33ad318e09ee18e ""
+  "week4.aux" 1761169583.21866 1348 667807618b814ab5401e46c015275344 "pdflatex"
+  "week4.tex" 1761169582.70453 7429 067c61fd5b3d67f23c693b2541192a32 ""
   (generated)
   "week4.aux"
   "week4.log"
